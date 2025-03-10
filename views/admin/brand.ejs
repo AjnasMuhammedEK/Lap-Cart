@@ -1,0 +1,796 @@
+<%- include("../../views/partials/admin/header") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAP CART - Category Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --sidebar-width: 240px;
+            --primary-color: #8257ED;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #101022;
+            --lighter-bg: #2a2a3e;
+            --text-color: #ffffff;
+            --border-color: #3a3a4e;
+            --success-color: #00bf8e;
+            --warning-color: #f7c94b;
+            --danger-color: #f75842;
+        }
+
+        body {
+            /* display: flex; */
+            /* min-height: 100vh; */
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+        }
+
+        /* Sidebar Styles */
+        .logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span:first-child {
+            color: var(--primary-color);
+        }
+
+        .menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(130, 87, 237, 0.1);
+        }
+
+        .menu-item.active {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .submenu {
+            padding-left: 20px;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+        }
+
+        .search-container button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-profile .status {
+            width: 10px;
+            height: 10px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .add-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .add-button:hover {
+            background-color: #6f46c9;
+        }
+
+        /* Search Component */
+        .search-component {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-component input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+        }
+
+        .search-component button {
+            padding: 12px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .search-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .search-btn:hover {
+            background-color: #6f46c9;
+        }
+
+        .clear-btn {
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .clear-btn:hover {
+            background-color: #3a3a4e;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: var(--lighter-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--darker-bg);
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(130, 87, 237, 0.05);
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 10px;
+        }
+
+        .edit-btn, .delete-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .edit-btn {
+            background-color: var(--warning-color);
+        }
+
+        .delete-btn {
+            background-color: var(--danger-color);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .pagination-info {
+            color: #aaa;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .pagination-controls button {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .pagination-controls button:hover {
+            background-color: #3a3a4e;
+        }
+
+        .pagination-controls button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Modal Styles */
+        /* .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            width: 500px;
+            background-color: var(--lighter-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show .modal {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 20px;
+        } */
+
+        /* .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        } */
+
+        /* .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        } */
+
+        /* .modal-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        } */
+
+        /* .cancel-btn {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .save-btn {
+            background-color: var(--primary-color);
+            color: white;
+        } */
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar .logo span, .sidebar .menu-item span {
+                display: none;
+            }
+
+            .sidebar .menu-item {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .sidebar .menu-item i {
+                margin-right: 0;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .user-profile {
+                align-self: flex-end;
+            }
+
+            .search-component {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-cell {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .pagination {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+
+        /* For mobile devices */
+        @media (max-width: 576px) {
+            .content {
+                padding: 15px;
+            }
+        }
+
+        /* // Add this to your modal content styling */
+.modal-content {
+    color: #000; /* Force black text in modal */
+    background-color: #fff; /* Ensure white background */
+}
+
+.modal-body label, .modal-title {
+    color: #000; /* Ensure labels are visible */
+}
+    </style>
+</head>
+<body>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="search-container">
+                <input type="text" placeholder="Search for Categories">
+                <button>❌</button>
+            </div>
+            <div class="user-profile">
+                <div class="status"></div>
+                <span>User Profile</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="page-header">
+                <h1 class="page-title">BRANDS</h1>
+                <button onclick="addBrand()" class="add-button" id="addCategoryBtn">
+                    <span>Add Brand</span>
+                    <span>+</span>
+                </button>
+            </div>
+
+            <div class="search-component">
+                <input type="text" placeholder="Search by category name or description">
+                <button class="search-btn">Search</button>
+                <button class="clear-btn">Clear</button>
+            </div>
+
+
+            
+    
+
+
+
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                           
+                            <th>Brands</th>
+                           <th>Status</th>
+                            <th>List/Unlist</th>
+                           
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% cat.forEach((brand, index) => { %>
+                            <tr>
+                                <td><%= brand.brandName %></td>
+                                
+                                
+                               
+                                <td class="text-start">
+                                    <% if (brand.isListed) { %>
+                                        <span class="badge rounded-pill alert-success" style="width: 60px;">Listed</span>
+                                    <% } else { %>
+                                        <span class="badge rounded-pill alert-danger" style="width: 60px;">Unlisted</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (brand.isListed) { %>
+                                        <button class="btn btn-danger" style="width: 70px;">
+                                            <a href="/admin/listBrand?id=<%= brand._id %>" class="text-white" style="text-decoration: none;">Unlist</a>
+                                        </button>
+                                    <% } else { %>
+                                        <button class="btn btn-success" style="width: 70px;">
+                                            <a href="/admin/unlistBrand?id=<%= brand._id %>" class="text-white" style="text-decoration: none;">List</a>
+                                        </button>
+                                    <% } %>
+                                </td>
+                                
+
+
+                                <td class="action-cell">
+                                    <button  class="edit-btn" onclick="editCategory('<%= brand._id %>')">✏️</button>
+                                    <button class="delete-btn" onclick="deleteCategory('<%= brand._id %>')">🗑️</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                        
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- <div class="pagination">
+                <div class="pagination-info">
+                    Showing 1 to 5 of 10
+                </div>
+                <div class="pagination-controls">
+                    <button>&lt;</button>
+                    <button class="active">1</button>
+                    <button>2</button>
+                    <button>3</button>
+                    <button>...</button>
+                    <button>9</button>
+                    <button>&gt;</button>
+                </div>
+            </div> -->
+
+            <div class="container mt-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        <%for(let i=1 ; i<=totalPages;i++){%>
+                            <li class="page-item <%=(i===currentPage) ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%=i%>"><%= i %></a>
+                            </li>
+                        <%}%>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+   
+    <div class="modal" tabindex="-1" id="addCategoryModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">ADD BRAND</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form onsubmit="return validateAdd()" action="/admin/addBrand" method="post" >
+                    <label for="name">Brand Name</label><br>
+                    <input type="text" name="brandName" id="name">
+                    <br>
+                    <div id="name-error" class="text-danger"></div>
+                    <br><br>
+                
+                    <button class="btn btn-primary">ADD BRAND</button>
+                </form>
+                
+
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+             
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- DELETE BRAND -->
+
+      <div class="modal" tabindex="-1" id="deleteCategoryModal">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">DELETE BRAND</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/deleteBrand" method="post">
+                    <input type="text" id="deleteBrand" name="brandId" hidden>
+                    <p>Delete This Brand</p>
+                    <button class="btn btn-primary">Delete Brand</button>
+                </form>
+             
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+             
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- EDIT BRAND -->
+      
+      <div class="modal" tabindex="-1" id="editCategoryModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Brand</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="return validateEdit()" action="/admin/editBrand" method="post" novalidate>
+                        <label for="editname">Brand Name</label><br>
+                        <input type="text" name="editname" id="editname">
+                        <br>
+                        <div id="editname-error" class="text-danger"></div>
+                        <br><br>
+    
+                        <input type="hidden" id="editCategory" name="brandId">
+                        <button type="submit" class="btn btn-primary">EDIT BRAND</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+      
+<input type="text" value="<%= msg ? msg : '' %>" id="message" hidden>
+
+
+    
+   
+
+    <script>
+
+function editCategory(categoryID){
+    document.getElementById("editCategory").value=categoryID
+            let editModalShow =  new bootstrap.Modal(document.getElementById('editCategoryModal'))
+            editModalShow.show()
+        }
+
+        function validateEdit(){
+            const editname = document.getElementById("editname").value.trim();
+            const editdescription = document.getElementById("editdescription").value.trim();
+
+            if (editname === "") {
+               displayErrMsg("editname-error","Please enter a category name")
+               return false
+    } else if (!/^[a-zA-Z\s]+$/.test(editname)) {
+        displayErrMsg("editname-error", "Category name should contain only alphabetic characters");
+        return false;
+    }
+
+    if (editdescription === "") {
+        displayErrMsg("editdescription-error", "Please enter a description");
+        return false;
+    }
+return true
+
+        }
+        function validateAdd(){
+            const brandName = document.getElementById("name").value.trim();
+
+            if (brandName === "") {
+               displayErrMsg("name-error","Please enter a category name")
+               return false
+    } else if (!/^[a-zA-Z\s]+$/.test(brandName)) {
+        displayErrMsg("name-error", "Category name should contain only alphabetic characters");
+        return false;
+    }
+return true
+
+        }
+
+        let message = document.getElementById("message").value;
+
+        
+        if (message.trim()) {
+            Swal.fire({
+                title: "Notification",
+                text: message,
+                icon: "success"
+            });
+        }   
+
+        function addBrand(){
+            let addModalShow =  new bootstrap.Modal(document.getElementById('addCategoryModal'))
+            addModalShow.show()
+        }
+
+        function deleteCategory(BrandID){
+            document.getElementById('deleteBrand').value=BrandID
+            let deleteModalShow =  new bootstrap.Modal(document.getElementById('deleteCategoryModal'))
+            deleteModalShow.show()
+        }
+
+
+
+
+function displayErrMsg(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.style.color = "red";
+    }
+}
+
+
+
+        
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+<%- include("../../views/partials/admin/footer") %>

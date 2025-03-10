@@ -1,0 +1,343 @@
+<%- include("../../views/partials/admin/header") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAP CART - Users</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            /* display: flex; */
+            background-color: #1a1a25;
+            color: #fff;
+        }
+
+       
+        .logo-container {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #2f2f3d;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .lap {
+            color: #6c5ce7;
+        }
+
+        .cart {
+            color: #ffffff;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            color: #9999aa;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover {
+            background-color: #252535;
+            color: white;
+        }
+
+        .menu-item.active {
+            background-color: #463cbc;
+            color: white;
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-item span {
+            font-size: 14px;
+        }
+
+        .menu-item-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+        }
+
+        .submenu-arrow {
+            margin-left: auto;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 20px;
+            width: calc(100% - 240px);
+            background-color: #1a1a25;
+        }
+
+        .header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Search Container Styles */
+        .search-container {
+            display: flex;
+            margin: 20px 0;
+            max-width: 700px;
+        }
+
+        .search-field {
+            display: flex;
+            align-items: center;
+            background-color: #252535;
+            border-radius: 4px;
+            padding: 0 15px;
+            flex: 1;
+        }
+
+        .search-icon {
+            color: #9999aa;
+            margin-right: 10px;
+        }
+
+        .search-input {
+            border: none;
+            background: transparent;
+            padding: 12px 0;
+            width: 100%;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .search-input::placeholder {
+            color: #9999aa;
+        }
+
+        .search-button {
+            background-color: #463cbc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            /* display: flex; */
+             align-items: center; 
+        }
+
+        .search-button:hover {
+            background-color: #5649d1;
+        }
+
+        .search-button i {
+            margin-right: 8px;
+        }
+
+        .clear-button {
+            background-color: #3a3a4a;
+            color: #ddd;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+
+        .clear-button:hover {
+            background-color: #45455a;
+        }
+
+        .clear-button i {
+            margin-right: 8px;
+        }
+
+        /* User Table Styles */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #252535;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 16px 20px;
+            background-color: #1e1e2d;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .users-table tbody tr {
+            border-bottom: 1px solid #303045;
+        }
+
+        .users-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .users-table td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #444455;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .user-name {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .user-email {
+            color: #9999aa;
+        }
+
+        .user-phone {
+            color: #9999aa;
+        }
+    </style>
+    <!-- You can include FontAwesome or another icon library for the icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+   
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title">Products</div>
+        </div>
+
+        <div class="search-container">
+            <div class="search-field">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Search for User Name">
+            </div>
+            <button class="search-button">
+                <i class="fas fa-search"></i>
+                Search
+            </button>
+            <button class="clear-button">
+                <i class="fas fa-times"></i>
+                Clear
+            </button>
+
+           
+        </div>
+        <button class="search-button">
+            <span>+</span>
+            Add Products
+        </button>
+         <table class="users-table">
+            <thead>
+                <tr>
+                    <th>USER IMAGE</th>
+                    <th>USER NAME</th>
+                    <th>EMAIL</th>
+                    <th>PHONE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="user-avatar">A</div>
+                    </td>
+                    <td class="user-name">Ajnas Muhammed</td>
+                    <td class="user-email">ajs44@gmail.com</td>
+                    <td class="user-phone">7034646123</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-avatar">A</div>
+                    </td>
+                    <td class="user-name">Ajnas Muhammed</td>
+                    <td class="user-email">ajnasajs44@gmail.com</td>
+                    <td class="user-phone">7034646123</td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="user-avatar">M</div>
+                    </td>
+                    <td class="user-name">Mansoor Ali</td>
+                    <td class="user-email">mansoor_alikaipanga@gmail.com</td>
+                    <td class="user-phone">7034646123</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Add JavaScript functionality for search and clear buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.search-input');
+            const searchButton = document.querySelector('.search-button');
+            const clearButton = document.querySelector('.clear-button');
+            
+            searchButton.addEventListener('click', function() {
+                // Implement search functionality
+                const searchTerm = searchInput.value.toLowerCase();
+                const rows = document.querySelectorAll('.users-table tbody tr');
+                
+                rows.forEach(row => {
+                    const userName = row.querySelector('.user-name').textContent.toLowerCase();
+                    const userEmail = row.querySelector('.user-email').textContent.toLowerCase();
+                    
+                    if (userName.includes(searchTerm) || userEmail.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+            
+            clearButton.addEventListener('click', function() {
+                // Clear search input and reset table
+                searchInput.value = '';
+                const rows = document.querySelectorAll('.users-table tbody tr');
+                rows.forEach(row => {
+                    row.style.display = '';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+<%- include("../../views/partials/admin/footer") %>

@@ -1,0 +1,68 @@
+<script>
+    // Set default active menu item
+    const defaultMenuItem = document.querySelector('.menu-item[data-section="dashboard"]');
+    defaultMenuItem.classList.add('active');
+
+    // Toggle sidebar on mobile
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+    });
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(e) {
+        if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && 
+            sidebar.classList.contains('active')) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    // Menu item click event with enhanced visual feedback and indicator
+    const menuItems = document.querySelectorAll('.menu-item');
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Only prevent default if it's not a logout link or external link
+            if (!this.getAttribute('href').startsWith('/')) {
+                e.preventDefault();
+            }
+
+            // Remove active class from all menu items
+            menuItems.forEach(menuItem => {
+                menuItem.classList.remove('active');
+            });
+
+            // Add active class to clicked menu item with visual feedback
+            this.classList.add('active');
+            
+            // Add a pulse animation to the indicator
+            const indicator = this.querySelector('.indicator');
+            indicator.style.animation = 'none';
+            setTimeout(() => {
+                indicator.style.animation = 'pulse 0.5s';
+            }, 10);
+            
+            // Add a temporary highlight effect
+            this.style.transition = 'background-color 0.3s';
+            const originalBg = this.style.backgroundColor;
+            this.style.backgroundColor = 'rgba(119, 89, 243, 0.4)';
+            setTimeout(() => {
+                this.style.backgroundColor = originalBg;
+            }, 300);
+        });
+    });
+
+    // Add animations
+    document.head.insertAdjacentHTML('beforeend', `
+        <style>
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.3); }
+                100% { transform: scale(1); }
+            }
+        </style>
+    `);
+</script>
+</body>
+</html>
