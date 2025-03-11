@@ -6,15 +6,34 @@ const categoryInfo = async (req,res) => {
     try {
 
          
-        const page = parseInt(req.query.page) || 1
-        const limit = 4
-        const skip = (page-1)*limit
+        let search = '';
+        if (req.query.search) {
+            search = req.query.search;
+        }
+
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 4;
+        const skip = (page - 1) * limit;
+
+        const categoryData = await Category.find({
+            isDeleted: false,
+            name: { $regex: ".*" + search + ".*", $options: "i" }
+        })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+
+
+        // const page = parseInt(req.query.page) || 1
+        // const limit = 4
+        // const skip = (page-1)*limit
 
         
-        const categoryData = await Category.find({isDeleted:false})
-        .sort({createdAt:-1})
-        .skip(skip)
-        .limit(limit)
+        // const categoryData = await Category.find({isDeleted:false})
+        // .sort({createdAt:-1})
+        // .skip(skip)
+        // .limit(limit)
 
        
         
@@ -27,10 +46,7 @@ const categoryInfo = async (req,res) => {
             req.session.admMsg = null
         }
 
-        // if(req.session.addmessage){
-        //     var msg = req.session.addmessage
-        //     req.session.addmessage = null
-        // }
+        
 
         res.render('category',{
             
@@ -55,13 +71,11 @@ const addCategory = async(req, res) => {
        
         const existingCategory = await Category.findOne({name});
         if(existingCategory) {
-            // return res.status(400).json({error: "Category already exists"});
            req.session.admMsg = "Category already exists"
            res.redirect('/admin/category')
            return
         }
         
-        // Create and save new category
         const newCategory = new Category({
             name,
             description
@@ -73,12 +87,7 @@ const addCategory = async(req, res) => {
         req.session.admMsg = "Category added successfully"
         res.redirect('/admin/category')
         
-        // Send success response for AJAX request
-        // return res.status(200).json({
-        //     success: true,
-        //     message: "Category added successfully",
-        //     category: newCategory
-        // });
+       
         
     } catch (error) {
         console.error("Error adding category:", error);
@@ -136,7 +145,7 @@ const getListCategory = async (req,res) => {
 
 
         let id = req.query.id
-         
+        console.log(id);
         await Category.updateOne({_id:id},{$set:{isListed:false}})
         res.redirect('/admin/category')
         

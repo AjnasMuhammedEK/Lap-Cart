@@ -47,11 +47,12 @@ const productSchema= new Schema({
         type:Boolean,
         deault:false
     },
+    
     status:{
         type:String,
         enum:["Available","out of stock","Discountinued"],
         required:true,
-        default:"Available"
+       
     },
 },{timestamps:true})
 

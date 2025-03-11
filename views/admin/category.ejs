@@ -506,14 +506,8 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <div class="search-container">
-                <input type="text" placeholder="Search for Categories">
-                <button>❌</button>
-            </div>
-            <div class="user-profile">
-                <div class="status"></div>
-                <span>User Profile</span>
-            </div>
+             
+             
         </div>
 
         <div class="content">
@@ -526,9 +520,11 @@
             </div>
 
             <div class="search-component">
-                <input type="text" placeholder="Search by category name or description">
+                <form action="/admin/category">
+                <input type="text" name="search" id="searchInput" placeholder="Search by category name or description">
                 <button class="search-btn">Search</button>
-                <button class="clear-btn">Clear</button>
+                <button class="clear-btn" onclick="clearSearch()">Clear</button>
+            </form>
             </div>
 
 
@@ -820,6 +816,13 @@ function displayErrMsg(elementId, message) {
     }
 }
 
+
+
+function clearSearch() {
+                document.getElementById("searchInput").value = "";
+                document.getElementById('searchBtn').click();
+
+            }
 
 
         

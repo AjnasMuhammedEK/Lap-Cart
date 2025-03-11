@@ -6,6 +6,10 @@ const customerController = require('../controllers/admin/customerController')
 const categoryController = require('../controllers/admin/categoryController')
 const brandController = require('../controllers/admin/brandController')
 const productController = require('../controllers/admin/productController')
+const multer = require('multer')
+const storage = require('../helpers/multer')
+// const uploads = multer({storage:storage})
+const upload = require('../helpers/multer')
 
 
 router.get('/pageerror',adminController.pageerror)
@@ -48,7 +52,7 @@ router.get('/unlistBrand',adminAuth,brandController.getunListBrand)
 //product 
 
 router.get('/product',adminAuth,productController.loadProduct)
-router.get('/addProduct',adminAuth,productController.addProduct)
-
+router.get('/addProduct',adminAuth,productController.loadAddProduct)
+router.post('/addProduct', adminAuth, upload.array('images', 3), productController.addProduct);
 
 module.exports = router

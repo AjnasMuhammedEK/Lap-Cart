@@ -1,68 +1,95 @@
 <script>
-    // Set default active menu item
-    const defaultMenuItem = document.querySelector('.menu-item[data-section="dashboard"]');
-    defaultMenuItem.classList.add('active');
+   document.addEventListener('DOMContentLoaded', function() {
+    // Create the moving indicator element
+    const indicator = document.createElement('div');
+    indicator.className = 'moving-indicator';
+    document.querySelector('.sidebar-menu').appendChild(indicator);
 
-    // Toggle sidebar on mobile
-    const sidebarToggle = document.querySelector('.sidebar-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    
-    sidebarToggle.addEventListener('click', function() {
-        sidebar.classList.toggle('active');
-    });
-
-    // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(e) {
-        if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && 
-            sidebar.classList.contains('active')) {
-            sidebar.classList.remove('active');
+    // Add styles for the moving indicator
+    const style = document.createElement('style');
+    style.textContent = `
+        .moving-indicator {
+            position: absolute;
+            left: 0;
+            width: 4px;
+            background-color: var(--primary-color);
+            border-radius: 0 2px 2px 0;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            pointer-events: none;
+            z-index: 2;
         }
-    });
+        
+        .menu-item {
+            position: relative;
+        }
+        
+        .menu-item.active {
+            border-left: 4px solid transparent !important;
+        }
+    `;
+    document.head.appendChild(style);
 
-    // Menu item click event with enhanced visual feedback and indicator
+    // Function to position the indicator
+    function positionIndicator(menuItem) {
+        if (!menuItem) return;
+        
+        const rect = menuItem.getBoundingClientRect();
+        const parentRect = document.querySelector('.sidebar-menu').getBoundingClientRect();
+        
+        indicator.style.top = (rect.top - parentRect.top) + 'px';
+        indicator.style.height = rect.height + 'px';
+        indicator.style.opacity = '1';
+    }
+
+    // Remove active class from all menu items
+    function removeActiveClass() {
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+    }
+
+    // Position indicator on the active menu item on load
+    const activeMenuItem = document.querySelector('.menu-item.active');
+    if (activeMenuItem) {
+        positionIndicator(activeMenuItem);
+    }
+
+    // Update indicator position when clicking menu items
     const menuItems = document.querySelectorAll('.menu-item');
     menuItems.forEach(item => {
         item.addEventListener('click', function(e) {
-            // Only prevent default if it's not a logout link or external link
-            if (!this.getAttribute('href').startsWith('/')) {
+            // If this isn't a real navigation (href="#"), prevent default
+            if (this.getAttribute('href') === '#') {
                 e.preventDefault();
             }
-
-            // Remove active class from all menu items
-            menuItems.forEach(menuItem => {
-                menuItem.classList.remove('active');
-            });
-
-            // Add active class to clicked menu item with visual feedback
+            
+            // Update active state
+            removeActiveClass();
             this.classList.add('active');
             
-            // Add a pulse animation to the indicator
-            const indicator = this.querySelector('.indicator');
-            indicator.style.animation = 'none';
-            setTimeout(() => {
-                indicator.style.animation = 'pulse 0.5s';
-            }, 10);
-            
-            // Add a temporary highlight effect
-            this.style.transition = 'background-color 0.3s';
-            const originalBg = this.style.backgroundColor;
-            this.style.backgroundColor = 'rgba(119, 89, 243, 0.4)';
-            setTimeout(() => {
-                this.style.backgroundColor = originalBg;
-            }, 300);
+            // Position the indicator
+            positionIndicator(this);
         });
     });
 
-    // Add animations
-    document.head.insertAdjacentHTML('beforeend', `
-        <style>
-            @keyframes pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.3); }
-                100% { transform: scale(1); }
-            }
-        </style>
-    `);
-</script>
+    // Highlight current page based on URL
+    const currentPath = window.location.pathname;
+    menuItems.forEach(item => {
+        const href = item.getAttribute('href');
+        if (href && currentPath.includes(href) && href !== '#') {
+            removeActiveClass();
+            item.classList.add('active');
+            positionIndicator(item);
+        }
+    });
+
+    // Update indicator position on window resize
+    window.addEventListener('resize', function() {
+        const activeMenuItem = document.querySelector('.menu-item.active');
+        if (activeMenuItem) {
+            positionIndicator(activeMenuItem);
+        }
+    });
+});</script>
 </body>
 </html>

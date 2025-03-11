@@ -1,0 +1,585 @@
+<%- include("../../views/partials/admin/header") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Products</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.css">
+    <style>
+        body {
+            background-color: #151521;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .main-content {
+            margin-left: 360px;
+            padding: 10px;
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .form-container {
+            background-color: #222;
+            border-radius: 8px;
+            padding: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+            margin-bottom: 50px;
+        }
+        
+        .form-title {
+            margin-bottom: 25px;
+        }
+        
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            background-color: #333;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            border: 1px solid #444;
+            margin-bottom: 15px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-preview:hover::after {
+            content: "Click to crop";
+            position: absolute;
+            background: rgba(0,0,0,0.7);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .image-preview-empty::before {
+            content: "+";
+            font-size: 40px;
+            color: #666;
+        }
+        
+        .image-preview-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .delivery-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .delivery-option {
+            background-color: #333;
+            border: 1px solid #444;
+            padding: 8px;
+            text-align: center;
+            border-radius: 4px;
+        }
+        
+        .add-product-btn {
+            background-color: #42b883;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+        
+        .add-product-btn:hover {
+            background-color: #36a574;
+            transform: translateY(-2px);
+        }
+        
+        .form-label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .form-control {
+            background-color: #333;
+            border: 1px solid #444;
+            color: white;
+        }
+        
+        .form-control:focus {
+            background-color: #333;
+            color: white;
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .error-message {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Modal Styles */
+        .crop-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+        
+        .crop-modal-content {
+            position: relative;
+            background-color: #333;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+        
+        .crop-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+        }
+        
+        .crop-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .crop-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .crop-btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .crop-btn-crop {
+            background-color: #42b883;
+            color: white;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            color: white;
+        }
+        
+        /* Hide file inputs visually but keep them accessible */
+        .hidden-file-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+        
+        /* Success message */
+        .alert-success {
+            background-color: #42b883;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        /* Scroll to top button */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: #42b883;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            z-index: 99;
+        }
+        
+        .scroll-top-btn:hover {
+            background-color: #36a574;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content" id="mainContent">
+        <div class="form-container">
+            <h4 class="form-title">Add Products</h4>
+            
+            <% if(locals.success) { %>
+                <div class="alert-success">
+                    Product added successfully!
+                </div>
+            <% } %>
+            
+            <form action="/admin/addProduct" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Add Images (Up to 3):</label>
+                            <div class="image-preview-container">
+                                <div class="image-preview image-preview-empty" id="imagePreview1" onclick="triggerFileInput(1)"></div>
+                                <div class="image-preview image-preview-empty" id="imagePreview2" onclick="triggerFileInput(2)"></div>
+                                <div class="image-preview image-preview-empty" id="imagePreview3" onclick="triggerFileInput(3)"></div>
+                            </div>
+                            
+                            <input type="file" class="hidden-file-input" id="productImage1" name="images" accept="image/png, image/jpeg, image/jpg" onchange="handleFileSelect(event, 1)">
+                            <input type="hidden" id="croppedImage1" name="croppedImages">
+                            <div id="images-error" class="error-message"></div>
+                            
+                            <input type="file" class="hidden-file-input" id="productImage2" name="images" accept="image/png, image/jpeg, image/jpg" onchange="handleFileSelect(event, 2)">
+                            <input type="hidden" id="croppedImage2" name="croppedImages">
+                            
+                            <input type="file" class="hidden-file-input" id="productImage3" name="images" accept="image/png, image/jpeg, image/jpg" onchange="handleFileSelect(event, 3)">
+                            <input type="hidden" id="croppedImage3" name="croppedImages">
+                            
+                            <div class="mt-2">
+                                <span class="text-muted" style="font-size: 12px;">Click on the boxes to upload and crop images</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productName" class="form-label">Product Name:</label>
+                                    <input type="text" class="form-control" id="productName" name="productName">
+                                    <div id="productName-error" class="error-message"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="productDescription" class="form-label">Product Description:</label>
+                                    <input type="text" class="form-control" id="productDescription" name="productDescription">
+                                    <div id="description-error" class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">Brand:</label>
+                            <select class="form-control" id="brand" name="brand">
+                                <%for(let i = 0; i < brand.length; i++){%>
+                                    <option value="<%=brand[i].brandName%>">
+                                        <%=brand[i].brandName%>
+                                    </option>
+                                <%}%>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">Statgitus:</label>
+                            <select class="form-control" id="status" name="status">
+                                 
+                                    <option value="Available">Available</option>
+                                    <option value="out of stock">out of stock</option>
+                                    <option value="Discountinued">Discountinued</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="productAmount" class="form-label">Regular Price:</label>
+                            <input type="text" class="form-control" id="productAmount" name="productAmount">
+                            <div id="regularPrice-error" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="salePrice" class="form-label">Sale Price:</label>
+                            <input type="text" class="form-control" id="salePrice" name="salePrice">
+                            <div id="salePrice-error" class="error-message"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="stockCount" class="form-label">Stock Count:</label>
+                            <input type="number" class="form-control" id="stockCount" name="stockCount">
+                            <div id="quantity-error" class="error-message"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category:</label>
+                            <select class="form-control" id="category" name="category">
+                                <%for(let i = 0; i < cat.length; i++){%>
+                                <option value="<%=cat[i].name%>">
+                                    <%=cat[i].name%>
+                                </option>
+                                <%}%>
+                            </select>
+                        </div>
+
+                        <div class="text-end">
+                            <button type="submit" class="add-product-btn">ADD PRODUCT</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Crop Modal -->
+    <div id="cropModal" class="crop-modal">
+        <div class="crop-modal-content">
+            <span class="close-modal" onclick="closeCropModal()">&times;</span>
+            <h5>Crop Image</h5>
+            <div class="crop-container">
+                <img id="cropImage" src="" alt="Image to crop">
+            </div>
+            <div class="crop-buttons">
+                <button class="crop-btn crop-btn-cancel" onclick="closeCropModal()">Cancel</button>
+                <button class="crop-btn crop-btn-crop" onclick="cropImage()">Crop</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll to top button -->
+    <button id="scrollTopBtn" class="scroll-top-btn" onclick="scrollToTop()">↑</button>
+    
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+
+    <script>
+        let cropper;
+        let currentImageIndex;
+        let croppedFiles = [];
+        
+        // Function to trigger file input click when image preview is clicked
+        function triggerFileInput(index) {
+            document.getElementById(`productImage${index}`).click();
+        }
+        
+        // Function to handle file selection and open crop modal
+        function handleFileSelect(event, index) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            currentImageIndex = index;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Show the crop modal
+                const cropModal = document.getElementById('cropModal');
+                const cropImage = document.getElementById('cropImage');
+                
+                cropImage.src = e.target.result;
+                cropModal.style.display = 'block';
+                
+                // Initialize cropper after image is loaded
+                cropImage.onload = function() {
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    cropper = new Cropper(cropImage, {
+                        aspectRatio: 1, // Square aspect ratio
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 0.8,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false
+                    });
+                };
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Function to close crop modal
+        function closeCropModal() {
+            const cropModal = document.getElementById('cropModal');
+            cropModal.style.display = 'none';
+            
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+        }
+        
+        // Function to crop image and update preview
+        function cropImage() {
+            if (!cropper) return;
+            
+            // Get cropped canvas
+            const canvas = cropper.getCroppedCanvas({
+                width: 440,
+                height: 440,
+                fillColor: '#fff',
+                imageSmoothingEnabled: true,
+                imageSmoothingQuality: 'high',
+            });
+            
+            // Convert canvas to blob/file
+            canvas.toBlob(function(blob) {
+                // Update the image preview
+                const imagePreview = document.getElementById(`imagePreview${currentImageIndex}`);
+                imagePreview.style.backgroundImage = `url('${canvas.toDataURL()}')`;
+                imagePreview.classList.remove('image-preview-empty');
+                
+                // Create a new file from the blob
+                const croppedFile = new File([blob], `cropped-image-${currentImageIndex}.jpg`, { type: 'image/jpeg' });
+                
+                // Store the cropped file
+                croppedFiles[currentImageIndex] = croppedFile;
+                
+                // Close modal
+                closeCropModal();
+                
+                // Create a FormData to append the file for server upload
+                appendFileToForm(croppedFile, currentImageIndex);
+            }, 'image/jpeg', 0.9);
+        }
+        
+        // Append file to form
+        function appendFileToForm(file, index) {
+            // Create a data transfer object
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            
+            // Replace the file in the file input
+            const fileInput = document.getElementById(`productImage${index}`);
+            fileInput.files = dataTransfer.files;
+        }
+        
+        // Function to validate form before submission
+        function validateForm() {
+            clearErrorMessages();
+            const name = document.getElementById('productName').value;
+            const description = document.getElementById('productDescription').value;
+            const price = document.getElementById('productAmount').value;
+            const salePrice = document.getElementById('salePrice').value;
+            const stockCount = document.getElementById('stockCount').value;
+            const productImage1 = document.getElementById('productImage1');
+            
+            let isValid = true;
+            
+            if (name.trim() === "") {
+                displayErrorMessage('productName-error', 'Please enter a product name.');
+                isValid = false;
+            } else if (!/^[a-zA-Z0-9\s]+$/.test(name.trim())) {
+                displayErrorMessage('productName-error', 'Product name should contain only alphanumeric characters.');
+                isValid = false;
+            }
+            
+            if (description.trim() === "") {
+                displayErrorMessage('description-error', 'Please enter a product description.');
+                isValid = false;
+            }
+            
+            if (stockCount === "" || parseInt(stockCount) < 0) {
+                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+                isValid = false;
+            }
+            
+            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) <= 0) {
+                displayErrorMessage('regularPrice-error', 'Please enter a valid positive price.');
+                isValid = false;
+            }
+            
+            if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) <= 0) {
+                displayErrorMessage('salePrice-error', 'Please enter a valid positive sale price.');
+                isValid = false;
+            }
+            
+            if (parseFloat(price) <= parseFloat(salePrice)) {
+                displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
+                isValid = false;
+            }
+            
+            if (productImage1.files.length === 0) {
+                displayErrorMessage("images-error", 'Please select at least one image.');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        function displayErrorMessage(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            if (errorElement) {
+                errorElement.innerText = message;
+                errorElement.style.display = "block";
+            }
+        }
+        
+        function clearErrorMessages() {
+            const errorElements = document.getElementsByClassName('error-message');
+            Array.from(errorElements).forEach(element => {
+                element.innerText = '';
+                element.style.display = "none";
+            });
+        }
+        
+        // Scroll functionality
+        window.onscroll = function() {
+            scrollFunction();
+        };
+        
+        function scrollFunction() {
+            const scrollBtn = document.getElementById("scrollTopBtn");
+            if (document.getElementById("mainContent").scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                scrollBtn.style.display = "flex";
+            } else {
+                scrollBtn.style.display = "none";
+            }
+        }
+        
+        function scrollToTop() {
+            document.getElementById("mainContent").scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            document.documentElement.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>
+<%- include("../../views/partials/admin/footer") %>

@@ -262,45 +262,41 @@
 
            
         </div>
+        <form action="/admin/addProduct">
         <button class="search-button">
             <span>+</span>
             Add Products
-        </button>
+        </button></form>
          <table class="users-table">
             <thead>
                 <tr>
-                    <th>USER IMAGE</th>
-                    <th>USER NAME</th>
-                    <th>EMAIL</th>
-                    <th>PHONE</th>
+                    <th>Product Neam</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Sale Price</th>
+                    <th>quantity</th>
+                    <!-- <th>Action</th> -->
+                    <th>Edit</th>
                 </tr>
             </thead>
             <tbody>
+                <%for(let i = data.length-1 ; i > 0  ; i--){%>
                 <tr>
+                    <td><%=data[i].productName%></td>
+                    <td><%=data[i].brand%></td>
+                    <td><%=data[i].category.name%></td>
+                    <td><%=data[i].regularPrice%></td>
+                    <td><%=data[i].salePrice%></td>
+                    <td><%=data[i].quantity%></td>
                     <td>
-                        <div class="user-avatar">A</div>
+                        <button class="btn btn-info" style="width: 100px;">
+                            <a href="" class="text-white" style="text-decoration: none;">Edit</a>
+                        </button>
                     </td>
-                    <td class="user-name">Ajnas Muhammed</td>
-                    <td class="user-email">ajs44@gmail.com</td>
-                    <td class="user-phone">7034646123</td>
                 </tr>
-                <tr>
-                    <td>
-                        <div class="user-avatar">A</div>
-                    </td>
-                    <td class="user-name">Ajnas Muhammed</td>
-                    <td class="user-email">ajnasajs44@gmail.com</td>
-                    <td class="user-phone">7034646123</td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="user-avatar">M</div>
-                    </td>
-                    <td class="user-name">Mansoor Ali</td>
-                    <td class="user-email">mansoor_alikaipanga@gmail.com</td>
-                    <td class="user-phone">7034646123</td>
-                </tr>
-            </tbody>
+            <%}%>
+        </tbody>
         </table>
     </div>
 

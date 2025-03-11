@@ -265,11 +265,11 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <div class="search-container">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" id="searchInput" placeholder="Search for User Name" class="form-control ps-5">
-                            <button class="clear-search" id="clearSearch">
-                                <i class="fas fa-times"></i>
-                            </button>
+                            <form action="/admin/users" method="GET">
+                                <input class="search-input" type="text" name="search" id="searchInput" placeholder="Search for Categories">
+                                <button type="submit" id="searchBtn" class="btn btn-success">Search</button>
+                                <button type="button" class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -372,6 +372,13 @@
             let modalShow =  new bootstrap.Modal(document.getElementById('userAction'))
             modalShow.show()
         }
+
+         function clearSearch() {
+                document.getElementById("searchInput").value = "";
+                document.getElementById('searchBtn').click();
+
+            }
+
 
         // // Simple search functionality
         // $(document).ready(function() {
