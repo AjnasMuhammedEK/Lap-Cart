@@ -22,4 +22,7 @@ router.post('/login',userController.login)
 router.get('/logout',userController.logout)
 
 
+//product detailes
+
+
 module.exports = router

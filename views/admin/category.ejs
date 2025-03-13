@@ -552,27 +552,6 @@
                                 <td><%= category.name %></td>
                                 <td><%= category.description %></td>
                                 
-                                <!-- <td class="text-start">
-                                    <%if(category.isListed){%>
-                                        <span class="badge rounded-pill alert-success" style="width: 60px;">Listed</span>
-                                    <%}else{%>
-                                        <span class="badge rounded-pill alert-success" style="width: 60px;">UnListed</span>
-                                    <%}%>
-                                </td>
-                                <td>
-                                    <%if(category.isListed){%>
-                                        <button class="btn btn-danger" style="width: 70px;">
-                                            <a href="/admin/listCategory?id=<%= category._id %>" class=text-white>UnList</a>
-                                        </button>
-                                    <%}else{%>
-                                        <button class="btn btn-success" style="width: 70px;">
-                                            <a href="/admin/unlistCategory?id=<%= category._id %>" class=text-white>List</a>
-                                        </button>
-                                       <%}%> 
-                               
-
-                                </td> -->
-
                                 <td class="text-start">
                                     <% if (category.isListed) { %>
                                         <span class="badge rounded-pill alert-success" style="width: 60px;">Listed</span>
@@ -595,7 +574,7 @@
 
 
                                 <td class="action-cell">
-                                    <button  class="edit-btn" onclick="editCategory('<%= category._id %>')">✏️</button>
+                                    <button  class="edit-btn" onclick="editCategory('<%= category._id %>','<%= category.name %>','<%= category.description %>')">✏️</button>
                                     <button class="delete-btn" onclick="deleteCategory('<%= category._id %>')">🗑️</button>
                                 </td>
                             </tr>
@@ -605,20 +584,7 @@
                 </table>
             </div>
 
-            <!-- <div class="pagination">
-                <div class="pagination-info">
-                    Showing 1 to 5 of 10
-                </div>
-                <div class="pagination-controls">
-                    <button>&lt;</button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>...</button>
-                    <button>9</button>
-                    <button>&gt;</button>
-                </div>
-            </div> -->
+            
 
             <div class="container mt-3">
                 <nav aria-label="Page navigation">
@@ -738,10 +704,16 @@
 
     <script>
 
-function editCategory(categoryID){
-    document.getElementById("editCategory").value=categoryID
+function editCategory(categoryID,categoryName,categoryDescription){
+    
+
             let editModalShow =  new bootstrap.Modal(document.getElementById('editCategoryModal'))
             editModalShow.show()
+            console.log(categoryID.description)
+    document.getElementById("editCategory").value=categoryID
+    document.getElementById("editname").value=categoryName
+    document.getElementById("editdescription").value=categoryDescription
+
         }
 
         function validateEdit(){

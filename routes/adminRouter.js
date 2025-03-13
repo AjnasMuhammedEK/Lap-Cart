@@ -54,5 +54,9 @@ router.get('/unlistBrand',adminAuth,brandController.getunListBrand)
 router.get('/product',adminAuth,productController.loadProduct)
 router.get('/addProduct',adminAuth,productController.loadAddProduct)
 router.post('/addProduct', adminAuth, upload.array('images', 3), productController.addProduct);
+router.get('/editProduct',adminAuth,productController.loadeditProduct)
+router.post('/editProduct/:id', adminAuth, upload.array('images', 3), productController.editProduct);
+router.post('/deleteProduct', productController.deleteProduct);
+
 
 module.exports = router

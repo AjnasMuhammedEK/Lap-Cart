@@ -1,4 +1,6 @@
 const User = require('../../models/userSchema')
+const Category = require('../../models/categorySchema')
+const Product = require('../../models/productSchema')
 const nodemailer = require('nodemailer')
 const env = require("dotenv").config()
 const bcrypt = require('bcrypt')
@@ -36,6 +38,18 @@ const pageNotFound = async (req,res) => {
 const loadHomepage = async (req, res) => {
     try {
         const user = req.session.user
+        const categories = await Category.find({isListed:true,isDeleted:false})
+        let productData = await Product.find(
+            {
+                isDeleted:false,
+                category:{$in:categories.map(category=>category._id)},quantity:{$gt:0}
+            }
+        )
+
+
+        productData.sort((a,b)=>new Date(b.createdOn)-new Date(a.createdOn));
+        productData = productData.slice(0,4)
+
         
         if (user) {
             const userData = await User.findOne({_id: user})
@@ -46,9 +60,9 @@ const loadHomepage = async (req, res) => {
                 return res.render("home");
             }
             
-            return res.render("home", {user: userData})
+            return res.render("home", {user: userData,products:productData})
         } else {
-            return res.render("home")
+            return res.render("home",{products:productData})
         }
     } catch (error) {
         console.log('Home page error:', error);
@@ -62,7 +76,7 @@ const loadLogin = async(req,res)=>{
         if(!req.session.user){
             return res.render('login')
         }else{
-            res.redirect('/')
+            res.redirect('/login')
         }
         
     }catch(err){
@@ -173,66 +187,66 @@ const securePassword = async (password) => {
     }
 }
 
-const verifyOtp = async (req, res) => {
-    try {
-        const { otp } = req.body;
+// const verifyOtp = async (req, res) => {
+//     try {
+//         const { otp } = req.body;
 
-        // Check if OTP exists in session
-        if (!req.session.userOtp) {
-            return res.status(400).json({
-                success: false, 
-                message: "OTP session expired. Please restart signup process."
-            });
-        }
+//         // Check if OTP exists in session
+//         if (!req.session.userOtp) {
+//             return res.status(400).json({
+//                 success: false, 
+//                 message: "OTP session expired. Please restart signup process."
+//             });
+//         }
 
-        // Verify OTP
-        if (otp === req.session.userOtp) {
-            const userData = req.session.userData;
+//         // Verify OTP
+//         if (otp === req.session.userOtp) {
+//             const userData = req.session.userData;
 
-            // Hash password
-            const passwordHash = await securePassword(userData.password);
+//             // Hash password
+//             const passwordHash = await securePassword(userData.password);
 
-            // Create new user
-            const newUser = new User({
-                name: userData.name,   
-                email: userData.email,
-                phone: userData.phone,
-                password: passwordHash,
-                isVerified: true
-            });
+//             // Create new user
+//             const newUser = new User({
+//                 name: userData.name,   
+//                 email: userData.email,
+//                 phone: userData.phone,
+//                 password: passwordHash,
+//                 isVerified: true
+//             });
 
-            // Save user
-            await newUser.save();
+//             // Save user
+//             await newUser.save();
 
-            // Set user session
-            req.session.user = newUser._id;
+//             // Set user session
+//             req.session.user = newUser._id;
 
-            // Clear OTP and user data from session
-            delete req.session.userOtp;
-            delete req.session.userData;
+//             // Clear OTP and user data from session
+//             delete req.session.userOtp;
+//             delete req.session.userData;
 
-            // IMPORTANT: Always send a 200 status with success true
-            return res.status(200).json({
-                success: true, 
-                message: "OTP Verified Successfully",
-                redirectUrl: "/"
-            });
-        } else {
-            // If OTP doesn't match
-            return res.status(200).json({
-                success: false, 
-                message: "Invalid OTP. Please try again."
-            });
-        }
-    } catch (error) {
-        console.error("OTP Verification Error", error);
-        // Send 200 status with error message
-        return res.status(200).json({
-            success: false, 
-            message: "An error occurred during verification"
-        });
-    }
-};
+//             // IMPORTANT: Always send a 200 status with success true
+//             return res.status(200).json({
+//                 success: true, 
+//                 message: "OTP Verified Successfully",
+//                 redirectUrl: "/"
+//             });
+//         } else {
+//             // If OTP doesn't match
+//             return res.status(200).json({
+//                 success: false, 
+//                 message: "Invalid OTP. Please try again."
+//             });
+//         }
+//     } catch (error) {
+//         console.error("OTP Verification Error", error);
+//         // Send 200 status with error message
+//         return res.status(200).json({
+//             success: false, 
+//             message: "An error occurred during verification"
+//         });
+//     }
+// };
 // const verifyOtp =  async (req,res)=>{
 
 //     console.log('1');
@@ -305,6 +319,42 @@ const verifyOtp = async (req, res) => {
 //     }
 // }
 
+// const resendotp = async (req, res) => {
+//     try {
+//         const { email } = req.session.userData;
+//         if (!email) {
+//             return res.status(400).json({ success: false, message: "Email not found in session" });
+//         }
+
+//         // Check if an OTP was recently generated
+//         const lastOtpTime = req.session.lastOtpTime || 0;
+//         const currentTime = Date.now();
+//         const otpCooldown = 60000; // 60 seconds cooldown
+
+//         if (currentTime - lastOtpTime < otpCooldown) {
+//             return res.status(429).json({ success: false, message: "Please wait before requesting a new OTP" });
+//         }
+
+//         // Generate a new OTP
+//         const otp = generateOtp();
+//         req.session.userOtp = otp;
+//         req.session.lastOtpTime = currentTime; // Update last OTP request time
+
+//         const emailSent = await sentVerificationEmail(email, otp);
+
+//         if (emailSent) {
+//             console.log('Resent OTP:', otp);
+//             res.status(200).json({ success: true, message: "OTP Resent Successfully" });
+//         } else {
+//             res.status(500).json({ success: false, message: "Failed to Resend OTP, Please Try Again" });
+//         }
+
+//     } catch (error) {
+//         console.error('Error resending OTP:', error);
+//         res.status(500).json({ success: false, message: "Internal Server Error. Please try again" });
+//     }
+// };
+
 const resendotp = async (req, res) => {
     try {
         const { email } = req.session.userData;
@@ -325,6 +375,7 @@ const resendotp = async (req, res) => {
         const otp = generateOtp();
         req.session.userOtp = otp;
         req.session.lastOtpTime = currentTime; // Update last OTP request time
+        req.session.otpExpiry = currentTime + 60000; // Set 5-minute expiry (300,000 ms)
 
         const emailSent = await sentVerificationEmail(email, otp);
 
@@ -338,6 +389,79 @@ const resendotp = async (req, res) => {
     } catch (error) {
         console.error('Error resending OTP:', error);
         res.status(500).json({ success: false, message: "Internal Server Error. Please try again" });
+    }
+};
+
+const verifyOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+
+        // Check if OTP exists in session
+        if (!req.session.userOtp) {
+            return res.status(400).json({
+                success: false, 
+                message: "OTP session expired. Please restart signup process."
+            });
+        }
+
+        // Check if OTP is expired (5 minutes)
+        const currentTime = Date.now();
+        if (req.session.otpExpiry && currentTime > req.session.otpExpiry) {
+            delete req.session.userOtp;
+            delete req.session.otpExpiry;
+            return res.status(200).json({
+                success: false,
+                message: "OTP has expired. Please request a new one."
+            });
+        }
+
+        // Verify OTP
+        if (otp === req.session.userOtp) {
+            const userData = req.session.userData;
+
+            // Hash password
+            const passwordHash = await securePassword(userData.password);
+
+            // Create new user
+            const newUser = new User({
+                name: userData.name,   
+                email: userData.email,
+                phone: userData.phone,
+                password: passwordHash,
+                isVerified: true
+            });
+
+            // Save user
+            await newUser.save();
+
+            // Set user session
+            req.session.user = newUser._id;
+
+            // Clear OTP and user data from session
+            delete req.session.userOtp;
+            delete req.session.userData;
+            delete req.session.otpExpiry;
+
+            // IMPORTANT: Always send a 200 status with success true
+            return res.status(200).json({
+                success: true, 
+                message: "OTP Verified Successfully",
+                redirectUrl: "/"
+            });
+        } else {
+            // If OTP doesn't match
+            return res.status(200).json({
+                success: false, 
+                message: "Invalid OTP. Please try again."
+            });
+        }
+    } catch (error) {
+        console.error("OTP Verification Error", error);
+        // Send 200 status with error message
+        return res.status(200).json({
+            success: false, 
+            message: "An error occurred during verification"
+        });
     }
 };
 

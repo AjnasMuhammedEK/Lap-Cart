@@ -1,95 +1,68 @@
 <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    // Create the moving indicator element
-    const indicator = document.createElement('div');
-    indicator.className = 'moving-indicator';
-    document.querySelector('.sidebar-menu').appendChild(indicator);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create the moving indicator element
+        const indicator = document.createElement('div');
+        indicator.className = 'moving-indicator';
+        document.querySelector('.sidebar-menu').appendChild(indicator);
 
-    // Add styles for the moving indicator
-    const style = document.createElement('style');
-    style.textContent = `
-        .moving-indicator {
-            position: absolute;
-            left: 0;
-            width: 4px;
-            background-color: var(--primary-color);
-            border-radius: 0 2px 2px 0;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            pointer-events: none;
-            z-index: 2;
-        }
-        
-        .menu-item {
-            position: relative;
-        }
-        
-        .menu-item.active {
-            border-left: 4px solid transparent !important;
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Function to position the indicator
-    function positionIndicator(menuItem) {
-        if (!menuItem) return;
-        
-        const rect = menuItem.getBoundingClientRect();
-        const parentRect = document.querySelector('.sidebar-menu').getBoundingClientRect();
-        
-        indicator.style.top = (rect.top - parentRect.top) + 'px';
-        indicator.style.height = rect.height + 'px';
-        indicator.style.opacity = '1';
-    }
-
-    // Remove active class from all menu items
-    function removeActiveClass() {
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-        });
-    }
-
-    // Position indicator on the active menu item on load
-    const activeMenuItem = document.querySelector('.menu-item.active');
-    if (activeMenuItem) {
-        positionIndicator(activeMenuItem);
-    }
-
-    // Update indicator position when clicking menu items
-    const menuItems = document.querySelectorAll('.menu-item');
-    menuItems.forEach(item => {
-        item.addEventListener('click', function(e) {
-            // If this isn't a real navigation (href="#"), prevent default
-            if (this.getAttribute('href') === '#') {
-                e.preventDefault();
-            }
+        // Function to position the indicator
+        function positionIndicator(menuItem) {
+            if (!menuItem) return;
             
-            // Update active state
-            removeActiveClass();
-            this.classList.add('active');
+            const rect = menuItem.getBoundingClientRect();
+            const parentRect = document.querySelector('.sidebar-menu').getBoundingClientRect();
             
-            // Position the indicator
-            positionIndicator(this);
-        });
-    });
-
-    // Highlight current page based on URL
-    const currentPath = window.location.pathname;
-    menuItems.forEach(item => {
-        const href = item.getAttribute('href');
-        if (href && currentPath.includes(href) && href !== '#') {
-            removeActiveClass();
-            item.classList.add('active');
-            positionIndicator(item);
+            indicator.style.top = (rect.top - parentRect.top) + 'px';
+            indicator.style.height = rect.height + 'px';
+            indicator.style.opacity = '1';
         }
-    });
 
-    // Update indicator position on window resize
-    window.addEventListener('resize', function() {
+        // Remove active class from all menu items
+        function removeActiveClass() {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+
+        // Position indicator on the active menu item on load
         const activeMenuItem = document.querySelector('.menu-item.active');
         if (activeMenuItem) {
             positionIndicator(activeMenuItem);
         }
+
+        // Update indicator position when clicking menu items
+        const menuItems = document.querySelectorAll('.menu-item');
+        menuItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (this.getAttribute('href') === '#') {
+                    e.preventDefault();
+                }
+                
+                removeActiveClass();
+                this.classList.add('active');
+                positionIndicator(this);
+            });
+        });
+
+        // Highlight current page based on URL
+        const currentPath = window.location.pathname;
+        menuItems.forEach(item => {
+            const href = item.getAttribute('href');
+            if (href && currentPath.includes(href) && href !== '#') {
+                removeActiveClass();
+                item.classList.add('active');
+                positionIndicator(item);
+            }
+        });
+
+        // Update indicator position on window resize
+        window.addEventListener('resize', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                positionIndicator(activeMenuItem);
+            }
+        });
     });
-});</script>
+    </script>
 </body>
 </html>

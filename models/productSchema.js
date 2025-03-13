@@ -43,7 +43,7 @@ const productSchema= new Schema({
         type:[String],
         required:true
     },
-    isBlocked:{
+    isDeleted:{
         type:Boolean,
         deault:false
     },
