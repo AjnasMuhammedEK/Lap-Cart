@@ -285,49 +285,62 @@
                         <div class="mb-3">
                             <label class="form-label">Product Images (Up to 3):</label>
                             <div class="image-preview-container">
-                                <!-- First image - editable -->
+                                <!-- First image -->
                                 <div class="image-wrapper">
                                     <div class="image-preview <%= product.productImage && product.productImage[0] ? '' : 'image-preview-empty' %>" 
-                                        id="imagePreview1" 
-                                        onclick="triggerFileInput(1)"
+                                        id="imagePreview0" 
+                                        onclick="triggerFileInput(0)"
                                         style="<%= product.productImage && product.productImage[0] ? `background-image: url('/uploads/product-images/${product.productImage[0]}')` : '' %>">
                                     </div>
                                     <% if(product.productImage && product.productImage[0]) { %>
-                                        <button type="button" class="delete-image-btn" onclick="deleteSingleImage('<%=product.productImage[0]%>','<%=product._id%>', 1)">×</button>
+                                        <button type="button" class="delete-image-btn" onclick="deleteSingleImage('<%=product.productImage[0]%>','<%=product._id%>', 0)">×</button>
                                     <% } %>
                                 </div>
                                 
-                                <!-- Second image - read-only -->
+                                <!-- Second image -->
                                 <div class="image-wrapper">
                                     <div class="image-preview <%= product.productImage && product.productImage[1] ? '' : 'image-preview-empty' %>" 
-                                        id="imagePreview2"
+                                        id="imagePreview1"
+                                        onclick="triggerFileInput(1)"
                                         style="<%= product.productImage && product.productImage[1] ? `background-image: url('/uploads/product-images/${product.productImage[1]}')` : '' %>">
                                     </div>
                                     <% if(product.productImage && product.productImage[1]) { %>
-                                        <button type="button" class="delete-image-btn" onclick="deleteSingleImage('<%=product.productImage[1]%>','<%=product._id%>', 2)">×</button>
+                                        <button type="button" class="delete-image-btn" onclick="deleteSingleImage('<%=product.productImage[1]%>','<%=product._id%>', 1)">×</button>
                                     <% } %>
                                 </div>
                                 
-                                <!-- Third image - read-only -->
+                                <!-- Third image -->
                                 <div class="image-wrapper">
                                     <div class="image-preview <%= product.productImage && product.productImage[2] ? '' : 'image-preview-empty' %>" 
-                                        id="imagePreview3"
+                                        id="imagePreview2"
+                                        onclick="triggerFileInput(2)"
                                         style="<%= product.productImage && product.productImage[2] ? `background-image: url('/uploads/product-images/${product.productImage[2]}')` : '' %>">
                                     </div>
                                     <% if(product.productImage && product.productImage[2]) { %>
-                                        <button type="button" class="delete-image-btn" onclick="deleteSingleImage('<%=product.productImage[2]%>','<%=product._id%>', 3)">×</button>
+                                        <button type="button" class="delete-image-btn" onclick="deleteSingleImage('<%=product.productImage[2]%>','<%=product._id%>', 2)">×</button>
                                     <% } %>
                                 </div>
                             </div>
                             
-                            <!-- Modified to only handle first image -->
+                            <!-- File inputs for all three images -->
+                            <input type="file" class="hidden-file-input" id="productImage0" name="images" 
+                                accept="image/png, image/jpeg, image/jpg" onchange="handleFileSelect(event, 0)">
                             <input type="file" class="hidden-file-input" id="productImage1" name="images" 
                                 accept="image/png, image/jpeg, image/jpg" onchange="handleFileSelect(event, 1)">
+                            <input type="file" class="hidden-file-input" id="productImage2" name="images" 
+                                accept="image/png, image/jpeg, image/jpg" onchange="handleFileSelect(event, 2)">
+                            
+                            <!-- Hidden inputs for cropped images -->
+                            <input type="hidden" id="croppedImage0" name="croppedImages">
                             <input type="hidden" id="croppedImage1" name="croppedImages">
+                            <input type="hidden" id="croppedImage2" name="croppedImages">
+                            
+                            <!-- Hidden input to track which positions were updated -->
+                            <input type="hidden" id="imagePositions" name="imagePositions" value="">
                             
                             <div id="images-error" class="error-message"></div>
                             <div class="mt-2">
-                                <span class="text-muted" style="font-size: 12px;">Click on the first box to upload and crop image</span>
+                                <span class="text-muted" style="font-size: 12px;">Click on any box to upload and crop image</span>
                             </div>
                         </div>
                     </div>
@@ -405,7 +418,7 @@
         </div>
     </div>
     
-    <!-- Crop Modal -->
+    <!-- modal for crop img -->
     <div id="cropModal" class="crop-modal">
         <div class="crop-modal-content">
             <span class="close-modal" onclick="closeCropModal()">×</span>
@@ -428,271 +441,542 @@
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
 
     <script>
-        let cropper;
-        let currentImageIndex;
-        let croppedFiles = [];
-        let imagesToRemove = [];
+        // let cropper;
+        // let currentImageIndex;
+        // let croppedFiles = [];
+        // let imagesToRemove = [];
+        // let updatedPositions = [];
         
-        function triggerFileInput(index) {
-            if (index === 1) { // Only allow editing first image
-                document.getElementById(`productImage${index}`).click();
-            }
-        }
+        // function triggerFileInput(index) {
+        //     document.getElementById(`productImage${index}`).click();
+        // }
         
-        function handleFileSelect(event, index) {
-            if (index !== 1) return; // Only handle first image
+        // function handleFileSelect(event, index) {
+        //     const file = event.target.files[0];
+        //     if (!file) return;
             
-            const file = event.target.files[0];
-            if (!file) return;
+        //     currentImageIndex = index;
             
-            currentImageIndex = index;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const cropModal = document.getElementById('cropModal');
-                const cropImage = document.getElementById('cropImage');
+        //     const reader = new FileReader();
+        //     reader.onload = function(e) {
+        //         const cropModal = document.getElementById('cropModal');
+        //         const cropImage = document.getElementById('cropImage');
                 
-                cropImage.src = e.target.result;
-                cropModal.style.display = 'block';
+        //         cropImage.src = e.target.result;
+        //         cropModal.style.display = 'block';
                 
-                cropImage.onload = function() {
-                    if (cropper) {
-                        cropper.destroy();
-                    }
+        //         cropImage.onload = function() {
+        //             if (cropper) {
+        //                 cropper.destroy();
+        //             }
                     
-                    cropper = new Cropper(cropImage, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        dragMode: 'move',
-                        autoCropArea: 0.8,
-                        restore: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false
-                    });
-                };
-            };
+        //             cropper = new Cropper(cropImage, {
+        //                 aspectRatio: 1,
+        //                 viewMode: 1,
+        //                 dragMode: 'move',
+        //                 autoCropArea: 0.8,
+        //                 restore: false,
+        //                 guides: true,
+        //                 center: true,
+        //                 highlight: false,
+        //                 cropBoxMovable: true,
+        //                 cropBoxResizable: true,
+        //                 toggleDragModeOnDblclick: false
+        //             });
+        //         };
+        //     };
             
-            reader.readAsDataURL(file);
-        }
+        //     reader.readAsDataURL(file);
+        // }
         
-        function closeCropModal() {
-            const cropModal = document.getElementById('cropModal');
-            cropModal.style.display = 'none';
+        // function closeCropModal() {
+        //     const cropModal = document.getElementById('cropModal');
+        //     cropModal.style.display = 'none';
             
+        //     if (cropper) {
+        //         cropper.destroy();
+        //         cropper = null;
+        //     }
+        // }
+        
+        // function cropImage() {
+        //     if (!cropper) return;
+        
+        //     const canvas = cropper.getCroppedCanvas({
+        //         width: 440,
+        //         height: 440,
+        //         fillColor: '#fff',
+        //         imageSmoothingEnabled: true,
+        //         imageSmoothingQuality: 'high',
+        //     });
+        
+        //     canvas.toBlob(function(blob) {
+        //         const imagePreview = document.getElementById(`imagePreview${currentImageIndex}`);
+        //         const croppedImageInput = document.getElementById(`croppedImage${currentImageIndex}`);
+                
+        //         imagePreview.style.backgroundImage = `url('${canvas.toDataURL()}')`;
+        //         imagePreview.classList.remove('image-preview-empty');
+                
+        //         croppedImageInput.value = canvas.toDataURL('image/jpeg', 0.9);
+                
+        //         // Track which positions were updated
+        //         if (!updatedPositions.includes(currentImageIndex)) {
+        //             updatedPositions.push(currentImageIndex);
+        //         }
+                
+        //         // Update the hidden input with all updated positions
+        //         document.getElementById('imagePositions').value = updatedPositions.join(',');
+        
+        //         const croppedFile = new File([blob], `cropped-image-${currentImageIndex}.jpg`, { type: 'image/jpeg' });
+        //         croppedFiles[currentImageIndex] = croppedFile;
+        
+        //         closeCropModal();
+                
+        //         const imageWrapper = imagePreview.closest('.image-wrapper');
+        //         if (!imageWrapper.querySelector('.delete-image-btn')) {
+        //             const deleteBtn = document.createElement('button');
+        //             deleteBtn.className = 'delete-image-btn';
+        //             deleteBtn.innerHTML = '×';
+        //             deleteBtn.setAttribute('type', 'button');
+        //             deleteBtn.setAttribute('onclick', `removeNewImage(${currentImageIndex})`);
+        //             imageWrapper.appendChild(deleteBtn);
+        //         }
+        //     }, 'image/jpeg', 0.9);
+        // }
+        
+        // function removeNewImage(index) {
+        //     const imagePreview = document.getElementById(`imagePreview${index}`);
+        //     const croppedImageInput = document.getElementById(`croppedImage${index}`);
+        //     const fileInput = document.getElementById(`productImage${index}`);
+            
+        //     imagePreview.style.backgroundImage = '';
+        //     imagePreview.classList.add('image-preview-empty');
+        //     croppedImageInput.value = '';
+        //     fileInput.value = '';
+            
+        //     // Remove from updated positions if it was there
+        //     const posIndex = updatedPositions.indexOf(index);
+        //     if (posIndex !== -1) {
+        //         updatedPositions.splice(posIndex, 1);
+        //         document.getElementById('imagePositions').value = updatedPositions.join(',');
+        //     }
+            
+        //     const deleteBtn = imagePreview.closest('.image-wrapper').querySelector('.delete-image-btn');
+        //     if (deleteBtn) {
+        //         deleteBtn.remove();
+        //     }
+        // }
+        
+        // function deleteSingleImage(imageName, productId, index) {
+        //     if (confirm('Are you sure you want to delete this image?')) {
+        //         if (!imagesToRemove.includes(imageName)) {
+        //             imagesToRemove.push(imageName);
+        //         }
+                
+        //         let removeInput = document.getElementById('removedImages');
+        //         if (!removeInput) {
+        //             removeInput = document.createElement('input');
+        //             removeInput.type = 'hidden';
+        //             removeInput.id = 'removedImages';
+        //             removeInput.name = 'removedImages';
+        //             document.getElementById('editProductForm').appendChild(removeInput);
+        //         }
+        //         removeInput.value = imagesToRemove.join(',');
+                
+        //         const imagePreview = document.getElementById(`imagePreview${index}`);
+        //         imagePreview.style.backgroundImage = '';
+        //         imagePreview.classList.add('image-preview-empty');
+                
+        //         const deleteBtn = imagePreview.closest('.image-wrapper').querySelector('.delete-image-btn');
+        //         if (deleteBtn) {
+        //             deleteBtn.remove();
+        //         }
+                
+        //         fetch(`/admin/deleteProductImage/${productId}/${imageName}`, {
+        //             method: 'DELETE'
+        //         })
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 console.log("Image deleted successfully");
+        //             } else {
+        //                 console.error("Failed to delete image:", data.error);
+        //             }
+        //         })
+        //         .catch(error => console.error('Error:', error));
+        //     }
+        // }
+        
+        // function validateForm() {
+        //     clearErrorMessages();
+        //     const name = document.getElementById('productName').value;
+        //     const description = document.getElementById('productDescription').value;
+        //     const price = document.getElementById('productAmount').value;
+        //     const salePrice = document.getElementById('salePrice').value;
+        //     const stockCount = document.getElementById('stockCount').value;
+            
+        //     let isValid = true;
+            
+        //     if (name.trim() === "") {
+        //         displayErrorMessage('productName-error', 'Please enter a product name.');
+        //         isValid = false;
+        //     } else if (!/^[a-zA-Z0-9\s]+$/.test(name.trim())) {
+        //         displayErrorMessage('productName-error', 'Product name should contain only alphanumeric characters.');
+        //         isValid = false;
+        //     }
+            
+        //     if (description.trim() === "") {
+        //         displayErrorMessage('description-error', 'Please enter a product description.');
+        //         isValid = false;
+        //     }
+            
+        //     if (stockCount === "" || parseInt(stockCount) < 0) {
+        //         displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        //         isValid = false;
+        //     }
+            
+        //     if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) <= 0) {
+        //         displayErrorMessage('regularPrice-error', 'Please enter a valid positive price.');
+        //         isValid = false;
+        //     }
+            
+        //     if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) <= 0) {
+        //         displayErrorMessage('salePrice-error', 'Please enter a valid positive sale price.');
+        //         isValid = false;
+        //     }
+            
+        //     if (parseFloat(price) <= parseFloat(salePrice)) {
+        //         displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
+        //         isValid = false;
+        //     }
+            
+        //     const hasExistingImage = document.getElementById('imagePreview0').style.backgroundImage || 
+        //                              document.getElementById('imagePreview1').style.backgroundImage || 
+        //                              document.getElementById('imagePreview2').style.backgroundImage;
+                                     
+        //     if (!hasExistingImage) {
+        //         displayErrorMessage("images-error", 'At least one product image is required.');
+        //         isValid = false;
+        //     }
+            
+        //     return isValid;
+        // }
+        
+        // function displayErrorMessage(elementId, message) {
+        //     const errorElement = document.getElementById(elementId);
+        //     if (errorElement) {
+        //         errorElement.innerText = message;
+        //         errorElement.style.display = "block";
+        //     }
+        // }
+        
+        // function clearErrorMessages() {
+        //     const errorElements = document.getElementsByClassName('error-message');
+        //     Array.from(errorElements).forEach(element => {
+        //         element.innerText = '';
+        //         element.style.display = "none";
+        //     });
+        // }
+        
+        // function validateAndSubmit() {
+        //     if (validateForm()) {
+        //         document.getElementById('editProductForm').submit();
+        //     }
+        // }
+        
+       
+        // window.onscroll = function() {
+        //     scrollFunction();
+        // };
+        
+        // function scrollFunction() {
+        //     const scrollBtn = document.getElementById("scrollTopBtn");
+        //     if (document.getElementById("mainContent").scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        //         scrollBtn.style.display = "flex";
+        //     } else {
+        //         scrollBtn.style.display = "none";
+        //     }
+        // }
+        
+        // function scrollToTop() {
+        //     document.getElementById("mainContent").scrollTo({
+        //         top: 0,
+        //         behavior: 'smooth'
+        //     });
+        //     document.documentElement.scrollTo({
+        //         top: 0,
+        //         behavior: 'smooth'
+        //     });
+        // }
+        // Replace the script section in your HTML with this updated version
+let cropper;
+let currentImageIndex;
+let croppedFiles = [];
+let imagesToRemove = [];
+let updatedPositions = [];
+
+function triggerFileInput(index) {
+    document.getElementById(`productImage${index}`).click();
+}
+
+function handleFileSelect(event, index) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    currentImageIndex = index;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const cropModal = document.getElementById('cropModal');
+        const cropImage = document.getElementById('cropImage');
+        
+        cropImage.src = e.target.result;
+        cropModal.style.display = 'block';
+        
+        cropImage.onload = function() {
             if (cropper) {
                 cropper.destroy();
-                cropper = null;
             }
-        }
-        
-        function cropImage() {
-            if (!cropper) return;
-        
-            const canvas = cropper.getCroppedCanvas({
-                width: 440,
-                height: 440,
-                fillColor: '#fff',
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high',
+            
+            cropper = new Cropper(cropImage, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.8,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false
             });
-        
-            canvas.toBlob(function(blob) {
-                const imagePreview = document.getElementById(`imagePreview${currentImageIndex}`);
-                const croppedImageInput = document.getElementById(`croppedImage${currentImageIndex}`);
-                
-                imagePreview.style.backgroundImage = `url('${canvas.toDataURL()}')`;
-                imagePreview.classList.remove('image-preview-empty');
-                
-                // Set the base64 string in the hidden input
-                croppedImageInput.value = canvas.toDataURL('image/jpeg', 0.9);
-        
-                const croppedFile = new File([blob], `cropped-image-${currentImageIndex}.jpg`, { type: 'image/jpeg' });
-                croppedFiles[currentImageIndex] = croppedFile;
-        
-                closeCropModal();
-                
-                // Show delete button if it doesn't exist
-                const imageWrapper = imagePreview.closest('.image-wrapper');
-                if (!imageWrapper.querySelector('.delete-image-btn')) {
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'delete-image-btn';
-                    deleteBtn.innerHTML = '×';
-                    deleteBtn.setAttribute('type', 'button');
-                    deleteBtn.setAttribute('onclick', `removeNewImage(${currentImageIndex})`);
-                    imageWrapper.appendChild(deleteBtn);
-                }
-            }, 'image/jpeg', 0.9);
-        }
-        
-        function removeNewImage(index) {
-            if (index !== 1) return; // Only handle first image
-            
-            const imagePreview = document.getElementById(`imagePreview${index}`);
-            const croppedImageInput = document.getElementById(`croppedImage${index}`);
-            const fileInput = document.getElementById(`productImage${index}`);
-            
-            imagePreview.style.backgroundImage = '';
-            imagePreview.classList.add('image-preview-empty');
-            croppedImageInput.value = '';
-            fileInput.value = '';
-            
-            // Remove delete button
-            const deleteBtn = imagePreview.closest('.image-wrapper').querySelector('.delete-image-btn');
-            if (deleteBtn) {
-                deleteBtn.remove();
-            }
-        }
-        
-        function deleteSingleImage(imageName, productId, index) {
-            if (confirm('Are you sure you want to delete this image?')) {
-                // Add this image to the list of images to be removed
-                if (!imagesToRemove.includes(imageName)) {
-                    imagesToRemove.push(imageName);
-                }
-                
-                // Create a hidden input to track removed images
-                let removeInput = document.getElementById('removedImages');
-                if (!removeInput) {
-                    removeInput = document.createElement('input');
-                    removeInput.type = 'hidden';
-                    removeInput.id = 'removedImages';
-                    removeInput.name = 'removedImages';
-                    document.getElementById('editProductForm').appendChild(removeInput);
-                }
-                removeInput.value = imagesToRemove.join(',');
-                
-                // Update the UI
-                const imagePreview = document.getElementById(`imagePreview${index}`);
-                imagePreview.style.backgroundImage = '';
-                imagePreview.classList.add('image-preview-empty');
-                
-                // Remove the delete button
-                const deleteBtn = imagePreview.closest('.image-wrapper').querySelector('.delete-image-btn');
-                if (deleteBtn) {
-                    deleteBtn.remove();
-                }
-                
-                // Call the server to delete the image
-                fetch(`/admin/deleteProductImage/${productId}/${imageName}`, {
-                    method: 'DELETE'
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        console.log("Image deleted successfully");
-                    } else {
-                        console.error("Failed to delete image:", data.error);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        }
-        
-        function validateForm() {
-            clearErrorMessages();
-            const name = document.getElementById('productName').value;
-            const description = document.getElementById('productDescription').value;
-            const price = document.getElementById('productAmount').value;
-            const salePrice = document.getElementById('salePrice').value;
-            const stockCount = document.getElementById('stockCount').value;
-            
-            let isValid = true;
-            
-            if (name.trim() === "") {
-                displayErrorMessage('productName-error', 'Please enter a product name.');
-                isValid = false;
-            } else if (!/^[a-zA-Z0-9\s]+$/.test(name.trim())) {
-                displayErrorMessage('productName-error', 'Product name should contain only alphanumeric characters.');
-                isValid = false;
-            }
-            
-            if (description.trim() === "") {
-                displayErrorMessage('description-error', 'Please enter a product description.');
-                isValid = false;
-            }
-            
-            if (stockCount === "" || parseInt(stockCount) < 0) {
-                displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
-                isValid = false;
-            }
-            
-            if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) <= 0) {
-                displayErrorMessage('regularPrice-error', 'Please enter a valid positive price.');
-                isValid = false;
-            }
-            
-            if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) <= 0) {
-                displayErrorMessage('salePrice-error', 'Please enter a valid positive sale price.');
-                isValid = false;
-            }
-            
-            if (parseFloat(price) <= parseFloat(salePrice)) {
-                displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
-                isValid = false;
-            }
-            
-            // At least one image is required
-            const hasExistingImage = document.getElementById('imagePreview1').style.backgroundImage || 
-                                     document.getElementById('imagePreview2').style.backgroundImage || 
-                                     document.getElementById('imagePreview3').style.backgroundImage;
-                                     
-            if (!hasExistingImage) {
-                displayErrorMessage("images-error", 'At least one product image is required.');
-                isValid = false;
-            }
-            
-            return isValid;
-        }
-        
-        function displayErrorMessage(elementId, message) {
-            const errorElement = document.getElementById(elementId);
-            if (errorElement) {
-                errorElement.innerText = message;
-                errorElement.style.display = "block";
-            }
-        }
-        
-        function clearErrorMessages() {
-            const errorElements = document.getElementsByClassName('error-message');
-            Array.from(errorElements).forEach(element => {
-                element.innerText = '';
-                element.style.display = "none";
-            });
-        }
-        
-        function validateAndSubmit() {
-            if (validateForm()) {
-                document.getElementById('editProductForm').submit();
-            }
-        }
-        
-        window.onscroll = function() {
-            scrollFunction();
         };
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function closeCropModal() {
+    const cropModal = document.getElementById('cropModal');
+    cropModal.style.display = 'none';
+    
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+function cropImage() {
+    if (!cropper) return;
+
+    const canvas = cropper.getCroppedCanvas({
+        width: 440,
+        height: 440,
+        fillColor: '#fff',
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high',
+    });
+
+    canvas.toBlob(function(blob) {
+        const imagePreview = document.getElementById(`imagePreview${currentImageIndex}`);
+        const croppedImageInput = document.getElementById(`croppedImage${currentImageIndex}`);
         
-        function scrollFunction() {
-            const scrollBtn = document.getElementById("scrollTopBtn");
-            if (document.getElementById("mainContent").scrollTop > 300 || document.documentElement.scrollTop > 300) {
-                scrollBtn.style.display = "flex";
+        imagePreview.style.backgroundImage = `url('${canvas.toDataURL()}')`;
+        imagePreview.classList.remove('image-preview-empty');
+        
+        croppedImageInput.value = canvas.toDataURL('image/jpeg', 0.9);
+        
+        // Track which positions were updated
+        if (!updatedPositions.includes(currentImageIndex)) {
+            updatedPositions.push(currentImageIndex);
+        }
+        
+        // Update the hidden input with all updated positions
+        document.getElementById('imagePositions').value = updatedPositions.join(',');
+
+        const croppedFile = new File([blob], `cropped-image-${currentImageIndex}.jpg`, { type: 'image/jpeg' });
+        croppedFiles[currentImageIndex] = croppedFile;
+
+        closeCropModal();
+        
+        const imageWrapper = imagePreview.closest('.image-wrapper');
+        if (!imageWrapper.querySelector('.delete-image-btn')) {
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-image-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.setAttribute('type', 'button');
+            deleteBtn.setAttribute('onclick', `removeNewImage(${currentImageIndex})`);
+            imageWrapper.appendChild(deleteBtn);
+        }
+    }, 'image/jpeg', 0.9);
+}
+
+function removeNewImage(index) {
+    const imagePreview = document.getElementById(`imagePreview${index}`);
+    const croppedImageInput = document.getElementById(`croppedImage${index}`);
+    const fileInput = document.getElementById(`productImage${index}`);
+    
+    imagePreview.style.backgroundImage = '';
+    imagePreview.classList.add('image-preview-empty');
+    croppedImageInput.value = '';
+    fileInput.value = '';
+    
+    // Remove from updated positions if it was there
+    const posIndex = updatedPositions.indexOf(index);
+    if (posIndex !== -1) {
+        updatedPositions.splice(posIndex, 1);
+        document.getElementById('imagePositions').value = updatedPositions.join(',');
+    }
+    
+    const deleteBtn = imagePreview.closest('.image-wrapper').querySelector('.delete-image-btn');
+    if (deleteBtn) {
+        deleteBtn.remove();
+    }
+}
+
+function deleteSingleImage(imageName, productId, index) {
+    if (confirm('Are you sure you want to delete this image?')) {
+        if (!imagesToRemove.includes(imageName)) {
+            imagesToRemove.push(imageName);
+        }
+        
+        let removeInput = document.getElementById('removedImages');
+        if (!removeInput) {
+            removeInput = document.createElement('input');
+            removeInput.type = 'hidden';
+            removeInput.id = 'removedImages';
+            removeInput.name = 'removedImages';
+            document.getElementById('editProductForm').appendChild(removeInput);
+        }
+        removeInput.value = imagesToRemove.join(',');
+        
+        const imagePreview = document.getElementById(`imagePreview${index}`);
+        imagePreview.style.backgroundImage = '';
+        imagePreview.classList.add('image-preview-empty');
+        
+        const deleteBtn = imagePreview.closest('.image-wrapper').querySelector('.delete-image-btn');
+        if (deleteBtn) {
+            deleteBtn.remove();
+        }
+        
+        fetch(`/admin/deleteProductImage/${productId}/${imageName}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("Image deleted successfully");
             } else {
-                scrollBtn.style.display = "none";
+                console.error("Failed to delete image:", data.error);
             }
-        }
-        
-        function scrollToTop() {
-            document.getElementById("mainContent").scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-            document.documentElement.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
+
+function validateForm() {
+    clearErrorMessages();
+    const name = document.getElementById('productName').value;
+    const description = document.getElementById('productDescription').value;
+    const price = document.getElementById('productAmount').value;
+    const salePrice = document.getElementById('salePrice').value;
+    const stockCount = document.getElementById('stockCount').value;
+    
+    let isValid = true;
+    
+    if (name.trim() === "") {
+        displayErrorMessage('productName-error', 'Please enter a product name.');
+        isValid = false;
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(name.trim())) {
+        displayErrorMessage('productName-error', 'Product name should contain only alphanumeric characters.');
+        isValid = false;
+    }
+    
+    if (description.trim() === "") {
+        displayErrorMessage('description-error', 'Please enter a product description.');
+        isValid = false;
+    }
+    
+    if (stockCount === "" || parseInt(stockCount) < 0) {
+        displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
+        isValid = false;
+    }
+    
+    if (!/^\d+(\.\d{1,2})?$/.test(price) || parseFloat(price) <= 0) {
+        displayErrorMessage('regularPrice-error', 'Please enter a valid positive price.');
+        isValid = false;
+    }
+    
+    if (!/^\d+(\.\d{1,2})?$/.test(salePrice) || parseFloat(salePrice) <= 0) {
+        displayErrorMessage('salePrice-error', 'Please enter a valid positive sale price.');
+        isValid = false;
+    }
+    
+    if (parseFloat(price) <= parseFloat(salePrice)) {
+        displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
+        isValid = false;
+    }
+    
+    const hasExistingImage = document.getElementById('imagePreview0').style.backgroundImage || 
+                             document.getElementById('imagePreview1').style.backgroundImage || 
+                             document.getElementById('imagePreview2').style.backgroundImage;
+                             
+    if (!hasExistingImage) {
+        displayErrorMessage("images-error", 'At least one product image is required.');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+function displayErrorMessage(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+        errorElement.innerText = message;
+        errorElement.style.display = "block";
+    }
+}
+
+function clearErrorMessages() {
+    const errorElements = document.getElementsByClassName('error-message');
+    Array.from(errorElements).forEach(element => {
+        element.innerText = '';
+        element.style.display = "none";
+    });
+}
+
+function validateAndSubmit() {
+    if (validateForm()) {
+        // Ensure that for each cropped image, we have its position correctly set
+        document.getElementById('imagePositions').value = updatedPositions.join(',');
+        document.getElementById('editProductForm').submit();
+    }
+}
+
+window.onscroll = function() {
+    scrollFunction();
+};
+
+function scrollFunction() {
+    const scrollBtn = document.getElementById("scrollTopBtn");
+    if (document.getElementById("mainContent").scrollTop > 300 || document.documentElement.scrollTop > 300) {
+        scrollBtn.style.display = "flex";
+    } else {
+        scrollBtn.style.display = "none";
+    }
+}
+
+function scrollToTop() {
+    document.getElementById("mainContent").scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    document.documentElement.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
     </script>
 </body>
 </html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .otp-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .otp-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .timer {
+            margin-top: 15px;
+            color: #666;
+        }
+
+        #resendLink {
+            display: none; /* Initially hidden */
+        }
+
+        #resendLink.active {
+            display: inline; /* Show when active */
+        }
+    </style>
+</head>
+<body>
+    <div class="otp-card">
+        <h2>OTP Verification</h2>
+        <p>Enter the 6-digit code sent to your email</p>
+        <form action="/verify-forgot-otp" method="post">
+        
+        <input type="text" id="otpInput" name="forgotOtp" class="otp-input" maxlength="6" placeholder="Enter OTP">
+        <button id="verifyBtn" class="btn">Verify OTP</button>
+    </form>
+        
+        <div class="timer">
+            <span id="timerText">Resend OTP in <span id="countdown">60</span> seconds</span>
+            <br>
+            <a href="/forPassReOtp" id="resendLink" class="active">Resend OTP</a>
+        </div>
+        <input type="text" id="otp-err-msg" value="<%=errorMsg%>" hidden>
+    </div>
+
+    <script>
+
+        let err = document.getElementById('otp-err-msg').value
+        if(err){
+            Swal.fire({
+                icon:'error',
+                text:err
+            })
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+    // Timer functionality
+    const countdownElement = document.getElementById('countdown');
+    const timerTextElement = document.getElementById('timerText');
+    const resendLink = document.getElementById('resendLink');
+    
+    // Check if there's a stored end time in sessionStorage
+    let endTime = sessionStorage.getItem('otpEndTime');
+    let timeLeft;
+    
+    // If no stored end time or it has expired, create a new one
+    if (!endTime || new Date().getTime() > parseInt(endTime)) {
+        endTime = new Date().getTime() + (60 * 1000); // 60 seconds from now
+        sessionStorage.setItem('otpEndTime', endTime);
+    }
+    
+    // Initially hide the resend link
+    resendLink.classList.remove('active');
+    
+    // Function to update the timer display
+    function updateTimer() {
+        const currentTime = new Date().getTime();
+        timeLeft = Math.max(0, Math.floor((parseInt(endTime) - currentTime) / 1000));
+        
+        countdownElement.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+            // Stop the timer
+            clearInterval(countdownTimer);
+            
+            // Hide the timer text
+            timerTextElement.style.display = 'none';
+            
+            // Show resend link only after timer completes
+            resendLink.classList.add('active');
+        }
+    }
+    
+    // Initial timer update
+    updateTimer();
+    
+    // Start the countdown timer
+    const countdownTimer = setInterval(updateTimer, 1000);
+    
+    // Reset timer when resend link is clicked
+    resendLink.addEventListener('click', function() {
+        endTime = new Date().getTime() + (60 * 1000); // 60 seconds from now
+        sessionStorage.setItem('otpEndTime', endTime);
+        
+        // Reset UI
+        timerTextElement.style.display = 'block';
+        resendLink.classList.remove('active');
+        
+        // Restart the timer
+        updateTimer();
+        clearInterval(countdownTimer);
+        const newCountdownTimer = setInterval(updateTimer, 1000);
+    });
+    
+    // Focus on OTP input field when page loads
+    document.getElementById('otpInput').focus();
+});
+        
+    </script>
+</body>
+</html>

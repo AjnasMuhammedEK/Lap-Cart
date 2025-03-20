@@ -5,18 +5,27 @@ const Brand = require('../../models/brandSchema')
 const brandInfo = async (req,res) => {
     try {
 
-         
-        const page = parseInt(req.query.page) || 1
-        const limit = 4
-        const skip = (page-1)*limit
-
-        
-        const brandData = await Brand.find({isDeleted:false})
-        .sort({createdAt:-1})
-        .skip(skip)
-        .limit(limit)
-
        
+
+        let search = '';
+        if (req.query.search) {
+            search = req.query.search;
+        }
+
+
+        const page = parseInt(req.query.page) || 1;
+        const limit = 4;
+        const skip = (page - 1) * limit;
+
+        const brandData = await Brand.find({
+            isDeleted: false,
+            brandName: { $regex: ".*" + search + ".*", $options: "i" }
+            
+        })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+
         
 
         const totalBrand = await Brand.countDocuments()
@@ -27,10 +36,7 @@ const brandInfo = async (req,res) => {
             req.session.admMsg = null
         }
 
-        // if(req.session.addmessage){
-        //     var msg = req.session.addmessage
-        //     req.session.addmessage = null
-        // }
+      
 
         res.render('brand',{
             
@@ -53,7 +59,7 @@ const addBrand = async(req, res) => {
     console.log(brandName);
     try {
        
-        const existingBrand = await Brand.findOne({brandName});
+        const existingBrand = await Brand.findOne({brandName:brandName});
         if(existingBrand) {
            
            req.session.admMsg = "Category already exists"
@@ -88,9 +94,9 @@ const deleteBrand = async (req,res) =>{
         console.log(brandId);
       
         const updateBrand = await Brand.findOneAndUpdate(
-            { _id: brandId }, // Correct way to find the document by ID
+            { _id: brandId }, 
             { $set: { isDeleted: true } },
-            { new: true } // Return the updated document
+            { new: true }
         );
 
         req.session.admMsg ="Brand Deleted successfully"
@@ -110,7 +116,7 @@ const editBrand = async (req,res)=>{
     const {editname,brandId} = req.body
     console.log(editname,brandId);
 
-    const exBrand = await Brand.findOne({brandNamename:editname,isDeleted:false})
+    const exBrand = await Brand.findOne({brandName:editname,isDeleted:false})
     if(exBrand){
         req.session.admMsg = "This Brand Already Existing"
         res.redirect('/admin/brand')

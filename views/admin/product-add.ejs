@@ -384,12 +384,10 @@
         let currentImageIndex;
         let croppedFiles = [];
         
-        // Function to trigger file input click when image preview is clicked
         function triggerFileInput(index) {
             document.getElementById(`productImage${index}`).click();
         }
         
-        // Function to handle file selection and open crop modal
         function handleFileSelect(event, index) {
             const file = event.target.files[0];
             if (!file) return;
@@ -398,21 +396,19 @@
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Show the crop modal
                 const cropModal = document.getElementById('cropModal');
                 const cropImage = document.getElementById('cropImage');
                 
                 cropImage.src = e.target.result;
                 cropModal.style.display = 'block';
                 
-                // Initialize cropper after image is loaded
                 cropImage.onload = function() {
                     if (cropper) {
                         cropper.destroy();
                     }
                     
                     cropper = new Cropper(cropImage, {
-                        aspectRatio: 1, // Square aspect ratio
+                        aspectRatio: 1, 
                         viewMode: 1,
                         dragMode: 'move',
                         autoCropArea: 0.8,
@@ -430,7 +426,6 @@
             reader.readAsDataURL(file);
         }
         
-        // Function to close crop modal
         function closeCropModal() {
             const cropModal = document.getElementById('cropModal');
             cropModal.style.display = 'none';
@@ -441,11 +436,9 @@
             }
         }
         
-        // Function to crop image and update preview
         function cropImage() {
             if (!cropper) return;
             
-            // Get cropped canvas
             const canvas = cropper.getCroppedCanvas({
                 width: 440,
                 height: 440,
@@ -454,39 +447,30 @@
                 imageSmoothingQuality: 'high',
             });
             
-            // Convert canvas to blob/file
             canvas.toBlob(function(blob) {
-                // Update the image preview
                 const imagePreview = document.getElementById(`imagePreview${currentImageIndex}`);
                 imagePreview.style.backgroundImage = `url('${canvas.toDataURL()}')`;
                 imagePreview.classList.remove('image-preview-empty');
                 
-                // Create a new file from the blob
                 const croppedFile = new File([blob], `cropped-image-${currentImageIndex}.jpg`, { type: 'image/jpeg' });
                 
-                // Store the cropped file
                 croppedFiles[currentImageIndex] = croppedFile;
                 
-                // Close modal
                 closeCropModal();
                 
-                // Create a FormData to append the file for server upload
                 appendFileToForm(croppedFile, currentImageIndex);
             }, 'image/jpeg', 0.9);
         }
         
-        // Append file to form
         function appendFileToForm(file, index) {
-            // Create a data transfer object
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(file);
             
-            // Replace the file in the file input
             const fileInput = document.getElementById(`productImage${index}`);
             fileInput.files = dataTransfer.files;
         }
         
-        // Function to validate form before submission
+// validation for form
         function validateForm() {
             clearErrorMessages();
             const name = document.getElementById('productName').value;
@@ -555,7 +539,6 @@
             });
         }
         
-        // Scroll functionality
         window.onscroll = function() {
             scrollFunction();
         };

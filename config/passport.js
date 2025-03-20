@@ -1,4 +1,3 @@
-const password = require('passport')
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/userSchema');
 const passport = require('passport');
@@ -6,7 +5,7 @@ const env = require('dotenv').config();
 
 
 
-password.use(new GoogleStrategy({
+passport.use(new GoogleStrategy({
     clientID:process.env.GOOGLE_CLIENT_ID,
     clientSecret:process.env.GOOGLE_CLIENT_SECRET,
     callbackURL:"/auth/google/callback"
@@ -15,12 +14,22 @@ password.use(new GoogleStrategy({
 
 async (accessToken,refreshToken,profile,done)=>{
     try {
+
+
+        console.log('1');
         
 
         let user = await User.findOne({googleId:profile.id})
-        if(user){
-            return done(null,user)
+        console.log(`from passport ${user}`);
+        // let userBlock await User.findOne({isBlocked:false})
+        if(!user.isBlocked){
+           
+            done(null,user)
+            console.log('if==true');
+            return
         }else{
+            console.log('if==else - before save');
+
             user = new User({
                 name:profile.displayName,
                 email:profile.emails[0].value,
@@ -32,7 +41,9 @@ async (accessToken,refreshToken,profile,done)=>{
         }
 
     } catch (error) {
-        return done(err,null)
+        
+        console.log('catch bock');
+        return done(error,null)
     }
 }
 

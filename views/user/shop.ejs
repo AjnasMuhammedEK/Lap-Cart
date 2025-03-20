@@ -1,0 +1,413 @@
+<%-include("../../views/partials/user/header")%>
+<style>
+    /* Main Layout Adjustments */
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    /* Sidebar and Content Layout */
+    .shop-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+    }
+
+    .sidebar-column {
+        width: 25%;
+        padding: 0 15px;
+    }
+
+    .products-column {
+        width: 75%;
+        padding: 0 15px;
+    }
+
+    /* Form Container Styling */
+    .form-container {
+        width: 100%;
+        max-width: 280px;
+        margin: 20px 0;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        overflow: hidden;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        border-bottom: 1px solid #eee;
+        width: 100%;
+    }
+
+    .filter-section:last-child {
+        border-bottom: none;
+    }
+
+    .filter-title {
+        padding: 15px 20px;
+        background: transparent;
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        width: 100%;
+    }
+
+    .filter-content {
+        padding: 0 20px 20px;
+        background: #fff;
+        width: 100%;
+    }
+
+    /* Form Elements */
+    input, select {
+        width: 100%;
+        max-width: 240px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 25px;
+        background: #f1f3f5;
+        font-size: 14px;
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        background: #fff;
+        box-shadow: 0 0 0 2px #82ae46;
+    }
+
+    /* Price Range */
+    .price-range {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        max-width: 240px;
+        margin: 0 auto;
+    }
+
+    .price-range input {
+        width: 115px;
+        margin-bottom: 0;
+    }
+
+    /* Button Container */
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        max-width: 240px;
+        margin: 20px auto;
+    }
+
+    /* Buttons */
+    .filter-button, .clear-button {
+        width: 100%;
+        padding: 8px; /* Reduced from 12px */
+        border: none;
+        border-radius: 20px; /* Slightly smaller radius */
+        font-weight: 600;
+        font-size: 12px; /* Reduced from default */
+        text-transform: uppercase;
+        letter-spacing: 0.5px; /* Reduced from 1px */
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .filter-button {
+        background: #82ae46;
+        color: white;
+    }
+
+    .filter-button:hover {
+        background: #6d9338;
+        transform: scale(1.02);
+    }
+
+    .clear-button {
+        background: #e63946;
+        color: white;
+    }
+
+    .clear-button:hover {
+        background: #cc2e3a;
+        transform: scale(1.02);
+    }
+
+    /* Select Arrow */
+    select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+    }
+
+    /* Product Grid */
+    .product-grid {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+    }
+
+    .product-item {
+        width: 33.333%;
+        padding: 0 15px;
+        margin-bottom: 30px;
+    }
+
+    /* Responsive */
+    @media (max-width: 991px) {
+        .sidebar-column {
+            width: 100%;
+            max-width: 100%;
+            order: 2;
+        }
+
+        .products-column {
+            width: 100%;
+            order: 1;
+        }
+
+        .form-container {
+            max-width: 100%;
+            margin: 15px 0;
+        }
+
+        .product-item {
+            width: 50%;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .price-range {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .price-range input {
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .product-item {
+            width: 100%;
+        }
+
+        .button-container {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
+    <div class="container">
+        <div class="row no-gutters slider-text align-items-center justify-content-center">
+            <div class="col-md-9 ftco-animate text-center">
+                <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Shop</span></p>
+                <h1 class="mb-0 bread">Shop</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+        <div class="shop-row">
+            <div class="sidebar-column">
+                <div class="form-container">
+                    <form action="/shop" method="GET">
+                        <div class="filter-section">
+                            <div class="filter-title">Search</div>
+                            <div class="filter-content">
+                                <input type="text" id="search" name="search" placeholder="Search products...">
+
+                            </div>
+                            <div class="button-container">
+                                <button type="submit" class="filter-button">Search</button>
+                                <button type="reset" class="clear-button">Clear</button>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <div class="filter-title">Brand</div>
+                            <div class="filter-content">
+                                <select id="brand" name="brand">
+                                    <option value="">All Brands</option>
+                                    <% for(let i = 0; i < brand.length; i++) { %>
+                                        <option value="<%=brand[i].brandName%>">
+                                            <%=brand[i].brandName%>
+                                        </option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <div class="filter-title">Category</div>
+                            <div class="filter-content">
+                                <select id="category" name="category">
+                                    <option value="">All Categories</option>
+                                    <% for(let i = 0; i < category.length; i++) { %>
+                                        <option value="<%=category[i].name%>">
+                                            <%=category[i].name%>
+                                        </option>
+                                    <% } %>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <div class="filter-title">Sort By</div>
+                            <div class="filter-content">
+                                <select id="sort" name="sort">
+                                    <option value="">Select Sort</option>
+                                    <option value="a-z">A-Z</option>
+                                    <option value="z-a">Z-A</option>
+                                    <option value="price-low-high">Price: Low to High</option>
+                                    <option value="price-high-low">Price: High to Low</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <div class="filter-title">Price Range</div>
+                            <div class="filter-content">
+                                <div class="price-range">
+                                    <input type="number" id="min-price" name="minPrice" placeholder="Min">
+                                    <input type="number" id="max-price" name="maxPrice" placeholder="Max">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="button-container">
+                            <button type="submit" class="filter-button">Apply Filters</button>
+                            <!-- <button type="reset" class="clear-button">Clear</button> -->
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="products-column">
+                <div class="product-grid">
+                    <%for(let i = 0 ; i < product.length ; i++) {%>
+                    <div class="product-item ftco-animate">
+                        <div class="product d-flex flex-column">
+                            <a href="/productDetaile?id=<%= product[i]._id %>" class="img-prod"><img class="img-fluid" src="/uploads/product-images/<%=product[i].productImage[0]%>" alt="Colorlib Template">
+                                <div class="overlay"></div>
+                            </a>
+                            <div class="text py-3 pb-4 px-3">
+                                <div class="d-flex">
+                                    <div class="cat">
+                                        <span></span>
+                                    </div>
+                                    <div class="rating">
+                                        <p class="text-right mb-0">
+                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                        </p>
+                                    </div>
+                                </div>
+                                <h3><a href="#"><%=product[i].productName%></a></h3>
+                                <h5><%=product[i].brand%></h5>
+                                <div class="pricing">
+                                    <p class="price"><span class="mr-2 price-dc">₹<%=product[i].regularPrice%></span><span>₹<%=product[i].salePrice%></span></p>
+                                </div>
+                                <p class="bottom-area d-flex px-3">
+                                    <a href="#" class="add-to-cart text-center py-2 mr-1"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
+                                    <a href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <%}%>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="pagination" style="width: 100%; text-align: center;">
+                        <% if (currentPage > 1) { %>
+                            <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>
+                        <% } %>
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/shop?page=<%= i %>"><%= i %></a>
+                        <% } %>
+                        <% if (currentPage < totalPages) { %>
+                            <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="ftco-gallery">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 heading-section text-center mb-4 ftco-animate">
+                <h2 class="mb-4">Follow Us On Instagram</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in</p>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid px-0">
+        <div class="row no-gutters">
+            <div class="col-md-4 col-lg-2 ftco-animate">
+                <a href="images/gallery-1.jpg" class="gallery image-popup img d-flex align-items-center" style="background-image: url(images/gallery-1.jpg);">
+                    <div class="icon mb-4 d-flex align-items-center justify-content-center">
+                        <span class="icon-instagram"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2 ftco-animate">
+                <a href="images/gallery-2.jpg" class="gallery image-popup img d-flex align-items-center" style="background-image: url(images/gallery-2.jpg);">
+                    <div class="icon mb-4 d-flex align-items-center justify-content-center">
+                        <span class="icon-instagram"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2 ftco-animate">
+                <a href="images/gallery-3.jpg" class="gallery image-popup img d-flex align-items-center" style="background-image: url(images/gallery-3.jpg);">
+                    <div class="icon mb-4 d-flex align-items-center justify-content-center">
+                        <span class="icon-instagram"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2 ftco-animate">
+                <a href="images/gallery-4.jpg" class="gallery image-popup img d-flex align-items-center" style="background-image: url(images/gallery-4.jpg);">
+                    <div class="icon mb-4 d-flex align-items-center justify-content-center">
+                        <span class="icon-instagram"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2 ftco-animate">
+                <a href="images/gallery-5.jpg" class="gallery image-popup img d-flex align-items-center" style="background-image: url(images/gallery-5.jpg);">
+                    <div class="icon mb-4 d-flex align-items-center justify-content-center">
+                        <span class="icon-instagram"></span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-lg-2 ftco-animate">
+                <a href="images/gallery-6.jpg" class="gallery image-popup img d-flex align-items-center" style="background-image: url(images/gallery-6.jpg);">
+                    <div class="icon mb-4 d-flex align-items-center justify-content-center">
+                        <span class="icon-instagram"></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%-include("../../views/partials/user/footer")%>

@@ -31,8 +31,8 @@
         }
 
         body {
-            /* display: flex; */
-            /* min-height: 100vh; */
+            /* display: flex;
+            min-height: 100vh; */
             background-color: var(--dark-bg);
             color: var(--text-color);
         }
@@ -311,117 +311,7 @@
             border-color: var(--primary-color);
         }
 
-        /* Modal Styles */
-        /* .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal {
-            width: 500px;
-            background-color: var(--lighter-bg);
-            border-radius: 10px;
-            overflow: hidden;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-        }
-
-        .modal-overlay.show .modal {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .modal-body {
-            padding: 20px;
-        } */
-
-        /* .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--dark-bg);
-            color: var(--text-color);
-        }
-
-        .form-group textarea {
-            min-height: 100px;
-            resize: vertical;
-        } */
-
-        /* .modal-footer {
-            padding: 20px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        } */
-
-        /* .modal-btn {
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            font-weight: 500;
-        } */
-
-        /* .cancel-btn {
-            background-color: transparent;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .save-btn {
-            background-color: var(--primary-color);
-            color: white;
-        } */
-
+       
         /* Responsive styles */
         @media (max-width: 992px) {
             .sidebar {
@@ -584,7 +474,7 @@
                 </table>
             </div>
 
-            
+            <!-- pagination -->
 
             <div class="container mt-3">
                 <nav aria-label="Page navigation">
@@ -600,6 +490,9 @@
         </div>
     </div>
 
+
+
+    <!-- add category modal -->
    
     <div class="modal" tabindex="-1" id="addCategoryModal">
         <div class="modal-dialog">
@@ -637,6 +530,9 @@
       </div>
 
 
+      <!-- delete category modal -->
+
+
       <div class="modal" tabindex="-1" id="deleteCategoryModal">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -661,6 +557,7 @@
       </div>
 
 
+      <!-- edit category modal -->
       
       <div class="modal" tabindex="-1" id="editCategoryModal">
         <div class="modal-dialog">
@@ -704,15 +601,14 @@
 
     <script>
 
-function editCategory(categoryID,categoryName,categoryDescription){
-    
+        function editCategory(categoryID,categoryName,categoryDescription){
 
             let editModalShow =  new bootstrap.Modal(document.getElementById('editCategoryModal'))
             editModalShow.show()
             console.log(categoryID.description)
-    document.getElementById("editCategory").value=categoryID
-    document.getElementById("editname").value=categoryName
-    document.getElementById("editdescription").value=categoryDescription
+            document.getElementById("editCategory").value=categoryID
+            document.getElementById("editname").value=categoryName
+            document.getElementById("editdescription").value=categoryDescription
 
         }
 
@@ -723,18 +619,19 @@ function editCategory(categoryID,categoryName,categoryDescription){
             if (editname === "") {
                displayErrMsg("editname-error","Please enter a category name")
                return false
-    } else if (!/^[a-zA-Z\s]+$/.test(editname)) {
-        displayErrMsg("editname-error", "Category name should contain only alphabetic characters");
-        return false;
-    }
+            } else if (!/^[a-zA-Z\s]+$/.test(editname)) {
+                displayErrMsg("editname-error", "Category name should contain only alphabetic characters");
+                return false;
+            }
 
-    if (editdescription === "") {
-        displayErrMsg("editdescription-error", "Please enter a description");
-        return false;
-    }
-return true
+            if (editdescription === "") {
+                displayErrMsg("editdescription-error", "Please enter a description");
+                return false;
+            }
+            return true
 
         }
+
         function validateAdd(){
             const name = document.getElementById("name").value.trim();
             const description = document.getElementById("description").value.trim();
@@ -742,16 +639,16 @@ return true
             if (name === "") {
                displayErrMsg("name-error","Please enter a category name")
                return false
-    } else if (!/^[a-zA-Z\s]+$/.test(name)) {
-        displayErrMsg("name-error", "Category name should contain only alphabetic characters");
-        return false;
-    }
+            } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+                displayErrMsg("name-error", "Category name should contain only alphabetic characters");
+                return false;
+            }
 
-    if (description === "") {
-        displayErrMsg("description-error", "Please enter a description");
-        return false;
-    }
-return true
+            if (description === "") {
+                displayErrMsg("description-error", "Please enter a description");
+                return false;
+            }
+            return true
 
         }
 

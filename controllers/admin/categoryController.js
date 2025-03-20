@@ -25,15 +25,7 @@ const categoryInfo = async (req,res) => {
             .limit(limit)
 
 
-        // const page = parseInt(req.query.page) || 1
-        // const limit = 4
-        // const skip = (page-1)*limit
-
         
-        // const categoryData = await Category.find({isDeleted:false})
-        // .sort({createdAt:-1})
-        // .skip(skip)
-        // .limit(limit)
 
        
         
@@ -104,9 +96,9 @@ const deleteCategory = async (req,res) =>{
         console.log(categoryId);
       
         const updateCategory = await Category.findOneAndUpdate(
-            { _id: categoryId }, // Correct way to find the document by ID
+            { _id: categoryId }, 
             { $set: { isDeleted: true } },
-            { new: true } // Return the updated document
+            { new: true }
         );
 
         req.session.admMsg ="Category Deleted successfully"
@@ -125,7 +117,7 @@ const editCategory = async (req,res)=>{
 
     const {editname,editdescription,categoryId} = req.body
 
-    const exCategory = await Category.findOne({name:editname,isDeleted:false})
+    const exCategory = await Category.findOne({name:editname,description:editdescription,isDeleted:false})
     if(exCategory){
         req.session.admMsg = "This Category Already Existing"
         res.redirect('/admin/category')

@@ -506,14 +506,11 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <div class="search-container">
-                <input type="text" placeholder="Search for Categories">
-                <button>❌</button>
-            </div>
-            <div class="user-profile">
+            
+            <!-- <div class="user-profile">
                 <div class="status"></div>
                 <span>User Profile</span>
-            </div>
+            </div> -->
         </div>
 
         <div class="content">
@@ -526,11 +523,12 @@
             </div>
 
             <div class="search-component">
-                <input type="text" placeholder="Search by category name or description">
+                <form action="/admin/brand">
+                <input type="text" name="search" id="searchInput" placeholder="Search by Brand Name">
                 <button class="search-btn">Search</button>
-                <button class="clear-btn">Clear</button>
+                <button class="clear-btn" onclick="clearSearch()">Clear</button>
+            </form>
             </div>
-
 
             
     
@@ -574,6 +572,7 @@
                                             <a href="/admin/unlistBrand?id=<%= brand._id %>" class="text-white" style="text-decoration: none;">List</a>
                                         </button>
                                     <% } %>
+                                    
                                 </td>
                                 
 
@@ -589,20 +588,7 @@
                 </table>
             </div>
 
-            <!-- <div class="pagination">
-                <div class="pagination-info">
-                    Showing 1 to 5 of 10
-                </div>
-                <div class="pagination-controls">
-                    <button>&lt;</button>
-                    <button class="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>...</button>
-                    <button>9</button>
-                    <button>&gt;</button>
-                </div>
-            </div> -->
+            <!-- pagination -->
 
             <div class="container mt-3">
                 <nav aria-label="Page navigation">
@@ -618,6 +604,8 @@
         </div>
     </div>
 
+
+    <!-- add brand modal -->
    
     <div class="modal" tabindex="-1" id="addCategoryModal">
         <div class="modal-dialog">
@@ -714,8 +702,8 @@
 
     <script>
 
-function editCategory(categoryID){
-    document.getElementById("editCategory").value=categoryID
+        function editCategory(categoryID){
+             document.getElementById("editCategory").value=categoryID
             let editModalShow =  new bootstrap.Modal(document.getElementById('editCategoryModal'))
             editModalShow.show()
         }
@@ -727,29 +715,31 @@ function editCategory(categoryID){
             if (editname === "") {
                displayErrMsg("editname-error","Please enter a category name")
                return false
-    } else if (!/^[a-zA-Z\s]+$/.test(editname)) {
-        displayErrMsg("editname-error", "Category name should contain only alphabetic characters");
-        return false;
-    }
+            } else if (!/^[a-zA-Z\s]+$/.test(editname)) {
+                displayErrMsg("editname-error", "Category name should contain only alphabetic characters");
+                return false;
+            }
 
-    if (editdescription === "") {
-        displayErrMsg("editdescription-error", "Please enter a description");
-        return false;
-    }
-return true
+            if (editdescription === "") {
+                displayErrMsg("editdescription-error", "Please enter a description");
+                return false;
+            }
+            return true
 
         }
+
+
         function validateAdd(){
             const brandName = document.getElementById("name").value.trim();
 
             if (brandName === "") {
                displayErrMsg("name-error","Please enter a category name")
                return false
-    } else if (!/^[a-zA-Z\s]+$/.test(brandName)) {
-        displayErrMsg("name-error", "Category name should contain only alphabetic characters");
-        return false;
-    }
-return true
+            } else if (!/^[a-zA-Z\s]+$/.test(brandName)) {
+                displayErrMsg("name-error", "Category name should contain only alphabetic characters");
+                return false;
+            }
+            return true
 
         }
 
@@ -787,6 +777,11 @@ function displayErrMsg(elementId, message) {
 }
 
 
+function clearSearch() {
+                document.getElementById("searchInput").value = "";
+                document.getElementById('searchBtn').click();
+
+            }
 
         
     </script>
