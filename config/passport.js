@@ -12,38 +12,32 @@ passport.use(new GoogleStrategy({
 },
 
 
-async (accessToken,refreshToken,profile,done)=>{
+async (accessToken, refreshToken, profile, done) => {
     try {
-
-
         console.log('1');
         
-
-        let user = await User.findOne({googleId:profile.id})
+        let user = await User.findOne({googleId: profile.id});
         console.log(`from passport ${user}`);
-        // let userBlock await User.findOne({isBlocked:false})
-        if(!user.isBlocked){
-           
-            done(null,user)
-            console.log('if==true');
-            return
-        }else{
-            console.log('if==else - before save');
-
-            user = new User({
-                name:profile.displayName,
-                email:profile.emails[0].value,
-                googleId:profile.id
-            })
-
-            await user.save()
-            return done(null,user)
-        }
-
-    } catch (error) {
         
-        console.log('catch bock');
-        return done(error,null)
+        if(user) {
+            if(!user.isBlocked) {
+                return done(null, user);
+            } else {
+                return done(null, false);
+            }
+        } else {
+            const newUser = new User({
+                name: profile.displayName,
+                email: profile.emails[0].value,
+                googleId: profile.id
+            });
+
+            await newUser.save();
+            return done(null, newUser);
+        }
+    } catch (error) {
+        console.log('catch block', error);
+        return done(error, null);
     }
 }
 

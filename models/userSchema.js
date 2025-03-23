@@ -13,7 +13,10 @@ const userSchema = new Schema({
         required : true,
         uniquen : true,
     },
-    
+    userImage:{
+        type:[String],
+        required:true
+    },
     phone : {
         type : String,
         required : false,

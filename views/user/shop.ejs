@@ -209,7 +209,7 @@
     }
 </style>
 
-<div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
+<div class="hero-wrap hero-bread" style="background-image: url('images/banner_shop.webp');">
     <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
             <div class="col-md-9 ftco-animate text-center">
@@ -233,8 +233,8 @@
 
                             </div>
                             <div class="button-container">
-                                <button type="submit" class="filter-button">Search</button>
-                                <button type="reset" class="clear-button">Clear</button>
+                                <button type="submit" id="searchBtn" class="filter-button">Search</button>
+                                <button type="reset" onclick="clearSearch()" class="clear-button">Clear</button>
                             </div>
                         </div>
 
@@ -409,5 +409,15 @@
         </div>
     </div>
 </section>
+
+<script>
+    
+
+function clearSearch() {
+                document.getElementById("search").value = "";
+                document.getElementById('searchBtn').click();
+
+            }
+</script>
 
 <%-include("../../views/partials/user/footer")%>

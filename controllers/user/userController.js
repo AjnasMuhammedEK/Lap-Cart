@@ -19,6 +19,15 @@ const pageNotFound = async (req,res) => {
 const loadHomepage = async (req, res) => {
     try {
         const user = req.session.user
+        let userData = null
+        if (user) {
+            userData = await User.findById(user);
+            if (userData && userData.isBlocked) {
+                req.session.destroy();
+                return res.redirect('/login');
+            }
+        }
+        
         const categories = await Category.find({isListed:true,isDeleted:false})
         let productData = await Product.find(
             {
@@ -28,7 +37,7 @@ const loadHomepage = async (req, res) => {
         )
 
         
-        productData.sort((a,b)=>new Date(b.createdOn)-new Date(a.createdOn));
+        productData.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
         productData = productData.slice(0,4)
 
         
@@ -114,6 +123,7 @@ const signup = async(req,res)=>{
         }
 
         req.session.userOtp = otp;
+        req.session.otpExpiry = Date.now() + 60000; // first time + 1 min
         req.session.userData = {name,phone,email,password}
 
         res.render("verify-otp");
@@ -185,6 +195,7 @@ const resendotp = async (req, res) => {
         
         const otp = generateOtp();
         req.session.userOtp = otp;
+        req.session.otpExpiry = Date.now() + 60000;
 
         const emailSent = await sentVerificationEmail(email, otp);
 
@@ -212,6 +223,13 @@ const verifyOtp = async (req, res) => {
             });
         }
 
+        if (Date.now() > req.session.otpExpiry) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP has expired. Please request a new OTP."
+            });
+        }
+
         if (otp === req.session.userOtp) {
             const userData = req.session.userData;
 
@@ -230,6 +248,7 @@ const verifyOtp = async (req, res) => {
             req.session.user = newUser._id;
 
             delete req.session.userOtp;
+            delete req.session.otpExpiry;
             delete req.session.userData;
 
             return res.status(200).json({
@@ -304,25 +323,6 @@ const logout = async (req,res) => {
 }
 
 
-// const singleSignUp = async (req,res)=>{
-//     try {
-
-//         console.log(1);
-
-//         const user = req.session.user
-//         const userBlock = await User.findOne({isBlocked:false})
-//         if(userBlock){
-//             res.redirect('/')
-//         }else{
-//             res.redirect('/signup')
-//         }
-        
-        
-//     } catch (error) {
-        
-//     }
-// }
-
 
 const loadEmailPage = (req,res) => {
     try {
@@ -394,6 +394,7 @@ const verifyForgotEmail = async (req,res) => {
         const emailSent = await sentVerificationEmail(email, forPassOtp);
 
         req.session.forPassOtp = forPassOtp;
+        req.session.forPassOtpExpiry = Date.now() + 60000;
 
         console.log(`Forgot Password OTP : ${forPassOtp}`);
 
@@ -409,6 +410,11 @@ const verifyForgotOtp = async (req,res) => {
 
         const {forgotOtp} = req.body
         const otp = req.session.forPassOtp 
+
+        if (Date.now() > req.session.forPassOtpExpiry) {
+            req.session.userMsg = "OTP has expired. Please request a new OTP.";
+            return res.redirect('/forgot-otp');
+        }
 
         if(otp===forgotOtp){
             req.session.userMsg="otp verification successful"
@@ -451,7 +457,12 @@ const forgotPassword = async (req,res) => {
 
         
         console.log(`update user ${updatedUser}`);
-        res.redirect('/login')
+        if(req.session.user){
+            res.redirect('/userProfile')
+        }else{
+            res.redirect('/login')
+        }
+        
 
 
           
@@ -471,6 +482,7 @@ const forPassResendOtp = async (req,res)=>{
         const reforPassOtp = await generateOtp();
         const emailSent = await sentVerificationEmail(useremail, reforPassOtp);
         req.session.forPassOtp = reforPassOtp;
+        req.session.forPassOtpExpiry = Date.now() + 60000;
 
         res.redirect("/forgot-otp")
 
@@ -507,5 +519,4 @@ module.exports = {
     verifyForgotOtp,
     forgotPassword,
     forPassResendOtp
-
 }

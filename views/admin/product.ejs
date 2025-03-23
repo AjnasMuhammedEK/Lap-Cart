@@ -436,6 +436,9 @@
                             <th>Sale Price</th>
                             <th>Stock</th>
                             <th>Status</th>
+                            <th>
+                                Listed/UnListed
+                            </th>
                             <th>Edit</th>
                         </tr>
                     </thead>
@@ -453,6 +456,17 @@
                             <td><%=data[i].salePrice%></td>
                             <td><%=data[i].quantity%></td>
                             <td><%=data[i].status%></td>
+                            <td>
+                                <% if (data[i].isListed) { %>
+                                    <button class="btn btn-danger" style="width: 70px;">
+                                        <a href="/admin/listProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Unlist</a>
+                                    </button>
+                                <% } else { %>
+                                    <button class="btn btn-success" style="width: 70px;">
+                                        <a href="/admin/unlistProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">List</a>
+                                    </button>
+                                <% } %>
+                            </td>
                             <td>     
                                 <!-- <button class="btn btn-info" style="width: 100px;">
                                     <a href="">Edit</a>

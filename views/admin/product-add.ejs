@@ -318,6 +318,17 @@
                                     <option value="Discountinued">Discountinued</option>
                             </select>
                         </div>
+
+                        <div class="mb-3">
+                            <label for="category" class="form-label">Category:</label>
+                            <select class="form-control" id="category" name="category">
+                                <%for(let i = 0; i < cat.length; i++){%>
+                                <option value="<%=cat[i].name%>">
+                                    <%=cat[i].name%>
+                                </option>
+                                <%}%>
+                            </select>
+                        </div>
                         
                         <div class="mb-3">
                             <label for="productAmount" class="form-label">Regular Price:</label>
@@ -337,16 +348,53 @@
                             <div id="quantity-error" class="error-message"></div>
                         </div>
 
+                        
+
+                        <hr>
+
+
+                        <label for="" style="color: #ffffff; font-weight: bolder;">Spec Of this Laptop</label>
+
+                        <br><br>
+
+
                         <div class="mb-3">
-                            <label for="category" class="form-label">Category:</label>
-                            <select class="form-control" id="category" name="category">
-                                <%for(let i = 0; i < cat.length; i++){%>
-                                <option value="<%=cat[i].name%>">
-                                    <%=cat[i].name%>
-                                </option>
-                                <%}%>
-                            </select>
+                            <label for="stockCount" class="form-label">Processor</label>
+                            <input type="text" class="form-control" id="processor" name="processor">
+                            <div id="processor-error" class="error-message"></div>
                         </div>
+
+                        
+                        <div class="mb-3">
+                            <label for="stockCount" class="form-label">Storage</label>
+                            <input type="text" class="form-control" id="storage" name="storage">
+                            <div id="storage-error" class="error-message"></div>
+                        </div>
+
+
+                     
+
+
+                        <div class="mb-3">
+                            <label for="stockCount" class="form-label">Ram</label>
+                            <input type="text" class="form-control" id="ram" name="ram">
+                            <div id="ram-error" class="error-message"></div>
+                        </div>
+
+
+                        
+                        <div class="mb-3">
+                            <label for="stockCount" class="form-label">Graphics Card</label>
+                            <input type="text" class="form-control" id="graphicsCard" name="graphicsCard">
+                            <div id="graphicsCard-error" class="error-message"></div>
+                        </div>
+
+
+
+                        
+                       
+
+
 
                         <div class="text-end">
                             <button type="submit" class="add-product-btn">ADD PRODUCT</button>
@@ -479,6 +527,11 @@
             const salePrice = document.getElementById('salePrice').value;
             const stockCount = document.getElementById('stockCount').value;
             const productImage1 = document.getElementById('productImage1');
+            const processor = document.getElementById('processor').value
+            const storage = document.getElementById('storage').value
+            const ram = document.getElementById('ram').value
+            const graphicsCard = document.getElementById('graphicsCard').value
+
             
             let isValid = true;
             
@@ -519,7 +572,26 @@
                 displayErrorMessage("images-error", 'Please add image in first field.');
                 isValid = false;
             }
+
+            if (processor.trim() === "") {
+                displayErrorMessage('processor-error', "Please enter product's processor detailes.");
+                isValid = false;
+            }
+
+            if (storage.trim() === "") {
+                displayErrorMessage('storage-error', "Please enter product's storage detailes.");
+                isValid = false;
+            }
+
+            if (ram.trim() === "") {
+                displayErrorMessage('ram-error', "Please enter product's Ram detailes.");
+                isValid = false;
+            }
             
+            if (graphicsCard.trim() === "") {
+                displayErrorMessage('graphicsCard-error', "Please enter product's Graphics Card detailes.");
+                isValid = false;
+            }
             return isValid;
         }
         

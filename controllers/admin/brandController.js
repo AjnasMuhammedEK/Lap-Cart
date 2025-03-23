@@ -62,7 +62,7 @@ const addBrand = async(req, res) => {
         const existingBrand = await Brand.findOne({brandName:brandName});
         if(existingBrand) {
            
-           req.session.admMsg = "Category already exists"
+           req.session.admMsg = "Brand already exists"
            res.redirect('/admin/brand')
            return
         }

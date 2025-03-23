@@ -69,78 +69,107 @@
     <div class="otp-card">
         <h2>OTP Verification</h2>
         <p>Enter the 6-digit code sent to your email</p>
-        <form action="/verify-forgot-otp" method="post">
-        
-        <input type="text" id="otpInput" name="forgotOtp" class="otp-input" maxlength="6" placeholder="Enter OTP">
-        <button id="verifyBtn" class="btn">Verify OTP</button>
-    </form>
+        <form action="/verify-email-otp" method="post">
+            <input type="text" id="otpInput" name="otp" class="otp-input" maxlength="6" placeholder="Enter OTP">
+            <button id="verifyBtn" class="btn">Verify OTP</button>
+        </form>
         
         <div class="timer">
             <span id="timerText">Resend OTP in <span id="countdown">60</span> seconds</span>
             <br>
-            <a href="/forPassReOtp" id="resendLink" class="active">Resend OTP</a>
+            <a href="/forPassReOtp" id="resendLink">Resend OTP</a>
         </div>
-        <input type="text" id="otp-err-msg" value="<%=errorMsg%>" hidden>
     </div>
 
     <script>
-
-        let err = document.getElementById('otp-err-msg').value
-        if(err){
-            Swal.fire({
-                icon:'error',
-                text:err
-            })
-        }
         document.addEventListener('DOMContentLoaded', function() {
     const countdownElement = document.getElementById('countdown');
     const timerTextElement = document.getElementById('timerText');
     const resendLink = document.getElementById('resendLink');
+    const otpInput = document.getElementById('otpInput');
     
     let endTime = sessionStorage.getItem('otpEndTime');
-    let timeLeft;
-    
+    let countdownTimer;
+
+    // Initialize timer if not set or expired
     if (!endTime || new Date().getTime() > parseInt(endTime)) {
         endTime = new Date().getTime() + (60 * 1000); // 60 seconds from now
         sessionStorage.setItem('otpEndTime', endTime);
     }
-    
-    resendLink.classList.remove('active');
-    
+
     function updateTimer() {
         const currentTime = new Date().getTime();
-        timeLeft = Math.max(0, Math.floor((parseInt(endTime) - currentTime) / 1000));
+        const timeLeft = Math.max(0, Math.floor((parseInt(endTime) - currentTime) / 1000));
         
         countdownElement.textContent = timeLeft;
         
         if (timeLeft <= 0) {
             clearInterval(countdownTimer);
-            
             timerTextElement.style.display = 'none';
-            
             resendLink.classList.add('active');
         }
     }
-    
-    updateTimer();
-    
-    const countdownTimer = setInterval(updateTimer, 1000);
-    
-    resendLink.addEventListener('click', function() {
-        endTime = new Date().getTime() + (60 * 1000); 
-        sessionStorage.setItem('otpEndTime', endTime);
-        
-        timerTextElement.style.display = 'block';
+
+    // Start timer function
+    function startTimer() {
         resendLink.classList.remove('active');
-        
+        timerTextElement.style.display = 'block';
         updateTimer();
-        clearInterval(countdownTimer);
-        const newCountdownTimer = setInterval(updateTimer, 1000);
-    });
-    
-    document.getElementById('otpInput').focus();
-});
+        countdownTimer = setInterval(updateTimer, 1000);
+    }
+
+    // Initial start
+    startTimer();
+
+    // Resend link handler
+    resendLink.addEventListener('click', function(e) {
+        e.preventDefault();
         
+        // Make AJAX call to resend OTP
+        fetch('/forPassReOtp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: sessionStorage.getItem('userEmail') })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'OTP has been resent to your email',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                
+                // Reset timer
+                clearInterval(countdownTimer);
+                endTime = new Date().getTime() + (60 * 1000);
+                sessionStorage.setItem('otpEndTime', endTime);
+                startTimer();
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Failed to resend OTP. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Something went wrong. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        });
+    });
+
+    otpInput.focus();
+});
     </script>
 </body>
 </html>

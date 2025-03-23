@@ -45,7 +45,11 @@ const productSchema= new Schema({
     },
     isDeleted:{
         type:Boolean,
-        deault:false
+        default:false
+    },
+    isListed:{
+        type:Boolean,
+        default:true
     },
     
     status:{
@@ -54,6 +58,33 @@ const productSchema= new Schema({
         required:true,
        
     },
+
+
+    processor:{
+        type : String,
+        required:true
+    },
+
+    ram:{
+        type:String,
+        required:true
+
+    },
+
+    storage:{
+        type:String,
+        required:true
+
+    },
+
+
+    graphicsCard:{
+        type:String,
+        required:true
+
+    }
+
+
 },{timestamps:true})
 
 const Product = mongoose.model("Product",productSchema)

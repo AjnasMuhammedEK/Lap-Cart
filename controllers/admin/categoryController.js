@@ -1,4 +1,5 @@
 const Category = require('../../models/categorySchema')
+const Product = require('../../models/productSchema')
 
 
 
@@ -61,11 +62,11 @@ const addCategory = async(req, res) => {
 
     try {
        
-        const existingCategory = await Category.findOne({name});
+        const existingCategory = await Category.findOne({ name: { $regex: new RegExp("^" + name + "$", "i") } });
         if(existingCategory) {
            req.session.admMsg = "Category already exists"
-           res.redirect('/admin/category')
-           return
+           return res.redirect('/admin/category')
+          
         }
         
         const newCategory = new Category({
@@ -94,12 +95,26 @@ const deleteCategory = async (req,res) =>{
         const {categoryId} = req.body
         console.log('1');
         console.log(categoryId);
+
+        const existProductWithCategory = await Product.find({category:categoryId})
+        console.log(existProductWithCategory);
+        if(existProductWithCategory.length===0){
+
+            const updateCategory = await Category.findOneAndUpdate(
+                { _id: categoryId }, 
+                { $set: { isDeleted: true } },
+                { new: true }
+            );
+           
+        }else{
+            req.session.admMsg = "Have some products with this categories"
+            return res.redirect("/admin/category")
+
+           
+
+        }
       
-        const updateCategory = await Category.findOneAndUpdate(
-            { _id: categoryId }, 
-            { $set: { isDeleted: true } },
-            { new: true }
-        );
+        
 
         req.session.admMsg ="Category Deleted successfully"
         

@@ -110,7 +110,7 @@
                 const otp = $('#otpInput').val();
                 
                 $.ajax({
-                    url: '/verify-forgot-otp',
+                    url: '/verify-otp',
                     method: 'POST',
                     data: { otp: otp },
                     success: function(response) {

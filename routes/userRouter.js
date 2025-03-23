@@ -2,9 +2,14 @@ const express = require('express')
 const router = express.Router()
 const userController = require('../controllers/user/userController')
 const productController = require('../controllers/user/ProductController')
+const profileController = require('../controllers/user/profileContoller')
 const passport = require('passport')
 const { userAuth } = require('../middlewares/auth')
 const Product = require('../models/productSchema')
+const multer = require('multer')
+const storage = require('../helpers/multer')
+
+
 
 router.get('/pageNotFound',userController.pageNotFound)
 router.get('/',userController.loadHomepage)
@@ -28,7 +33,7 @@ router.get('/logout',userController.logout)
 
 //product detailes
 
-router.get('/productDetaile',productController.productDetailes)
+router.get('/productDetaile',userAuth,productController.productDetailes)
 
 //forgot password
 
@@ -44,8 +49,21 @@ router.get('/forPassReOtp',userController.forPassResendOtp)
 
 //shop page
 
-router.get('/shop',productController.loadShop)
-// router.get('/filterProducts',productController.filterProducts)
+router.get('/shop',userAuth,productController.loadShop)
 
+
+router.get('/userProfile',userAuth,profileController.userProfile)
+// router.post('/addProfileImage', userAuth, upload.array('images', 1), profileController.addProfileImage);
+router.get('/changeEmail',userAuth,profileController.changeEmail)
+router.post('/verifyEmailChange',userAuth,profileController.verifyEmailChange)
+router.post('/verify-email-otp',userAuth,profileController.verifyEmailOtp)
+router.post('/updateEmail',userAuth,profileController.updateEmail)
+router.get('/edit-profile',userAuth,profileController.loadeditProfile)
+router.post('/updateProfile',userAuth,profileController.updateProfile)
+// Add this to your routes file
+router.post('/forPassReOtp',userAuth,profileController.emailReOtp);
+
+router.get('/address',userAuth,profileController.loadAddress)
+ 
 
 module.exports = router

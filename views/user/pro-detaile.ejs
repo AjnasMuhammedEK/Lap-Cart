@@ -100,7 +100,7 @@
 	  </nav>
     <!-- END nav -->
 
-    <div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
+    <div class="hero-wrap hero-bread" style="background-image: url('images/banner_shop.webp');">
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
           <div class="col-md-9 ftco-animate text-center">
@@ -180,8 +180,30 @@
 						<%}else{%>
 	          		<p style="color: #000;">Stock : <%=product.quantity%></p>
 					<%}%>
+
+					<p>Processor : <%=product.processor%> </p>
+					<p>RAM : <%=product.ram%></p>
+					<p>Storage : <%=product.storage%></p>
+					<p>Graphics Card : <%=product.graphicsCard%></p>
+
+
+
 	          	</div>
           	</div>
+			  <div class="w-100"></div>
+			  <div class="input-group col-md-6 d-flex mb-3">
+	   <span class="input-group-btn mr-2">
+		  <button type="button" class="quantity-left-minus btn"  data-type="minus" data-field="">
+		 <i class="ion-ios-remove"></i>
+		  </button>
+		  </span>
+	   <input type="text" id="quantity" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+	   <span class="input-group-btn ml-2">
+		  <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
+		   <i class="ion-ios-add"></i>
+	   </button>
+	   </span>
+	</div>
           	<p><a href="cart.html" class="btn btn-black py-3 px-5 mr-2">Add to Cart</a><a href="cart.html" class="btn btn-primary py-3 px-5">Buy now</a></p>
     			</div>
     		</div>
@@ -296,10 +318,7 @@
         </div>
         <div class="row">
           <div class="col-md-12 text-center">
-            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						  Copyright ©<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-						  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						</p>
+           
           </div>
         </div>
       </div>
@@ -326,6 +345,34 @@
   <script src="js/main.js"></script>
 
   <script>
+
+
+		$(document).ready(function(){
+
+		var quantitiy=0;
+		$('.quantity-right-plus').click(function(e){
+				
+				e.preventDefault();
+				var quantity = parseInt($('#quantity').val());
+				
+					
+					$('#quantity').val(quantity + 1);
+
+				
+				
+			});
+
+			$('.quantity-left-minus').click(function(e){
+				e.preventDefault();
+				var quantity = parseInt($('#quantity').val());
+				
+					if(quantity>0){
+					$('#quantity').val(quantity - 1);
+					}
+			});
+			
+		});
+
 		$(document).ready(function(){
 			$('.product-slider').owlCarousel({
 				loop: true,
@@ -352,7 +399,6 @@
 			});
 		});
 
-    // Zoom functionality script
     document.querySelectorAll('.zoom-container').forEach(container => {
       const img = container.querySelector('.zoom-image img');
       const lens = container.querySelector('.zoom-lens');
@@ -362,30 +408,25 @@
         const posX = e.clientX - rect.left;
         const posY = e.clientY - rect.top;
 
-        // Position the lens
         const lensX = posX - (lens.offsetWidth / 2);
         const lensY = posY - (lens.offsetHeight / 2);
         
-        // Keep lens within image bounds
         const boundedX = Math.max(0, Math.min(lensX, img.width - lens.offsetWidth));
         const boundedY = Math.max(0, Math.min(lensY, img.height - lens.offsetHeight));
         
         lens.style.left = `${boundedX}px`;
         lens.style.top = `${boundedY}px`;
 
-        // Set zoom effect
         const zoomedImgUrl = img.src;
         lens.style.backgroundImage = `url(${zoomedImgUrl})`;
         lens.style.backgroundSize = `${img.width * 2}px ${img.height * 2}px`;
         lens.style.backgroundPosition = `-${posX * 2}px -${posY * 2}px`;
       });
 
-      // Hide lens when mouse leaves
       container.addEventListener('mouseleave', () => {
         lens.style.display = 'none';
       });
 
-      // Show lens when mouse enters
       container.addEventListener('mouseenter', () => {
         lens.style.display = 'block';
       });

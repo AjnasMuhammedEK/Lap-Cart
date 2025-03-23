@@ -1,0 +1,465 @@
+<%-include("../../views/partials/user/header")%>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-color: #2196F3; /* Changed from green to blue */
+            --primary-hover-color: #0b7dda; /* Darker blue for hover states */
+            --secondary-color: #333;
+            --text-color: #333;
+            --light-bg: #f5f5f5;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            --danger-color: #f44336; /* Red for delete actions */
+            --danger-hover-color: #d32f2f;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .page-content {
+            display: flex;
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        
+        
+        
+        
+       
+        
+        /* Address management styles */
+        .addr-container {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .addr-heading {
+            color: #333;
+            margin-top: 0;
+        }
+        .addr-form-section {
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .addr-form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .addr-form-group {
+            margin-right: 20px;
+            margin-bottom: 15px;
+            min-width: 200px;
+            flex: 1;
+        }
+        .addr-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .addr-input, .addr-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .addr-button {
+            background-color: var(--primary-color); /* Now blue */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .addr-button:hover {
+            background-color: var(--primary-hover-color); /* Darker blue */
+        }
+        .addr-button-cancel {
+            background-color: var(--danger-color);
+        }
+        .addr-button-cancel:hover {
+            background-color: var(--danger-hover-color);
+        }
+        .addr-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .addr-th, .addr-td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .addr-th {
+            background-color: #f2f2f2;
+        }
+        .addr-tr:hover {
+            background-color: #f5f5f5;
+        }
+        .addr-action-btns .addr-button {
+            padding: 6px 10px;
+            margin-right: 5px;
+        }
+        .addr-button-edit {
+            background-color: var(--primary-color); /* Now blue */
+        }
+        .addr-button-edit:hover {
+            background-color: var(--primary-hover-color); /* Darker blue */
+        }
+        .addr-button-delete {
+            background-color: var(--danger-color);
+        }
+        .addr-button-delete:hover {
+            background-color: var(--danger-hover-color);
+        }
+        .addr-hidden {
+            display: none;
+        }
+        .addr-add-btn {
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .page-content {
+                flex-direction: column;
+            }
+            .aside-wrapper {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-content">
+        <!-- Aside Menu -->
+         
+        <%-include("../../views/partials/profile/aside")%>
+
+        <!-- Address Container -->
+        <div class="addr-container">
+            <h1 class="addr-heading">Address Management</h1>
+            
+            <button id="addr-add-btn" class="addr-button addr-add-btn">Add New Address</button>
+            
+            <div id="addr-form" class="addr-form-section addr-hidden">
+                <h2 id="addr-form-title">Add New Address</h2>
+                <form id="addrForm">
+                    <input type="hidden" id="addrId" value="">
+                    <div class="addr-form-row">
+                        <div class="addr-form-group">
+                            <label for="addrFullName" class="addr-label">Full Name</label>
+                            <input type="text" id="addrFullName" class="addr-input" required>
+                        </div>
+                        <div class="addr-form-group">
+                            <label for="addrPhoneNumber" class="addr-label">Phone Number</label>
+                            <input type="tel" id="addrPhoneNumber" class="addr-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="addr-form-row">
+                        <div class="addr-form-group">
+                            <label for="addrLine1" class="addr-label">Address Line 1</label>
+                            <input type="text" id="addrLine1" class="addr-input" required>
+                        </div>
+                        <div class="addr-form-group">
+                            <label for="addrLine2" class="addr-label">Address Line 2</label>
+                            <input type="text" id="addrLine2" class="addr-input">
+                        </div>
+                    </div>
+                    
+                    <div class="addr-form-row">
+                        <div class="addr-form-group">
+                            <label for="addrCity" class="addr-label">City</label>
+                            <input type="text" id="addrCity" class="addr-input" required>
+                        </div>
+                        <div class="addr-form-group">
+                            <label for="addrState" class="addr-label">State/Province</label>
+                            <input type="text" id="addrState" class="addr-input" required>
+                        </div>
+                        <div class="addr-form-group">
+                            <label for="addrZipCode" class="addr-label">Zip/Postal Code</label>
+                            <input type="text" id="addrZipCode" class="addr-input" required>
+                        </div>
+                    </div>
+                    
+                    <div class="addr-form-row">
+                        <div class="addr-form-group">
+                            <label for="addrCountry" class="addr-label">Country</label>
+                            <select id="addrCountry" class="addr-select" required>
+                                <option value="">Select Country</option>
+                                <option value="US">United States</option>
+                                <option value="CA">Canada</option>
+                                <option value="UK">United Kingdom</option>
+                                <option value="AU">Australia</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="addr-form-group">
+                            <label for="addrType" class="addr-label">Address Type</label>
+                            <select id="addrType" class="addr-select" required>
+                                <option value="">Select Type</option>
+                                <option value="Home">Home</option>
+                                <option value="Work">Work</option>
+                                <option value="Shipping">Shipping</option>
+                                <option value="Billing">Billing</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="addr-form-actions">
+                        <button type="submit" id="addr-save-btn" class="addr-button">Save Address</button>
+                        <button type="button" id="addr-cancel-btn" class="addr-button addr-button-cancel">Cancel</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="addr-list">
+                <h2>Your Addresses</h2>
+                <table id="addrTable" class="addr-table">
+                    <thead>
+                        <tr class="addr-tr">
+                            <th class="addr-th">Name</th>
+                            <th class="addr-th">Phone</th>
+                            <th class="addr-th">Address</th>
+                            <th class="addr-th">City</th>
+                            <th class="addr-th">State/Province</th>
+                            <th class="addr-th">Type</th>
+                            <th class="addr-th">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="addrTableBody">
+                        <!-- Addresses will be added here -->
+                    </tbody>
+                </table>
+                <div id="addr-no-addresses" class="addr-hidden">
+                    <p>You have no saved addresses. Click "Add New Address" to create one.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize address data (in a real app, this would come from a database/API)
+        let addrData = [
+            {
+                id: 1,
+                fullName: "John Doe",
+                phoneNumber: "555-123-4567",
+                addressLine1: "123 Main St",
+                addressLine2: "Apt 4B",
+                city: "New York",
+                state: "NY",
+                zipCode: "10001",
+                country: "US",
+                addressType: "Home"
+            },
+            {
+                id: 2,
+                fullName: "Jane Smith",
+                phoneNumber: "555-987-6543",
+                addressLine1: "456 Park Ave",
+                addressLine2: "",
+                city: "Boston",
+                state: "MA",
+                zipCode: "02108",
+                country: "US",
+                addressType: "Work"
+            }
+        ];
+        
+        // DOM elements
+        const addrForm = document.getElementById('addr-form');
+        const addrList = document.getElementById('addr-list');
+        const addrTable = document.getElementById('addrTable');
+        const addrTableBody = document.getElementById('addrTableBody');
+        const addrNoAddressesDiv = document.getElementById('addr-no-addresses');
+        const addrAddBtn = document.getElementById('addr-add-btn');
+        const addrCancelBtn = document.getElementById('addr-cancel-btn');
+        const addrFormTitle = document.getElementById('addr-form-title');
+        const addrIdField = document.getElementById('addrId');
+        
+        // Event listeners
+        document.getElementById('addrForm').addEventListener('submit', saveAddress);
+        addrAddBtn.addEventListener('click', showAddressForm);
+        addrCancelBtn.addEventListener('click', hideAddressForm);
+        
+        // Initialize the page
+        renderAddressList();
+
+        // Functions
+        function renderAddressList() {
+            // Clear table first
+            addrTableBody.innerHTML = '';
+            
+            if (addrData.length === 0) {
+                addrTable.classList.add('addr-hidden');
+                addrNoAddressesDiv.classList.remove('addr-hidden');
+                return;
+            }
+            
+            // Show table and hide no addresses message
+            addrTable.classList.remove('addr-hidden');
+            addrNoAddressesDiv.classList.add('addr-hidden');
+            
+            // Add each address to the table
+            addrData.forEach(address => {
+                const tr = document.createElement('tr');
+                tr.classList.add('addr-tr');
+                
+                const fullAddressText = `${address.addressLine1}${address.addressLine2 ? ', ' + address.addressLine2 : ''}, ${address.zipCode}`;
+                
+                tr.innerHTML = `
+                    <td class="addr-td">${address.fullName}</td>
+                    <td class="addr-td">${address.phoneNumber}</td>
+                    <td class="addr-td">${fullAddressText}</td>
+                    <td class="addr-td">${address.city}</td>
+                    <td class="addr-td">${address.state}</td>
+                    <td class="addr-td">${address.addressType}</td>
+                    <td class="addr-td addr-action-btns">
+                        <button class="addr-button addr-button-edit" data-id="${address.id}">Edit</button>
+                        <button class="addr-button addr-button-delete" data-id="${address.id}">Delete</button>
+                    </td>
+                `;
+                
+                addrTableBody.appendChild(tr);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.addr-button-edit').forEach(btn => {
+                btn.addEventListener('click', editAddress);
+            });
+            
+            document.querySelectorAll('.addr-button-delete').forEach(btn => {
+                btn.addEventListener('click', deleteAddress);
+            });
+        }
+        
+        function showAddressForm() {
+            // Reset form for new address
+            document.getElementById('addrForm').reset();
+            addrIdField.value = '';
+            addrFormTitle.textContent = 'Add New Address';
+            
+            // Show form and hide list
+            addrForm.classList.remove('addr-hidden');
+            addrList.classList.add('addr-hidden');
+        }
+        
+        function hideAddressForm() {
+            addrForm.classList.add('addr-hidden');
+            addrList.classList.remove('addr-hidden');
+        }
+        
+        function saveAddress(e) {
+            e.preventDefault();
+            
+            // Get values from form
+            const addressId = addrIdField.value;
+            const fullName = document.getElementById('addrFullName').value;
+            const phoneNumber = document.getElementById('addrPhoneNumber').value;
+            const addressLine1 = document.getElementById('addrLine1').value;
+            const addressLine2 = document.getElementById('addrLine2').value;
+            const city = document.getElementById('addrCity').value;
+            const state = document.getElementById('addrState').value;
+            const zipCode = document.getElementById('addrZipCode').value;
+            const country = document.getElementById('addrCountry').value;
+            const addressType = document.getElementById('addrType').value;
+            
+            // Create address object
+            const address = {
+                fullName,
+                phoneNumber,
+                addressLine1,
+                addressLine2,
+                city,
+                state,
+                zipCode,
+                country,
+                addressType
+            };
+            
+            if (addressId) {
+                // Update existing address
+                address.id = parseInt(addressId);
+                const index = addrData.findIndex(a => a.id === address.id);
+                if (index !== -1) {
+                    addrData[index] = address;
+                }
+            } else {
+                // Add new address
+                address.id = addrData.length > 0 ? Math.max(...addrData.map(a => a.id)) + 1 : 1;
+                addrData.push(address);
+            }
+            
+            // Update UI
+            renderAddressList();
+            hideAddressForm();
+        }
+        
+        function editAddress(e) {
+            const addressId = parseInt(e.target.getAttribute('data-id'));
+            const address = addrData.find(a => a.id === addressId);
+            
+            if (!address) return;
+            
+            // Set form title
+            addrFormTitle.textContent = 'Edit Address';
+            
+            // Fill the form with address data
+            addrIdField.value = address.id;
+            document.getElementById('addrFullName').value = address.fullName;
+            document.getElementById('addrPhoneNumber').value = address.phoneNumber;
+            document.getElementById('addrLine1').value = address.addressLine1;
+            document.getElementById('addrLine2').value = address.addressLine2;
+            document.getElementById('addrCity').value = address.city;
+            document.getElementById('addrState').value = address.state;
+            document.getElementById('addrZipCode').value = address.zipCode;
+            document.getElementById('addrCountry').value = address.country;
+            document.getElementById('addrType').value = address.addressType;
+            
+            // Show form and hide list
+            addrForm.classList.remove('addr-hidden');
+            addrList.classList.add('addr-hidden');
+        }
+        
+        function deleteAddress(e) {
+            if (confirm('Are you sure you want to delete this address?')) {
+                const addressId = parseInt(e.target.getAttribute('data-id'));
+                addrData = addrData.filter(a => a.id !== addressId);
+                renderAddressList();
+            }
+        }
+        
+        // Aside menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.aside-menu li a');
+            
+            // Handle click events on menu items
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // First remove the active class from all items
+                    document.querySelectorAll('.aside-menu li').forEach(li => {
+                        li.classList.remove('aside-active');
+                    });
+                    
+                    // Add active class to the parent li of the clicked link
+                    this.parentNode.classList.add('aside-active');
+                });
+            });
+        });
+    </script>
+<%-include("../../views/partials/user/footer")%>

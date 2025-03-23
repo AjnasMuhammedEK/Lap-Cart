@@ -54,7 +54,7 @@ const coustomerBlocked = async (req,res) => {
     try {
         
         let {user_id} = req.body;
-        console.log(user_id);
+        // console.log(user_id);
         await User.updateOne({_id:user_id},{$set:{isBlocked:true}})
         res.redirect("/admin/users")
 

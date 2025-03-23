@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter New Email | Your E-commerce</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f7f7f7;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 20px;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo img {
+            height: 40px;
+            /* Replace with your actual logo */
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .description {
+            color: #666;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input[type="email"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="email"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+        }
+        
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #3a7bc8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #4a90e2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            input[type="email"], button {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <!-- Replace with your actual logo -->
+            <div style="font-weight: bold; font-size: 24px;">LAP CART</div>
+        </div>
+        
+        <h1>Enter New Email Address</h1>
+        <p class="description">Please enter the new email address you would like to use for your account.</p>
+        
+        <div id="errorMessage" class="message error">
+            Please enter a valid email address.
+        </div>
+        
+        <form id="newEmailForm" action="/updateEmail" method="post">
+            <div class="form-group">
+                <label for="newEmail">New Email Address</label>
+                <input type="email" id="newEmail" name="newEmail" required 
+                       placeholder="Enter your new email address" autofocus>
+            </div>
+            
+            <button type="submit">Continue</button>
+        </form>
+        
+        <div class="back-link">
+            <a href="#">&larr; Back to Account Settings</a>
+        </div>
+    </div>
+    
+    <!-- <script>
+        // Basic functionality for demonstration
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('newEmailForm');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newEmail = document.getElementById('newEmail').value;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                // Hide any previous error
+                errorMessage.style.display = 'none';
+                
+                // Simple validation
+                if (!emailRegex.test(newEmail)) {
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                // Here you would normally send this to your backend
+                // For demo purposes, we'll redirect to a confirmation page
+                // In a real implementation, replace this with your API call and redirect logic
+                console.log('New email submitted:', newEmail);
+                alert('Email submitted: ' + newEmail + '\nIn a real application, you would be redirected to the next step.');
+                
+                // Example redirect (commented out)
+                // window.location.href = '/confirm-email-change?email=' + encodeURIComponent(newEmail);
+            });
+        });
+    </script> -->
+</body>
+</html>

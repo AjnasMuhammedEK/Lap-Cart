@@ -196,6 +196,10 @@ const addProduct = async (req, res) => {
             quantity: product.stockCount,
             productImage: images,
             status: product.status,
+            processor:product.processor,
+            storage:product.storage,
+            ram:product.ram,
+            graphicsCard:product.graphicsCard,
             isDeleted: false
         });
         
@@ -207,84 +211,7 @@ const addProduct = async (req, res) => {
     }
 };
 
-// const editProduct = async (req, res) => {
-//     try {
-//         const id = req.params.id;
-//         const product = await Product.findOne({ _id: id });
-//         const data = req.body;
 
-//         const existingProduct = await Product.findOne({
-//             productName: data.productName,
-//             _id: { $ne: id },
-//         });
-        
-//         if (existingProduct) {
-//             return res.status(400).json({ error: "Product with this name already exists." });
-//         }
-        
-//         const existingImages = Array.isArray(product.productImage) ? product.productImage : [];
-//         let newImages = existingImages.slice();
-        
-//         if (data.croppedImages && data.croppedImages.startsWith('data:image')) {
-//             const filename = `cropped-image-${Date.now()}.jpg`;
-//             const base64Data = data.croppedImages.replace(/^data:image\/\w+;base64,/, "");
-            
-//             fs.writeFileSync(path.join(productImagesDir, filename), Buffer.from(base64Data, 'base64'));
-            
-//             if (newImages.length > 0) {
-//                 const oldImagePath = path.join(productImagesDir, newImages[0]);
-//                 if (fs.existsSync(oldImagePath)) {
-//                     fs.unlinkSync(oldImagePath);
-//                 }
-//             }
-//             newImages[0] = filename;
-//         }
-        
-//         if (req.files && req.files.length > 0) {
-//             const uploadedFile = req.files[0];
-//             const outputFilename = `product-${Date.now()}.jpg`;
-//             const resizedImagePath = path.join(productImagesDir, outputFilename);
-            
-//             try {
-//                 await sharp(uploadedFile.path)
-//                     .resize({ width: 440, height: 440, fit: 'cover' })
-//                     .jpeg({ quality: 80 })
-//                     .toFile(resizedImagePath);
-                
-//                 if (newImages.length > 0) {
-//                     const oldImagePath = path.join(productImagesDir, newImages[0]);
-//                     if (fs.existsSync(oldImagePath)) {
-//                         fs.unlinkSync(oldImagePath);
-//                     }
-//                 }
-                
-//                 newImages[0] = outputFilename;
-//                 fs.unlinkSync(uploadedFile.path);
-//             } catch (sharpError) {
-//                 console.error("Error processing uploaded image:", sharpError);
-//             }
-//         }
-        
-//         const updateFields = {
-//             productName: data.productName,
-//             description: data.productDescription,
-//             brand: data.brand,
-//             category: data.category,
-//             regularPrice: data.productAmount,
-//             salePrice: data.salePrice,
-//             quantity: data.stockCount,
-//             status: data.status,
-//             productImage: newImages,
-//         };
-        
-//         await Product.findByIdAndUpdate(id, updateFields, { new: true });
-//         res.redirect('/admin/product');
-//     } catch (error) {
-//         console.error(error);
-//         res.redirect('/admin/pageerror');
-//     }
-// };
-// 
 const editProduct = async (req, res) => {
     try {
         const id = req.params.id;
@@ -300,67 +227,52 @@ const editProduct = async (req, res) => {
             return res.status(400).json({ error: "Product with this name already exists." });
         }
         
-        // Clone existing product images array
         const existingImages = Array.isArray(product.productImage) ? product.productImage : [];
         let newImages = existingImages.slice();
         
-        // Handle cropped images
         if (data.croppedImages) {
-            // Convert to array if it's not already
             const croppedImagesArray = Array.isArray(data.croppedImages) ? data.croppedImages : [data.croppedImages];
             
-            // Get positions from the imagePositions field
             const imagePositions = data.imagePositions ? data.imagePositions.split(',').map(pos => parseInt(pos)) : [];
             
-            // Process each cropped image with its corresponding position
             for(let i = 0; i < croppedImagesArray.length; i++) {
                 const croppedImage = croppedImagesArray[i];
                 
-                // Only process if it's a valid base64 image
                 if (croppedImage && croppedImage.startsWith('data:image')) {
-                    // Use the position from imagePositions if available, otherwise default to index
                     const position = imagePositions[i] !== undefined ? imagePositions[i] : i;
                     
-                    // Generate unique filename
                     const filename = `cropped-image-${Date.now()}-${i}.jpg`;
                     const base64Data = croppedImage.replace(/^data:image\/\w+;base64,/, "");
                     
                     fs.writeFileSync(path.join(productImagesDir, filename), Buffer.from(base64Data, 'base64'));
                     
-                    // If there's an old image at this position, delete it
                     if (newImages[position] && fs.existsSync(path.join(productImagesDir, newImages[position]))) {
                         fs.unlinkSync(path.join(productImagesDir, newImages[position]));
                     }
                     
-                    // Update the image at the correct position
                     if (position >= newImages.length) {
-                        // Fill any gaps with null values
                         while (newImages.length < position) {
                             newImages.push(null);
                         }
-                        newImages.push(filename); // Add at the end
+                        newImages.push(filename); 
                     } else {
-                        newImages[position] = filename; // Replace at position
+                        newImages[position] = filename;
                     }
                 }
             }
         }
         
-        // Handle removed images
         if (data.removedImages) {
             const removedImages = data.removedImages.split(',');
             for (const removedImage of removedImages) {
                 const index = newImages.indexOf(removedImage);
                 if (index !== -1) {
-                    // Remove the image file
                     if (fs.existsSync(path.join(productImagesDir, removedImage))) {
                         fs.unlinkSync(path.join(productImagesDir, removedImage));
                     }
-                    // Set to null to maintain position
                     newImages[index] = null;
                 }
             }
-            // Filter out null values
             newImages = newImages.filter(img => img !== null);
         }
         
@@ -374,6 +286,10 @@ const editProduct = async (req, res) => {
             quantity: data.stockCount,
             status: data.status,
             productImage: newImages,
+            processor:data.processor,
+            storage:data.storage,
+            ram:data.ram,
+            graphicsCard:data.graphicsCard,
         };
         
         await Product.findByIdAndUpdate(id, updateFields, { new: true });
@@ -383,11 +299,51 @@ const editProduct = async (req, res) => {
         res.redirect('/admin/pageerror');
     }
 }
+
+
+
+const getListProduct = async (req,res) => {
+    console.log('getListProduct');
+
+
+    try {
+
+       
+
+
+        let id = req.query.id
+        console.log(id);
+        await Product.updateOne({_id:id},{$set:{isListed:false}})
+        res.redirect('/admin/product')
+        
+    } catch (error) {
+        console.log('error from listproduct');
+        res.redirect('/pageerror')
+    }
+}
+
+
+const getunListProduct = async (req,res) => {
+    try {
+
+        console.log('getunListProduct');
+        let id = req.query.id
+        console.log(`id = ${id}`);
+        await Product.updateOne({_id:id},{$set:{isListed:true}})
+        res.redirect('/admin/product')
+        
+    } catch (error) {
+        res.redirect('/pageerror')
+    }
+}
+
 module.exports = {
     loadProduct,
     loadAddProduct,
     addProduct,
     loadeditProduct,
     editProduct,
-    deleteProduct
+    deleteProduct,
+    getListProduct,
+    getunListProduct
 }

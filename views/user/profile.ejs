@@ -1,0 +1,503 @@
+<%-include("../../views/partials/user/header")%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ 
+    <style>
+        :root {
+            --primary-color: #4a6fdc;
+            --secondary-color: #2c3e50;
+            --accent-color: #5ae4a8;
+            --light-bg: #f5f6fa;
+            --dark-bg: #2c3e50;
+            --text-color: #333;
+            --light-text: #f5f5f5;
+            --border-radius: 8px;
+            --box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        .main-container {
+            width: 100%;
+            margin: 3rem 0; /* Increased margin-top to push content down */
+            padding: 0 1rem;
+            display: flex;
+            gap: 1.5rem;
+            position: relative;
+            flex: 1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #eef2f8;
+            color: var(--text-color);
+            line-height: 1.4;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+        
+        .main-header {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--box-shadow);
+            width: 100%;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .logo-icon {
+            color: var(--accent-color);
+            font-size: 1.6rem;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.2rem;
+        }
+        
+        .main-nav a {
+            color: var(--light-text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 3px;
+            font-size: 0.9rem;
+        }
+        
+        .main-nav a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            background-color: var(--accent-color);
+            bottom: 0;
+            left: 0;
+            transition: width 0.3s ease;
+        }
+        
+        .main-nav a:hover {
+            color: var(--accent-color);
+        }
+        
+        .main-nav a:hover:after {
+            width: 100%;
+        }
+        
+        .main-container {
+            width: 100%;
+            margin: 1rem 0;
+            padding: 0 1rem;
+            display: flex;
+            gap: 1.5rem;
+            position: relative;
+            flex: 1;
+            margin-top: 50px;
+        }
+        
+        .main-content {
+            flex: 1;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--box-shadow);
+            width: 100%;
+        }
+        
+        .content-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .content-section h2 {
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--light-bg);
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background-color: #f9fafc;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(74, 111, 220, 0.2);
+            background-color: white;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 0.8rem;
+            width: 100%;
+        }
+        
+        .form-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .main-btn {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(74, 111, 220, 0.2);
+        }
+        
+        .main-btn:hover {
+            background-color: #3a5dc7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(74, 111, 220, 0.3);
+        }
+        
+        .main-btn:active {
+            transform: translateY(0);
+        }
+        
+        .profile-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+        
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 1rem;
+            background-color: #f0f4f9;
+        }
+        
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        
+        .image-upload-btn {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+        
+        .image-upload-btn input[type=file] {
+            position: absolute;
+            font-size: 80px;
+            opacity: 0;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+        }
+        
+        .main-footer {
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            padding: 0.8rem 1.5rem;
+            text-align: center;
+            margin-top: auto;
+            box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 1rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .footer-links a {
+            color: var(--light-text);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+        
+        .footer-copyright {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .form-group-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            position: relative;
+            width: 100%;
+        }
+        
+        .form-group-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        .edit-btn {
+            padding: 0.4rem 0.8rem;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+        }
+        
+        .edit-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+        }
+        
+        .form-control:disabled {
+            background-color: #e9ecef;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 992px) {
+            .main-container {
+                margin-top: 1rem;
+                flex-direction: column;
+            }
+            
+            .aside-wrapper {
+                flex: 1;
+                width: 100%;
+                height: auto;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.6rem;
+                padding: 0.6rem;
+            }
+            
+            .main-nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.8rem;
+            }
+            
+            .main-container {
+                padding: 0 0.5rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 0.6rem;
+                padding: 0 0.5rem;
+            }
+            
+            .form-group-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .edit-btn {
+                width: 100%;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .content-section {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .content-section:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+ <body>
+
+    <div style="width: 100%; background-color: black;"></div>
+   
+    <div class="main-container">
+
+        <%-include("../../views/partials/profile/aside")%>
+
+        <div class="main-content">
+            <form action="/addProfileImage">
+                <div class="content-section">
+                    <h2>PROFILE IMAGE</h2>
+                    <div class="profile-image-container">
+                        <img src="<%=user.profileImage || '/api/placeholder/150/150'%>" alt="" class="profile-image" id="profileImagePreview">
+                        <p><%=user.name%></p>
+                    </div>
+                  
+                </div>
+                
+        </form>
+            
+            <div class="content-section">
+                <h2>PERSONAL INFORMATION</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="first-name">Name</label>
+                            <h3><%=user.name%></h3>
+                            <!-- <input type="text" id="first-name" class="form-control" value="<%=user.name%>"> -->
+                        </div>
+                    </div>
+                </div>
+                <hr>                
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                        
+                            <h5><%=user.phone%></h5>
+                            <!-- <input type="tel" id="phone" class="form-control" value="<%=user.phone%>"> -->
+                        </div>
+                    </div>                 
+                </div>
+                <div class="form-group">
+                    <button class="main-btn"><a href="/edit-profile">Edit Profile</a></button>
+                </div>
+            </div>
+            <hr> 
+            <div class="content-section">
+                <h2 style="font-weight: bolder; font-size: xx-large;">LOGIN DETAILS</h2>
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="username">Email</label>
+                        <h4><%=user.email%></h4>
+                        <!-- <input type="email" id="username" class="form-control" value="<%=user.email%>" disabled> -->
+                    </div>
+                    
+                    <!-- <button class="edit-btn"><a href="/changeEmail">Edit</a></button> -->
+                </div>
+                <div class="form-group">
+                    <button class="main-btn"><a href="/changeEmail" style="text-decoration: none;">Changes Email</a></button>
+                </div>
+
+                <hr>
+                
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <h4>........</h4>
+                        <!-- <input type="password" id="password" class="form-control" value="********" disabled> -->
+                    </div>
+                    <!-- <button class="edit-btn">Edit</button> -->
+                </div>
+                
+                <div class="form-group">
+                    <button class="main-btn"><a href="/forgot-password">Changes Password</a></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <input type="text" value="<%=msg%>" id="message" hidden>
+
+    <script>
+
+let message = document.getElementById("message").value;
+
+        
+if (message.trim()) {
+    Swal.fire({
+        title: "Notification",
+        text: message,
+        icon: "success"
+    });
+}   
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileImageInput = document.getElementById('profileImageInput');
+            const profileImagePreview = document.getElementById('profileImagePreview');
+            
+            profileImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        profileImagePreview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+       
+    </script>
+ 
+<%-include("../../views/partials/user/footer")%>

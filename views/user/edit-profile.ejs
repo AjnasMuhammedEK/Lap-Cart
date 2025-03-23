@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f8f9fa;
+            --text: #333333;
+            --text-light: #6c757d;
+            --border: #e1e5eb;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --card-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Content */
+        .main-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem;
+            flex: 1;
+        }
+
+        .profile-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px var(--shadow);
+            overflow: hidden;
+        }
+
+        .profile-card-body {
+            padding: 2rem;
+        }
+
+        /* Profile Image Styles */
+        .profile-image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-edit {
+            position: absolute;
+            right: 5px;
+            bottom: 5px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .avatar-edit:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .avatar-edit input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .upload-btn {
+            background-color: var(--secondary);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .upload-btn:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+        }
+
+        .upload-btn input {
+            display: none;
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        /* Buttons */
+        .form-footer {
+            background-color: rgba(0, 0, 0, 0.02);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.85rem 2rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+
+        /* Footer */
+        .site-footer {
+            background-color: var(--text);
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 1.25rem;
+            }
+
+            .main-container {
+                margin: 1.5rem auto;
+                padding: 0 1rem;
+            }
+
+            .profile-card-body,
+            .form-footer {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <i class="fas fa-user-edit"></i>
+                <h1>Edit Profile</h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <form action="/updateProfile" method="POST"  >
+            <div class="profile-card">
+                <div class="profile-card-body">
+                    <!-- Profile Image Section -->
+                    <!-- <div class="profile-image-container">
+                        <div class="avatar-wrapper">
+                            <img src="/api/placeholder/150/150" alt="Profile" class="profile-avatar" id="profileImagePreview">
+                            <div class="avatar-edit">
+                                <i class="fas fa-camera"></i>
+                                <input type="file" name="profileImage" id="profileImageInput" accept="image/*">
+                            </div>
+                        </div>
+                        <label for="profileImageInput2" class="upload-btn">
+                            <i class="fas fa-upload"></i> Upload Profile Picture
+                            <input type="file" name="profileImage" id="profileImageInput2" accept="image/*">
+                        </label>
+                    </div> -->
+
+                    <!-- Form Fields -->
+                    <div class="form-group">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="phoneNumber">Phone Number</label>
+                        <input type="text" class="form-control" id="phoneNumber" name="phone" placeholder="Enter your phone number">
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 Your Application. All rights reserved.</p>
+    </footer>
+
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Profile image preview functionality
+            const profileImageInput = document.getElementById('profileImageInput');
+            const profileImageInput2 = document.getElementById('profileImageInput2');
+            const profileImagePreview = document.getElementById('profileImagePreview');
+            
+            // Function to handle image preview
+            function handleImagePreview(input) {
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            profileImagePreview.src = e.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Apply to both image inputs
+            handleImagePreview(profileImageInput);
+            handleImagePreview(profileImageInput2);
+        });
+    </script> -->
+</body>
+</html>
