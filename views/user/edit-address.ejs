@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Address</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+         :root {
+            --primary-color: #007bff;
+            --primary-hover-color: #0056b3;
+            --secondary-color: #333;
+            --text-color: #333;
+            --light-bg: #f5f5f5;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+         .add-addr-layout-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            display: flex;
+            gap: 30px;
+            min-height: calc(100vh - 200px);  
+        }
+
+         .add-addr-main-content {
+            flex: 1;
+            min-width: 0;  
+        }
+
+         .add-addr-container {
+            max-width: 100%;
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+        }
+
+        .add-addr-title {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .add-addr-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .add-addr-type-section {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .add-addr-field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .add-addr-label {
+            font-weight: 500;
+            color: #444;
+            font-size: 1rem;
+        }
+
+        .add-addr-input,
+        .add-addr-select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 100%;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .add-addr-input:focus,
+        .add-addr-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+
+        .add-addr-submit-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-addr-submit-btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+        .add-addr-submit-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .add-addr-layout-container {
+                flex-direction: column;
+                padding: 15px;
+                margin: 10px auto;
+            }
+
+            .add-addr-container {
+                padding: 20px;
+            }
+
+            .add-addr-title {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .add-addr-input,
+            .add-addr-select {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .add-addr-submit-btn {
+                padding: 10px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include("../../views/partials/user/header") %>
+
+    <div class="add-addr-layout-container">
+        <%- include("../../views/partials/profile/aside") %>
+        
+        <main class="add-addr-main-content">
+            <div class="add-addr-container">
+                <h1 class="add-addr-title">Add New Address</h1>
+                
+                <form onsubmit="return ValidChecking()" action="/posteditAddress" method="post" class="add-addr-form" id="editAddressForm">
+                    <div class="add-addr-type-section">
+                        <label class="add-addr-label" for="addressType">Address Type</label>
+                        <select class="add-addr-select" id="addressType" name="addressType" >
+                            <option value="">Select Address Type</option>
+                            <option value="Home">Home</option>
+                            <option value="Work">Work</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <div id="error1" class="error-message"></div>
+
+                    </div>
+                    
+                    <div class="add-addr-field-group">
+                        <label class="add-addr-label" for="name">Full Name</label>
+                        <input class="add-addr-input" type="text" id="name" name="name" value="<%=address.name%>">
+                        <div id="error2" class="error-message"></div>
+
+                    </div>
+ 
+                    
+                    <div class="add-addr-field-group">
+                        <label class="add-addr-label" for="city">City</label>
+                        <input class="add-addr-input" type="text" id="city" name="city" value="<%=address.city%>">
+                        <div id="error3" class="error-message"></div>
+
+                    </div>
+                    
+                    <div class="add-addr-field-group">
+                        <label class="add-addr-label" for="landMark">Landmark</label>
+                        <input class="add-addr-input" type="text" id="landMark" name="landMark" value="<%=address.landMark%>">
+                        <div id="error4" class="error-message"></div>
+
+                    </div>
+                    
+                    <div class="add-addr-field-group">
+                        <label class="add-addr-label" for="state">State</label>
+                        <input class="add-addr-input" type="text" id="state" name="state" value="<%=address.state%>">
+                        <div id="error5" class="error-message"></div>
+
+                    </div>
+                    
+                    <div class="add-addr-field-group">
+                        <label class="add-addr-label" for="pincode">Pincode</label>
+                        <input class="add-addr-input" type="number" id="pincode" name="pincode"  min="100000" max="999999" value="<%=address.pincode%>">
+                        <div id="error6" class="error-message"></div>
+
+                    </div>
+                    <input type="hidden" name="addressId" value="<%=address._id%>">
+
+                    
+                    <div class="add-addr-field-group">
+                        <label class="add-addr-label" for="phone">Phone Number</label>
+                        <input class="add-addr-input" type="number" id="phone" name="phone"  min="1000000000" max="9999999999" value="<%=address.phone%>">
+                        <div id="error7" class="error-message"></div>
+
+                    </div>
+                    
+                    <button class="add-addr-submit-btn" type="submit">Save Address</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    
+    <%- include("../../views/partials/user/footer") %>
+    
+    <script>
+        const nameid = document.getElementById("name");
+        const city = document.getElementById("city");
+        const landMark = document.getElementById("landMark");
+        const state = document.getElementById("state");
+        const pincode = document.getElementById("pincode");
+        const phone = document.getElementById("phone");
+
+        const error1 = document.getElementById("error1");
+        const error2 = document.getElementById("error2");
+        const error3 = document.getElementById("error3");
+        const error4 = document.getElementById("error4");
+        const error5 = document.getElementById("error5");
+        const error6 = document.getElementById("error6");
+
+
+        function ValidChecking() {
+    let isValid = true;
+    
+    // Address Type validation
+    const addressType = document.getElementById("addressType");
+    if (!addressType.value) {
+        document.getElementById("error1").style.display = "block";
+        document.getElementById("error1").innerHTML = "Please select an address type.";
+        isValid = false;
+    } else {
+        document.getElementById("error1").style.display = "none";
+    }
+    
+    // Name validation
+    const nameVal = document.getElementById("name").value.trim();
+    const namePattern = /^[A-Za-z\s]+$/;
+    
+    if (!nameVal) {
+        document.getElementById("error2").style.display = "block";
+        document.getElementById("error2").innerHTML = "Please enter a valid name.";
+        isValid = false;
+    } else if (!namePattern.test(nameVal)) {
+        document.getElementById("error2").style.display = "block";
+        document.getElementById("error2").innerHTML = "Name can only contain alphabets and spaces.";
+        isValid = false;
+    } else {
+        document.getElementById("error2").style.display = "none";
+    }
+    
+    // City validation
+    const cityVal = document.getElementById("city").value.trim();
+    if (!cityVal) {
+        document.getElementById("error3").style.display = "block";
+        document.getElementById("error3").innerHTML = "Enter your city.";
+        isValid = false;
+    } else {
+        document.getElementById("error3").style.display = "none";
+    }
+    
+    // Landmark validation
+    const landmarkVal = document.getElementById("landMark").value.trim();
+    if (!landmarkVal) {
+        document.getElementById("error4").style.display = "block";
+        document.getElementById("error4").innerHTML = "Enter your landmark.";
+        isValid = false;
+    } else {
+        document.getElementById("error4").style.display = "none";
+    }
+    
+    // State validation
+    const stateVal = document.getElementById("state").value.trim();
+    if (!stateVal) {
+        document.getElementById("error5").style.display = "block";
+        document.getElementById("error5").innerHTML = "Enter your state.";
+        isValid = false;
+    } else {
+        document.getElementById("error5").style.display = "none";
+    }
+    
+    // Pincode validation
+    const pincodeVal = document.getElementById("pincode").value.trim();
+    if (!pincodeVal || pincodeVal.length !== 6 || isNaN(pincodeVal)) {
+        document.getElementById("error6").style.display = "block";
+        document.getElementById("error6").innerHTML = "Enter a valid 6-digit pincode.";
+        isValid = false;
+    } else {
+        document.getElementById("error6").style.display = "none";
+    }
+    
+    // Phone validation
+    const phoneVal = document.getElementById("phone").value.trim();
+    if (!phoneVal || phoneVal.length !== 10 || isNaN(phoneVal)) {
+        document.getElementById("error7").style.display = "block";
+        document.getElementById("error7").innerHTML = "Phone number must be exactly 10 digits.";
+        isValid = false;
+    } else {
+        document.getElementById("error7").style.display = "none";
+    }
+    
+    return isValid;
+}
+       
+
+
+    </script>
+</body>
+</html>

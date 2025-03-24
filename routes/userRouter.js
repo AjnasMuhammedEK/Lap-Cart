@@ -64,6 +64,10 @@ router.post('/updateProfile',userAuth,profileController.updateProfile)
 router.post('/forPassReOtp',userAuth,profileController.emailReOtp);
 
 router.get('/address',userAuth,profileController.loadAddress)
- 
+router.get('/addAddress',userAuth,profileController.addAddress)
+router.post('/addAddress',userAuth,profileController.postAddAddress)
+router.get("/editAddress",userAuth,profileController.editAddress)
+router.post("/posteditAddress",userAuth,profileController.postEditAddress)
+router.get("/deleteAddress",userAuth,profileController.deleteAddress)
 
 module.exports = router
