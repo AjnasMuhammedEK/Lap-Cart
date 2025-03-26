@@ -16,48 +16,91 @@ const pageNotFound = async (req,res) => {
 
 
 
+// const loadHomepage = async (req, res) => {
+//     try {
+//         const user = req.session.user
+//         let userData = null
+//         if (user) {
+//             userData = await User.findById(user);
+//             if (userData && userData.isBlocked) {
+//                 req.session.destroy();
+//                 return res.redirect('/login');
+//             }
+//         }
+        
+//         const categories = await Category.find({isListed:true,isDeleted:false})
+//         let productData = await Product.find(
+//             {
+//                 isDeleted:false,
+//                 isListed:true,
+//                 category:{$in:categories.map(category=>category._id)},quantity:{$gt:0}
+//             }
+//         )
+
+        
+//         productData.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+//         productData = productData.slice(0,4)
+
+        
+//         if (user) {
+//             const userData = await User.findOne({_id: user})
+            
+//             if (!userData) {
+//                 delete req.session.user;
+//                 return res.render("home");
+//             }
+            
+//             return res.render("home", {user: userData,products:productData})
+//         } else {
+//             return res.render("home",{products:productData})
+//         }
+//     } catch (error) {
+//         console.log('Home page error:', error);
+//         res.status(500).send("Server error")
+//     }
+// }
+
 const loadHomepage = async (req, res) => {
     try {
-        const user = req.session.user
-        let userData = null
+        // Check if session exists before accessing it
+        let user = req.session && req.session.user ? req.session.user : null;
+        let userData = null;
+
         if (user) {
             userData = await User.findById(user);
             if (userData && userData.isBlocked) {
-                req.session.destroy();
-                return res.redirect('/login');
+                req.session.destroy((err) => {
+                    if (err) console.error('Session destroy error:', err);
+                    return res.redirect('/login');
+                });
+                return; // Ensure no further execution after redirect
             }
         }
-        
-        const categories = await Category.find({isListed:true,isDeleted:false})
-        let productData = await Product.find(
-            {
-                isDeleted:false,
-                category:{$in:categories.map(category=>category._id)},quantity:{$gt:0}
-            }
-        )
 
-        
-        productData.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
-        productData = productData.slice(0,4)
+        // Fetch categories and products regardless of user status
+        const categories = await Category.find({ isListed: true, isDeleted: false });
+        let productData = await Product.find({
+            isDeleted: false,
+            isListed: true,
+            category: { $in: categories.map(category => category._id) },
+            quantity: { $gt: 0 }
+        });
 
-        
-        if (user) {
-            const userData = await User.findOne({_id: user})
-            
-            if (!userData) {
-                delete req.session.user;
-                return res.render("home");
-            }
-            
-            return res.render("home", {user: userData,products:productData})
+        // Sort by creation date (newest first) and limit to 4
+        productData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        productData = productData.slice(0, 4);
+
+        // Render the page based on user status
+        if (user && userData) {
+            return res.render('home', { user: userData, products: productData });
         } else {
-            return res.render("home",{products:productData})
+            return res.render('home', { products: productData });
         }
     } catch (error) {
-        console.log('Home page error:', error);
-        res.status(500).send("Server error")
+        console.error('Home page error:', error);
+        res.status(500).render('error', { message: 'Server error' }); // Use render instead of send for consistency
     }
-}
+};
 
 
 const loadLogin = (req,res)=>{

@@ -438,6 +438,8 @@ const deleteAddress = async (req,res) => {
     }
 }
 
+
+
 module.exports = {
     userProfile,
     addProfileImage,
@@ -453,5 +455,6 @@ module.exports = {
     postAddAddress,
     editAddress,
     postEditAddress,
-    deleteAddress
+    deleteAddress,
+     
 }

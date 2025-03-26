@@ -1,0 +1,219 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', Arial, sans-serif;
+    }
+
+    body {
+        background-color: #f5f5f5;
+        color: #2d2d2d;
+    }
+
+    /* Header Styles */
+    .prod-listing-header {
+        background-color: #f7e8a4;
+        padding: 20px 0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .prod-listing-nav {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+    }
+
+    .prod-listing-nav-item {
+        margin: 0 25px;
+    }
+
+    .prod-listing-nav-link {
+        text-decoration: none;
+        color: #3a3a3a;
+        font-weight: 600;
+        font-size: 16px;
+        transition: color 0.3s ease;
+    }
+
+    .prod-listing-nav-link:hover {
+        color: #d4a017;
+    }
+
+    /* Container Styles */
+    .prod-listing-wrapper {
+        max-width: 1280px;
+        margin-top: 90px ;
+        padding: 0 20px;
+    }
+
+    /* Table Styles */
+    .prod-listing-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background-color: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .prod-listing-table-head {
+        background-color: #f7e8a4;
+        color: #3a3a3a;
+    }
+
+    .prod-listing-table-head th {
+        padding: 18px 20px;
+        font-weight: 600;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .prod-listing-table-row {
+        transition: background-color 0.3s ease;
+    }
+
+    .prod-listing-table-row:hover {
+        background-color: #f9f9f9;
+    }
+
+    .prod-listing-table-cell {
+        padding: 20px;
+        border-bottom: 1px solid #e5e5e5;
+        vertical-align: middle;
+    }
+
+    /* Item Number */
+    .prod-listing-item-num {
+        font-size: 14px;
+        color: #7a7a7a;
+        font-weight: 500;
+    }
+
+    /* Product Image */
+    .prod-listing-img-box img {
+        max-width: 110px;
+        border-radius: 8px;
+        border: 1px solid #e5e5e5;
+        padding: 5px;
+        transition: transform 0.3s ease;
+    }
+
+    .prod-listing-img-box img:hover {
+        transform: scale(1.05);
+    }
+
+    /* Product Title and Description */
+    .prod-listing-title {
+        font-weight: 600;
+        font-size: 16px;
+        color: #2d2d2d;
+        margin-bottom: 6px;
+    }
+
+    .prod-listing-desc {
+        font-size: 14px;
+        color: #6b6b6b;
+        line-height: 1.5;
+    }
+
+    /* Pricing */
+    .prod-listing-old-price {
+        text-decoration: line-through;
+        color: #a1a1a1;
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    .prod-listing-new-price {
+        font-weight: 700;
+        font-size: 18px;
+        color: #d4a017;
+        margin: 6px 0;
+    }
+
+    /* Add to Cart Button */
+    .prod-listing-cart-btn {
+        background-color: #f7e8a4;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        color: #3a3a3a;
+        transition: all 0.3s ease;
+    }
+
+    .prod-listing-cart-btn:hover {
+        background-color: #d4a017;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Empty Wishlist Message */
+    .prod-listing-empty {
+        text-align: center;
+        font-size: 18px;
+        color: #6b6b6b;
+        padding: 40px 0;
+    }
+</style>
+
+<body>
+    
+
+    <div class="prod-listing-wrapper">
+        <% if (data && data.products.length > 0) { %>
+        <table class="prod-listing-table">
+            <thead class="prod-listing-table-head">
+                <tr>
+                    <th>Item</th>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Description</th>
+                    <th>Original Price</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% data.products.forEach((item, index) => { %>
+                <tr class="prod-listing-table-row">
+                    <td class="prod-listing-table-cell prod-listing-item-num">
+                        <%= String(index + 1).padStart(2, '0') %>
+                    </td>
+                    <td class="prod-listing-table-cell prod-listing-img-box">
+                        <img src="/uploads/product-images/<%=item.productId.productImage[0]%>" alt="<%= item.productId.productName %>">
+                    </td>
+                    <td class="prod-listing-table-cell prod-listing-title">
+                        <%= item.productId.productName %>
+                    </td>
+                    <td class="prod-listing-table-cell prod-listing-desc">
+                        <%= item.productId.description %>
+                    </td>
+                    <td class="prod-listing-table-cell prod-listing-old-price">
+                        $<%= item.productId.regularPrice || 'N/A' %>
+                    </td>
+                    <td class="prod-listing-table-cell prod-listing-new-price">
+                        $<%= item.productId.salePrice || '1,599.99' %>
+                    </td>
+                    <td class="prod-listing-table-cell">
+                        <button class="prod-listing-cart-btn">Add to Cart</button>
+                    </td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <% } else { %>
+            <p class="prod-listing-empty">Your wishlist is empty.</p>
+        <% } %>
+    </div>
+
+ </body>
+</html>

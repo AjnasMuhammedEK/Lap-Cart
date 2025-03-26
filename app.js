@@ -12,6 +12,9 @@ db()
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 app.use('/uploads', express.static('uploads'));
+// app.js or index.js
+// const cartRoutes = require('./routes/cartRoutes');
+app.use('/cart', userRouter);
 
 
 app.use(session({
