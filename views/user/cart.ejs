@@ -1,3 +1,14 @@
+ 
+
+
+
+
+
+
+
+
+
+
 <%- include("../partials/user/header.ejs") %>
 <style>
   * {
@@ -145,6 +156,11 @@
     color: #fff;
   }
 
+  .quantity-box button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
   .quantity-box input {
     width: 50px;
     text-align: center;
@@ -269,7 +285,7 @@
     <% if (cartItems && cartItems.length > 0) { %>
       <div class="cart-products">
         <% cartItems.forEach(item => { %>
-          <div class="cart-product">
+          <div class="cart-product" data-product-id="<%= item.productId._id %>">
             <img src="/uploads/product-images/<%= item.productId.productImage[0] || 'default.jpg' %>" 
                  alt="<%= item.productId.productName %>">
             <h5><%= item.productId.productName %></h5>
@@ -294,9 +310,9 @@
             %>
             <p class="stock <%= stockClass %>"><%= stockText %></p>
             <div class="price-details">
-              <span class="current-price">₹<%= item.price %></span>
+              <span class="current-price">₹<%= item.productId.salePrice %></span>
               <span class="original-price">₹<%= item.productId.regularPrice %></span>
-              <% const discountPercent = Math.round((1 - item.price / item.productId.regularPrice) * 100); %>
+              <% const discountPercent = Math.round((1 - item.productId.salePrice / item.productId.regularPrice) * 100); %>
               <% if (discountPercent > 0) { %>
                 <span class="discount"><%= discountPercent %>% Off</span>
               <% } %>
@@ -304,7 +320,7 @@
             <div class="product-actions">
               <div class="quantity-box">
                 <button class="minus" data-product-id="<%= item.productId._id %>">-</button>
-                <input type="text" value="<%= item.quantity %>" readonly>
+                <input type="text" class="quantity-input" value="<%= item.quantity %>" readonly>
                 <button class="plus" data-product-id="<%= item.productId._id %>">+</button>
               </div>
               <a href="#" class="remove-link" data-product-id="<%= item.productId._id %>">Remove</a>
@@ -316,17 +332,14 @@
       <div class="cart-summary">
         <h3>Order Summary</h3>
         <div class="summary-line">
-          <span>Subtotal (<%= cartItems.length %> items)</span>
-          <span>₹<%= total %></span>
+          <span>Subtotal (<span id="item-count"><%= cartItems.length %></span> items)</span>
+          <span id="subtotal">₹<%= subtotal %></span>
         </div>
         <div class="summary-line">
           <span>Discount</span>
           <span class="discount-amount">
-            <% let totalDiscount = 0; %>
-            <% cartItems.forEach(item => { %>
-              <% totalDiscount += (item.productId.regularPrice - item.price) * item.quantity; %>
-            <% }); %>
-            -₹<%= totalDiscount %>
+            <% let totalDiscount = cartItems.reduce((sum, item) => sum + ((item.productId.regularPrice - item.productId.salePrice) * item.quantity), 0); %>
+            -₹<span id="discount-amount"><%= totalDiscount %></span>
           </span>
         </div>
         <div class="summary-line">
@@ -335,7 +348,7 @@
         </div>
         <div class="summary-line total">
           <span>Total</span>
-          <span>₹<%= total %></span>
+          <span id="cart-total">₹<%= total %></span>
         </div>
         <button class="checkout-button">Proceed to Checkout</button>
       </div>
@@ -351,56 +364,108 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.quantity-box button').forEach(button => {
-      button.addEventListener('click', function() {
-        const productId = this.getAttribute('data-product-id');
-        const action = this.classList.contains('plus') ? 'increment' : 'decrement';
-  
-        $.ajax({
-          url: '/cartQuantity',
-          method: 'POST',
-          data: { productId, action },
-          success: function(response) {
-            location.reload();
-          },
-          error: function(err) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: err.responseJSON.message,
-              confirmButtonColor: '#007bff'
-            });
-          }
-        });
+  $(document).ready(function() {
+    // Quantity buttons
+    $('.quantity-box button').click(function(e) {
+      e.preventDefault();
+      const productId = $(this).data('product-id');
+      const action = $(this).hasClass('plus') ? 'increment' : 'decrement';
+      const $quantityInput = $(this).siblings('.quantity-input');
+      const $productCard = $(this).closest('.cart-product');
+      const $button = $(this);
+
+      $button.prop('disabled', true);
+
+      $.ajax({
+        url: '/cartQuantity',
+        method: 'POST',
+        data: { productId, action },
+        success: function(response) {
+          // Update quantity
+          const newQuantity = response.cart.items.find(item => 
+            item.productId._id.toString() === productId
+          ).quantity;
+          $quantityInput.val(newQuantity);
+
+          // Update totals from response
+          $('#subtotal').text(`₹${response.subtotal}`);
+          $('#cart-total').text(`₹${response.total}`);
+          
+          // Update discount
+          let totalDiscount = 0;
+          response.cart.items.forEach(item => {
+            totalDiscount += (item.productId.regularPrice - item.productId.salePrice) * item.quantity;
+          });
+          $('#discount-amount').text(totalDiscount);
+
+          $button.prop('disabled', false);
+        },
+        error: function(err) {
+          $button.prop('disabled', false);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: err.responseJSON.message,
+            confirmButtonColor: '#007bff'
+          });
+        }
       });
     });
-  
-    document.querySelectorAll('.remove-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const productId = this.getAttribute('data-product-id');
-  
-        $.ajax({
-          url: '/deleteCart',
-          method: 'POST',
-          data: { productId },
-          success: function(response) {
+
+    // Remove item
+    $('.remove-link').click(function(e) {
+      e.preventDefault();
+      const productId = $(this).data('product-id');
+      const $link = $(this);
+
+      $link.text('Removing...');
+
+      $.ajax({
+        url: '/deleteCart',
+        method: 'POST',
+        data: { productId },
+        success: function(response) {
+          // Remove the product card
+          $(`div[data-product-id="${productId}"]`).remove();
+          
+          // Update totals
+          $('#subtotal').text(`₹${response.subtotal}`);
+          $('#cart-total').text(`₹${response.total}`);
+          $('#item-count').text(response.cart.items.length);
+          
+          // Update discount
+          let totalDiscount = 0;
+          response.cart.items.forEach(item => {
+            totalDiscount += (item.productId.regularPrice - item.productId.salePrice) * item.quantity;
+          });
+          $('#discount-amount').text(totalDiscount);
+
+          if (response.cart.items.length === 0) {
             location.reload();
-          },
-          error: function(err) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Failed to remove item from cart',
-              confirmButtonColor: '#007bff'
-            });
           }
-        });
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.message,
+            showConfirmButton: false,
+            timer: 1500
+          });
+        },
+        error: function(err) {
+          $link.text('Remove');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to remove item from cart',
+            confirmButtonColor: '#007bff'
+          });
+        }
       });
     });
-  
-    document.querySelector('.checkout-button')?.addEventListener('click', function() {
+
+    // Checkout
+    $('.checkout-button').click(function() {
       if (this.disabled) return;
       $.ajax({
         url: '/cartCheckout',
@@ -414,11 +479,10 @@
             title: 'Error',
             text: err.responseJSON.message,
             confirmButtonColor: '#007bff'
-            });
-          }
-        });
+          });
+        }
       });
     });
+  });
 </script>
-
 <%- include("../partials/user/footer.ejs") %>

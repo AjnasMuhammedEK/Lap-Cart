@@ -72,23 +72,16 @@ router.post("/posteditAddress",userAuth,profileController.postEditAddress)
 router.get("/deleteAddress",userAuth,profileController.deleteAddress)
  
 router.get("/getCart", userAuth, cartController.manageGetCartPage);
-router.post("/cartAdd", cartController.manageAddToCart);
+router.post("/cartAdd", userAuth, cartController.manageAddToCart);
 router.post("/cartQuantity", userAuth, cartController.manageCartQuantity);
 router.post("/deleteCart", userAuth, cartController.manageDeleteCart);
 router.post("/cartCheckout", userAuth, cartController.manageCartCheckout);
 
+router.get('/whishlist', userAuth, cartController.loadWhishList);
+router.get('/addWhishlist', userAuth, cartController.addWhishList);
+router.post('/removeWishlist', userAuth, cartController.removeFromWishlist);
+router.post('/addToCartFromWishlist', userAuth, cartController.addToCartFromWishlist);
 
-// router.get('/cart', cartController.getCartPage);
-// router.post('/cart/add', cartController.addToCart);
-// router.put('/cart/update-quantity', cartController.updateQuantity);
-// router.delete('/cart/remove', cartController.removeFromCart);
-// router.get('/cart', cartController.getCartPage);
-// router.post('/cart/add', cartController.addToCart);
-// router.post('/cart/update', cartController.updateCartQuantity);
-// router.post('/cart/remove', cartController.removeFromCart);
-// router.get('/cart/validate', cartController.validateCartForCheckout);
+router.get('/checkout',userAuth,cartController.loadCheckOut)
 
-
-router.get('/whishlist',userAuth,cartController.loadWhishList)
-router.get('/addWhishlist',userAuth,cartController.addWhishList)
 module.exports = router

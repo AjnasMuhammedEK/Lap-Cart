@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Page - Light Theme</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            padding: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .checkout-wrapper {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .checkout-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .address-section, .order-summary {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            min-width: 300px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .address-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .address-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .address-card.selected {
+            border-color: #3498db;
+            background-color: #e6f0fa;
+        }
+
+        .address-card:hover {
+            border-color: #3498db;
+        }
+
+        .address-card input[type="radio"] {
+            margin-right: 12px;
+            accent-color: #3498db;
+        }
+
+        .address-details p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .address-details p:first-child {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .delivery-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .delivery-info strong {
+            color: #2c3e50;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+
+        .add-address-btn, .continue-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .add-address-btn {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+
+        .add-address-btn:hover {
+            background-color: #d4ac0d;
+            transform: translateY(-2px);
+        }
+
+        .continue-btn {
+            background-color: #3498db;
+            color: #fff;
+            width: 200px;
+        }
+
+        .continue-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .order-summary {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .item-details {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .item-details img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .item-details p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .cart-total {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+
+        .total-row span:last-child {
+            color: #2c3e50;
+        }
+
+        .final-total {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-top: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .checkout-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .address-section, .order-summary {
+                width: 100%;
+            }
+
+            .continue-btn {
+                width: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-wrapper">
+        <div class="checkout-container">
+            <!-- Address Selection Section -->
+                
+            <div class="address-section">
+                
+                <h2>Select Address</h2>
+                <div class="address-list">
+                    <%address.address.forEach((add) => {%>
+                    <label class="address-card" data-id="1">
+                        <input type="radio" name="address" checked>
+                        <div class="address-details">
+                            <p><strong><%=add.name%></strong></p>
+                            <p><%=add.city%>,<%=add.state%>,</p>
+                            <p><%=add.pincode%></p>
+                            <p><%=add.landMark%></p>
+                            <button class="addr-button addr-button-edit">
+                                <a href="/editAddress?addressId=<%= add._id %>&fromCheckout=10"><i class="fas fa-edit"></i></a>                            </button>
+                        </div>
+                    </label>
+                   
+                    <%})%>
+                </div>
+                <p class="delivery-info">Estimated Delivery Date: <strong>Monday, 13, 12:00 - 18:00</strong></p>
+                <div class="button-group">
+                    <form action="/addAddress" method="get"><button class="add-address-btn">Add Address</button></form>
+                 </div>           
+            </div>
+            
+             <!-- Order Summary Section -->
+            <div class="order-summary">
+               
+                    <h2>Confirm Details</h2>
+                <div class="item-details">
+                    <% cart.items.forEach(item => { %>
+                    <img src="/uploads/product-images/<%= item.productId.productImage[0] || 'default.jpg' %>">
+                    <p><%=item.productId.productName%></p>
+                    <%})%>
+                </div>
+                <div class="cart-total">
+                    <div class="total-row">
+                        <span>total</span>
+                        <span><%= subtotal %></span>
+                    </div>
+                    <div class="total-row">
+                        <span>Delivery</span>
+                        <span>free</span>
+                    </div>
+                    <div class="total-row">
+                            
+                            
+                         
+                        <span>Discount</span>
+                        <span><%=Discount%></span>
+                     </div>
+                    <div class="total-row final-total">
+                        <span>Total</span>
+                        <span><%=total%></span>
+                    </div>
+
+                </div>
+               
+            </div>
+        </div>
+        <div class="button-group">
+            <button class="continue-btn" >Continue</button>
+        </div>
+    </div>
+</body>
+</html>

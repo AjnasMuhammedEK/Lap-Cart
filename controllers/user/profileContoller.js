@@ -340,12 +340,12 @@ const editAddress = async (req,res) =>{
     try {
 
         const addressId = req.query.addressId
-        console.log(addressId);
+         console.log(addressId);
         const user = req.session.user
         const currentAddress = await Address.findOne({
             "address._id": addressId
         });
-
+ 
         if (!currentAddress) {
             return res.redirect("/pageNotFound");
         }
@@ -371,8 +371,7 @@ const editAddress = async (req,res) =>{
 
 const postEditAddress = async (req, res) => {
     try {
-        // const addressId = req.body.addressId; // Get addressId from form body
-        const userId = req.session.user;
+         const userId = req.session.user;
 
         const { addressId , addressType, name, city, landMark, state, pincode, phone } = req.body;
 
@@ -404,9 +403,9 @@ const postEditAddress = async (req, res) => {
 
     } catch (error) {
         console.error("Error in edit address:", error);
-        if (!res.headersSent) { // ✅ Check if response is already sent
-            return res.redirect("/pageNotFound");
-        }
+       
+        return res.redirect("/pageNotFound");
+        
     }
 };
 
