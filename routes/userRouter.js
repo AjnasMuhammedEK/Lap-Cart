@@ -4,6 +4,7 @@ const userController = require('../controllers/user/userController')
 const productController = require('../controllers/user/ProductController')
 const profileController = require('../controllers/user/profileContoller')
 const cartController = require('../controllers/user/CartMgmtController ')
+const orderController = require('../controllers/user/orderController')
 const passport = require('passport')
 const { userAuth } = require('../middlewares/auth')
 const Product = require('../models/productSchema')
@@ -54,15 +55,35 @@ router.get('/shop',userAuth,productController.loadShop)
 
 
 router.get('/userProfile',userAuth,profileController.userProfile)
-// router.post('/addProfileImage', userAuth, upload.array('images', 1), profileController.addProfileImage);
-router.get('/changeEmail',userAuth,profileController.changeEmail)
-router.post('/verifyEmailChange',userAuth,profileController.verifyEmailChange)
-router.post('/verify-email-otp',userAuth,profileController.verifyEmailOtp)
-router.post('/updateEmail',userAuth,profileController.updateEmail)
+ 
 router.get('/edit-profile',userAuth,profileController.loadeditProfile)
 router.post('/updateProfile',userAuth,profileController.updateProfile)
-// Add this to your routes file
-router.post('/forPassReOtp',userAuth,profileController.emailReOtp);
+ router.post('/forPassReOtp',userAuth,profileController.emailReOtp);
+ 
+
+router.get('/changeEmail', userAuth, profileController.changeEmail);
+router.post('/verifyEmailChange', userAuth, profileController.verifyEmailChange);
+
+router.get('/verify-email-otp', userAuth, (req, res) => {
+    if (!req.session.userOtp) {
+        return res.redirect('/changeEmail');
+    }
+    res.render('ChangeEmailOtp');
+});
+
+router.post('/verify-email-otp', userAuth, profileController.verifyEmailOtp);
+
+ router.get('/new-email', userAuth, (req, res) => {
+    if (!req.session.verifiedForEmailChange) {
+        return res.redirect('/changeEmail');
+    }
+    const userId = req.session.user;
+    res.render('new-email', { user: { _id: userId } });  
+});
+
+router.post('/emailReOtp', userAuth, profileController.emailReOtp);
+router.post('/updateEmail', userAuth, profileController.updateEmail);
+
 
 router.get('/address',userAuth,profileController.loadAddress)
 router.get('/addAddress',userAuth,profileController.addAddress)
@@ -71,11 +92,11 @@ router.get("/editAddress",userAuth,profileController.editAddress)
 router.post("/posteditAddress",userAuth,profileController.postEditAddress)
 router.get("/deleteAddress",userAuth,profileController.deleteAddress)
  
-router.get("/getCart", userAuth, cartController.manageGetCartPage);
-router.post("/cartAdd", userAuth, cartController.manageAddToCart);
+router.get("/getCart", userAuth, cartController.loadCart);
+router.post("/cartAdd", userAuth, cartController.addToCart);
 router.post("/cartQuantity", userAuth, cartController.manageCartQuantity);
-router.post("/deleteCart", userAuth, cartController.manageDeleteCart);
-router.post("/cartCheckout", userAuth, cartController.manageCartCheckout);
+router.post("/deleteCart", userAuth, cartController.deleteCart);
+router.post("/cartCheckout", userAuth, cartController.cartCheckout);
 
 router.get('/whishlist', userAuth, cartController.loadWhishList);
 router.get('/addWhishlist', userAuth, cartController.addWhishList);
@@ -83,5 +104,10 @@ router.post('/removeWishlist', userAuth, cartController.removeFromWishlist);
 router.post('/addToCartFromWishlist', userAuth, cartController.addToCartFromWishlist);
 
 router.get('/checkout',userAuth,cartController.loadCheckOut)
+router.post('/checkAddAddress',userAuth,cartController.checkoutAddAddress)
+router.post('/checkeditAddress',userAuth,cartController.checkoutEditAddress)
+
+router.post('/place-order',userAuth,orderController.placeOrder);
+router.get('/order-success',userAuth,orderController.loadOrderSuccess);
 
 module.exports = router

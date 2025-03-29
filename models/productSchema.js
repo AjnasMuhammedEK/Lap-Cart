@@ -52,13 +52,6 @@ const productSchema= new Schema({
         default:true
     },
     
-    status:{
-        type:String,
-        enum:["Available","out of stock","Discountinued"],
-        required:true,
-       
-    },
-
 
     processor:{
         type : String,

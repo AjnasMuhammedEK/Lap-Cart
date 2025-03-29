@@ -12,39 +12,136 @@ const bcrypt = require('bcrypt')
 function generateOtp(){
     return Math.floor(100000 + Math.random()*900000).toString()
 }
-
-async function sentVerificationEmail(email,otp) {
-
+async function sentVerificationEmail(email, otp) {
     try {
-        
         const transporter = nodemailer.createTransport({
-            service:'gmail',
-            port:587,
-            secure:false,
-            requireTLS:true,
-            auth:{
-                user:process.env.NODEMAILER_EMAIL,
-                pass:process.env.NODEMAILER_PASSWORD
+            service: 'gmail',
+            port: 587,
+            secure: false,
+            requireTLS: true,
+            auth: {
+                user: process.env.NODEMAILER_EMAIL,
+                pass: process.env.NODEMAILER_PASSWORD
             }
-        })
-        
+        });
+
         const info = await transporter.sendMail({
-            from:process.env.NODEMAILER_EMAIL,
-            to:email,
-            subject:"Verify your account",
-            text:`you OTP is ${otp}`,
-            html:`<b>Your OYP is: ${otp}</b>`
-        })
+            from: process.env.NODEMAILER_EMAIL,
+            to: email,
+            subject: "Verify your account",
+            text: `Your OTP is ${otp}`,
+            html: `<b>Your OTP is: ${otp}</b>`
+        });
 
-        return info.accepted.length>0
-
+        return info.accepted.length > 0;
     } catch (error) {
-        console.error('sending email',error);
+        console.error('sending email', error);
         return false;
     }
-    
 }
 
+const verifyEmailChange = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const userExist = await User.findOne({ email });
+
+        if (userExist) {
+            const otp = generateOtp();
+            const emailSent = await sentVerificationEmail(email, otp);
+            
+            if (emailSent) {
+                 req.session.userOtp = {
+                    code: otp,
+                    timestamp: Date.now()
+                };
+                req.session.email = email;
+                console.log(`OTP Generated: ${otp}`);
+                return res.redirect('/verify-email-otp');
+            } else {
+                return res.render('change-email', {
+                    user: await User.findById(req.session.user),
+                    message: "Failed to send OTP. Please try again."
+                });
+            }
+        } else {
+            return res.render('change-email', {
+                user: await User.findById(req.session.user),
+                message: "User with this email doesn't exist"
+            });
+        }
+    } catch (error) {
+        console.error('Error in verifyEmailChange:', error);
+        res.redirect('/pageNotFound');
+    }
+};
+
+const verifyEmailOtp = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        const storedOtp = req.session.userOtp;
+
+         if (!storedOtp || Date.now() - storedOtp.timestamp > 60000) {
+            return res.json({ success: false, message: 'OTP has expired' });
+        }
+
+        if (otp === storedOtp.code) {
+            req.session.verifiedForEmailChange = true;
+            return res.json({ success: true });
+        } else {
+            return res.json({ success: false, message: 'Invalid OTP' });
+        }
+    } catch (error) {
+        console.error('Error in verifyEmailOtp:', error);
+        return res.json({ success: false, message: 'Something went wrong' });
+    }
+};
+
+const updateEmail = async (req, res) => {
+    try {
+        if (!req.session.verifiedForEmailChange) {
+            return res.redirect('/changeEmail');
+        }
+
+        const newEmail = req.body.newEmail;
+        const userId = req.session.user;
+        
+        await User.findByIdAndUpdate(userId, { email: newEmail });
+        delete req.session.verifiedForEmailChange;
+        delete req.session.userOtp;
+        
+        req.session.userMsg = "Email updated successfully";
+        res.redirect('/userProfile');
+    } catch (error) {
+        console.error('Error in updateEmail:', error);
+        res.redirect('/pageNotFound');
+    }
+};
+
+const emailReOtp = async (req, res) => {
+    try {
+        const email = req.session.email;
+        if (!email) {
+            return res.json({ success: false, message: 'Session expired. Please start over.' });
+        }
+
+        const otp = generateOtp();
+        const emailSent = await sentVerificationEmail(email, otp);
+        
+        if (emailSent) {
+            req.session.userOtp = {
+                code: otp,
+                timestamp: Date.now()
+            };
+            console.log(`Resent OTP: ${otp}`);
+            return res.json({ success: true, message: 'New OTP sent successfully' });
+        } else {
+            return res.json({ success: false, message: 'Failed to send OTP' });
+        }
+    } catch (error) {
+        console.error('Error in emailReOtp:', error);
+        return res.json({ success: false, message: 'Server error' });
+    }
+};
 
 const userProfile = async (req,res)=>{
 
@@ -84,12 +181,7 @@ const userProfile = async (req,res)=>{
     }
 }
 
-
-const addProfileImage = async (req,res) => {
-
-    console.log('hai');
-
-}
+ 
 
 
 const changeEmail = async (req,res)=>{
@@ -107,113 +199,7 @@ const changeEmail = async (req,res)=>{
     }
 }
 
-
-const verifyEmailChange = async (req,res) => {
-    try {
-
-        const {email} =req.body
-
  
-        userExist = await User.findOne({email})
-
-        if(userExist){
-            const otp = generateOtp()
-            const emailSent = await sentVerificationEmail(email,otp)
-            if(emailSent){
-
-                req.session.userOtp = otp;
-                req.session.userData = req.body;
-                req.session.email = email
-                console.log(`OTP FROM EMAIL CHANGE ${otp}`);
-                res.render("ChangeEmailOtp")
-
-            }else{
-                res.json('email-error')
-            }
-           
-        }else{
-            res.render('change-email',{
-                message:"User With this email not exist"
-            })
-        }
-        
-        
-    } catch (error) {
-        
-    }
-}
-
-
-const verifyEmailOtp = async (req,res) => {
-    try {
-
-        const enteredOtp = req.body.otp
-        console.log(enteredOtp);
-        if(enteredOtp === req.session.userOtp){
-            req.session.userData = req.body.userData
-            res.render("new-email",{
-                userData:req.session.userData
-            })
-        }else{
-            res.render("ChangeEmailOtp",{
-                message:"OTP NOT MATCHING",
-                userData:req.session.userData
-            })
-        }
-        
-    } catch (error) {
-        res.redirect('/pageNotFound')
-    }
-}
-
-
-const updateEmail = async (req,res) => {
-    try {
-        
-        const newEmail = req.body.newEmail
-        const userId = req.session.user;
-        await User.findByIdAndUpdate(userId,{email:newEmail})
-        res.redirect('/userProfile')
-
-    } catch (error) {
-
-        res.redirect("/pageNotFound")
-        
-    }
-}
-
-const emailReOtp = async (req, res) => {
-    try {
-        // Get email from session or request body
-        const email = req.session.email || req.body.email;
-        
-        if (!email) {
-            return res.status(400).json({ success: false, message: 'Email not found' });
-        }
-        
-        // Generate new OTP
-        const otp = generateOtp();
-        
-        // Send email with new OTP
-        const emailSent = await sentVerificationEmail(email, otp);
-        
-        if (emailSent) {
-            // Update session with new OTP
-            req.session.userOtp = otp;
-            console.log(`Resent OTP: ${otp}`);
-            
-            return res.json({ success: true, message: 'OTP sent successfully' });
-        } else {
-            return res.json({ success: false, message: 'Failed to send email' });
-        }
-    } catch (error) {
-        console.error('Error in forPassReOtp:', error);
-        return res.status(500).json({ success: false, message: 'Server error' });
-    }
-};
-
- 
-
 const loadeditProfile = async (req,res) => {
     try {
         const userId = req.session.user
@@ -274,41 +260,7 @@ const addAddress = async (req,res) => {
 }
 
 
-
-// const postAddAddress = async (req,res) => {
-//     try {
-
-//         const userId = req.session.user
-//         const userData = await User.findOne({_id:userId})
-//         const {addressType,name,city,landMark,state,pincode,phone} = req.body
-//         console.log('1');
-//         const userAddress = await Address.findOne({userId:userData._id})
-//         if(!userAddress){
-//             const newAddress = new Address({
-//                 userId : userData._id,
-//                 address : [{addressType,name,city,landMark,state,pincode,phone}]
-//             })
-//             await newAddress.save()
-//             console.log('2');
-
-//         }else{
-//             console.log('3');
-
-//             userAddress.address.push({addressType,name,city,landMark,state,pincode,phone})
-//             await newAddress.save()
-//         }
-//         console.log('4');
-
-//         res.redirect('/address')
-
-
-//     } catch (error) {
-
-//         console.error('error from newAddress save',error)
-//         res.redirect('/pageNotFound')
-        
-//     }
-// }
+ 
 const postAddAddress = async (req, res) => {
     try {
         const userId = req.session.user
@@ -340,7 +292,7 @@ const editAddress = async (req,res) =>{
     try {
 
         const addressId = req.query.addressId
-         console.log(addressId);
+        console.log(addressId);
         const user = req.session.user
         const currentAddress = await Address.findOne({
             "address._id": addressId
@@ -441,7 +393,6 @@ const deleteAddress = async (req,res) => {
 
 module.exports = {
     userProfile,
-    addProfileImage,
     changeEmail,
     verifyEmailChange,
     verifyEmailOtp,

@@ -1,14 +1,3 @@
- 
-
-
-
-
-
-
-
-
-
-
 <%- include("../partials/user/header.ejs") %>
 <style>
   * {
@@ -365,8 +354,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
-    // Quantity buttons
-    $('.quantity-box button').click(function(e) {
+     $('.quantity-box button').click(function(e) {
       e.preventDefault();
       const productId = $(this).data('product-id');
       const action = $(this).hasClass('plus') ? 'increment' : 'decrement';
@@ -381,18 +369,15 @@
         method: 'POST',
         data: { productId, action },
         success: function(response) {
-          // Update quantity
-          const newQuantity = response.cart.items.find(item => 
+           const newQuantity = response.cart.items.find(item => 
             item.productId._id.toString() === productId
           ).quantity;
           $quantityInput.val(newQuantity);
 
-          // Update totals from response
           $('#subtotal').text(`₹${response.subtotal}`);
           $('#cart-total').text(`₹${response.total}`);
           
-          // Update discount
-          let totalDiscount = 0;
+           let totalDiscount = 0;
           response.cart.items.forEach(item => {
             totalDiscount += (item.productId.regularPrice - item.productId.salePrice) * item.quantity;
           });
@@ -425,16 +410,13 @@
         method: 'POST',
         data: { productId },
         success: function(response) {
-          // Remove the product card
-          $(`div[data-product-id="${productId}"]`).remove();
+           $(`div[data-product-id="${productId}"]`).remove();
           
-          // Update totals
-          $('#subtotal').text(`₹${response.subtotal}`);
+           $('#subtotal').text(`₹${response.subtotal}`);
           $('#cart-total').text(`₹${response.total}`);
           $('#item-count').text(response.cart.items.length);
           
-          // Update discount
-          let totalDiscount = 0;
+           let totalDiscount = 0;
           response.cart.items.forEach(item => {
             totalDiscount += (item.productId.regularPrice - item.productId.salePrice) * item.quantity;
           });
@@ -464,8 +446,7 @@
       });
     });
 
-    // Checkout
-    $('.checkout-button').click(function() {
+     $('.checkout-button').click(function() {
       if (this.disabled) return;
       $.ajax({
         url: '/cartCheckout',

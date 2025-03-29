@@ -20,36 +20,77 @@
     <link rel="stylesheet" href="/css/style.css">
 
     <style>
-      .zoom-container {
+       .zoom-container {
           position: relative;
           overflow: hidden;
+          cursor: zoom-in;
       }
 
-      .zoom-lens {
-          position: absolute;
-          width: 100px;
-          height: 100px;
-          background-color: rgba(0, 0, 0, 0.1);
-          border: 1px solid #ccc;
-          border-radius: 50%;
-          pointer-events: none;
-          display: none;
-          z-index: 1000;
+      .zoom-container img {
+          transition: transform 0.3s ease;
+          transform-origin: center center;
       }
 
-      .zoom-container:hover .zoom-lens {
-          display: block;
+      .zoom-container:hover img {
+          transform: scale(1.5);  
       }
 
-      .disabled-btn {
-        background-color: #ccc !important;
-        cursor: not-allowed;
-        pointer-events: none;
+       .add-to-cart-container {
+          margin-top: 20px;
+          padding: 10px 0;
+          clear: both;  
+          display: block !important; 
+          position: relative; 
+          z-index: 100;  
       }
 
-      .add-to-cart.loading {
-        opacity: 0.6;
-        cursor: not-allowed;
+      button.add-to-cart {
+          display: inline-block !important;
+          visibility: visible !important;  
+          opacity: 1 !important;  
+          background-color: #000000 !important;
+          color: #ffffff !important;
+          padding: 12px 24px !important;
+          border: none !important;
+          border-radius: 5px !important;
+          font-size: 16px !important;
+          font-weight: 600 !important;
+          cursor: pointer !important;
+          text-align: center !important;
+          min-width: 150px !important;
+          transition: background-color 0.3s ease !important;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+          position: relative !important;  
+          z-index: 10 !important;  
+      }
+
+      button.add-to-cart:hover {
+          background-color: #333333 !important;
+      }
+
+      button.add-to-cart.loading {
+          opacity: 0.6 !important;
+          cursor: not-allowed !important;
+      }
+
+      button.add-to-cart.disabled-btn {
+          background-color: #cccccc !important;
+          cursor: not-allowed !important;
+          pointer-events: none !important;
+      }
+
+       .product-details button.add-to-cart,
+      .product-details:hover button.add-to-cart,
+      *:hover button.add-to-cart {
+          display: inline-block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+      }
+      
+       .btn-primary, .btn-black, .add-to-cart {
+          display: inline-block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
       }
     </style>
   </head>
@@ -78,7 +119,6 @@
                     <a href="/uploads/product-images/<%=product.productImage[i]%>" class="image-popup zoom-image">
                       <img src="/uploads/product-images/<%=product.productImage[i]%>" class="img-fluid" alt="product image">
                     </a>
-                    <div class="zoom-lens"></div>
                   </div>
                 </div>
               <% } %>
@@ -141,13 +181,15 @@
                 </button>
               </span>
             </div>
-            <% if(product.quantity > 0) { %>
-              <p><button class="btn btn-black py-3 px-5 mr-2 add-to-cart" data-product-id="<%= product._id %>">Add to Cart</button></p>
-            <% } else { %>
-              <p><button class="btn btn-black py-3 px-5 mr-2 add-to-cart disabled-btn" disabled>Out of Stock</button></p>
-            <% } %>
-            <p><a href="/addWhishlist?productId=<%=product._id%>" class="btn btn-black py-3 px-5">Add to Whishist</a></p>
-            <p><a href="/cart" class="btn btn-primary py-3 px-5">Buy now</a></p>
+             <div class="add-to-cart-container" style="z-index: 1000;">
+              <% if(product.quantity > 0) { %>
+                <button type="button" id="add-to-cart"   data-product-id="<%= product._id %>" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Add to Cart</button>
+              <% } else { %>
+                <button type="button" class="add-to-cart disabled-btn" disabled style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Out of Stock</button>
+              <% } %>
+              <a href="/addWhishlist?productId=<%=product._id%>" class="btn btn-black py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Add to Wishlist</a>
+              <a href="/cart" class="btn btn-primary py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Buy now</a>
+            </div>
           </div>
         </div>
       </div>
@@ -214,125 +256,121 @@
     <script src="/js/bootstrap-datepicker.js"></script>
     <script src="/js/scrollax.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   <!-- ... Keep all other HTML the same ... -->
 
-<script>
-  $(document).ready(function(){
-    var quantitiy = 0;
-    $('.quantity-right-plus').click(function(e){
-      e.preventDefault();
-      var quantity = parseInt($('#quantity').val());
-      var max = parseInt($('#quantity').attr('max'));
-      if(quantity < max){
-        $('#quantity').val(quantity + 1);
-      }
+    <script>
+    $(document).ready(function(){
+ 
+        var quantitiy = 0;
+        $('.quantity-right-plus').click(function(e){
+            e.preventDefault();
+            var quantity = parseInt($('#quantity').val());
+            var max = parseInt($('#quantity').attr('max'));
+            if(quantity < max){
+                $('#quantity').val(quantity + 1);
+            }
+        });
+
+        $('.quantity-left-minus').click(function(e){
+            e.preventDefault();
+            var quantity = parseInt($('#quantity').val());
+            if(quantity > 1){
+                $('#quantity').val(quantity - 1);
+            }
+        });
+
+        $('.product-slider').owlCarousel({
+            loop: true,
+            margin: 10,
+            nav: true,
+            items: 1,
+            dots: true
+        });
+
+        $('.zoom-image').magnificPopup({
+            type: 'image',
+            closeOnContentClick: true,
+            mainClass: 'mfp-img-mobile',
+            image: {
+                verticalFit: true
+            },
+            zoom: {
+                enabled: true,
+                duration: 300,
+                opener: function(element) {
+                    return element.find('img');
+                }
+            }
+        });
+
+         $('#add-to-cart').click(function() {
+            if ($(this).hasClass('disabled-btn')) return;
+
+            const productId = $(this).data('product-id');
+            const quantity = parseInt($('#quantity').val());
+            const button = $(this);
+
+            button.addClass('loading').text('Adding...');
+
+            $.ajax({
+                url: '/cartAdd',
+                method: 'POST',
+                data: { productId, quantity },
+                success: function(response) {
+                    button.removeClass('loading').text('Add to Cart');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                        confirmButtonColor: '#3085d6'
+                    }).then(() => {
+                        window.location.href = response.redirect;
+                    });
+                },
+                error: function(err) {
+                    button.removeClass('loading').text('Add to Cart');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: err.responseJSON.message,
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
+        });
+
+         $('.btn-black[href^="/addWhishlist"]').click(function(e) {
+            e.preventDefault();
+            const href = $(this).attr('href');
+            const button = $(this);
+
+            button.text('Adding...').prop('disabled', true);
+
+            $.ajax({
+                url: href,
+                method: 'GET',
+                success: function(response) {
+                    button.text('Add to Wishlist').prop('disabled', false);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: response.message,
+                        confirmButtonColor: '#3085d6'
+                    }).then(() => {
+                        window.location.href = response.redirect;
+                    });
+                },
+                error: function(err) {
+                    button.text('Add to Wishlist').prop('disabled', false);
+                    Swal.fire({
+                        icon: err.status === 400 ? 'warning' : 'error',
+                        title: err.status === 400 ? 'Warning' : 'Error',
+                        text: err.responseJSON.message,
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
+        });
     });
-
-    $('.quantity-left-minus').click(function(e){
-      e.preventDefault();
-      var quantity = parseInt($('#quantity').val());
-      if(quantity > 1){
-        $('#quantity').val(quantity - 1);
-      }
-    });
-
-    $('.product-slider').owlCarousel({
-      loop: true,
-      margin: 10,
-      nav: true,
-      items: 1,
-      dots: true
-    });
-
-    $('.zoom-image').magnificPopup({
-      type: 'image',
-      closeOnContentClick: true,
-      mainClass: 'mfp-img-mobile',
-      image: {
-        verticalFit: true
-      },
-      zoom: {
-        enabled: true,
-        duration: 300,
-        opener: function(element) {
-          return element.find('img');
-        }
-      }
-    });
-
-    // Add to cart
-    $('.add-to-cart').click(function() {
-      if ($(this).hasClass('disabled-btn')) return;
-
-      const productId = $(this).data('product-id');
-      const quantity = parseInt($('#quantity').val());
-      const button = $(this);
-
-      button.addClass('loading').text('Adding...');
-
-      $.ajax({
-        url: '/cartAdd',
-        method: 'POST',
-        data: { productId, quantity },
-        success: function(response) {
-          button.removeClass('loading').text('Add to Cart');
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: response.message,
-            confirmButtonColor: '#3085d6'
-          }).then(() => {
-            window.location.href = response.redirect;
-          });
-        },
-        error: function(err) {
-          button.removeClass('loading').text('Add to Cart');
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: err.responseJSON.message,
-            confirmButtonColor: '#dc3545'
-          });
-        }
-      });
-    });
-
-    // Add to wishlist
-    $('.btn-black[href^="/addWhishlist"]').click(function(e) {
-      e.preventDefault();
-      const href = $(this).attr('href');
-      const button = $(this);
-
-      button.text('Adding...').prop('disabled', true);
-
-      $.ajax({
-        url: href,
-        method: 'GET',
-        success: function(response) {
-          button.text('Add to Wishlist').prop('disabled', false);
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: response.message,
-            confirmButtonColor: '#3085d6'
-          }).then(() => {
-            window.location.href = response.redirect;
-          });
-        },
-        error: function(err) {
-          button.text('Add to Wishlist').prop('disabled', false);
-          Swal.fire({
-            icon: err.status === 400 ? 'warning' : 'error',
-            title: err.status === 400 ? 'Warning' : 'Error',
-            text: err.responseJSON.message,
-            confirmButtonColor: '#dc3545'
-          });
-        }
-      });
-    });
-  });
-
-  // ... Keep your existing zoom functionality ...
-</script>
+    </script>
   </body>
 </html>

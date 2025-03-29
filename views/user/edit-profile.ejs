@@ -258,21 +258,7 @@
         <form action="/updateProfile" method="POST"  >
             <div class="profile-card">
                 <div class="profile-card-body">
-                    <!-- Profile Image Section -->
-                    <!-- <div class="profile-image-container">
-                        <div class="avatar-wrapper">
-                            <img src="/api/placeholder/150/150" alt="Profile" class="profile-avatar" id="profileImagePreview">
-                            <div class="avatar-edit">
-                                <i class="fas fa-camera"></i>
-                                <input type="file" name="profileImage" id="profileImageInput" accept="image/*">
-                            </div>
-                        </div>
-                        <label for="profileImageInput2" class="upload-btn">
-                            <i class="fas fa-upload"></i> Upload Profile Picture
-                            <input type="file" name="profileImage" id="profileImageInput2" accept="image/*">
-                        </label>
-                    </div> -->
-
+                    
                     <!-- Form Fields -->
                     <div class="form-group">
                         <label class="form-label" for="username">Username</label>
@@ -298,31 +284,6 @@
         <p>© 2025 Your Application. All rights reserved.</p>
     </footer>
 
-    <!-- <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Profile image preview functionality
-            const profileImageInput = document.getElementById('profileImageInput');
-            const profileImageInput2 = document.getElementById('profileImageInput2');
-            const profileImagePreview = document.getElementById('profileImagePreview');
-            
-            // Function to handle image preview
-            function handleImagePreview(input) {
-                input.addEventListener('change', function() {
-                    const file = this.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            profileImagePreview.src = e.target.result;
-                        }
-                        reader.readAsDataURL(file);
-                    }
-                });
-            }
-            
-            // Apply to both image inputs
-            handleImagePreview(profileImageInput);
-            handleImagePreview(profileImageInput2);
-        });
-    </script> -->
+    
 </body>
 </html>

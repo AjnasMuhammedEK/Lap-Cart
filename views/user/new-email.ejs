@@ -181,37 +181,6 @@
         </div>
     </div>
     
-    <!-- <script>
-        // Basic functionality for demonstration
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('newEmailForm');
-            const errorMessage = document.getElementById('errorMessage');
-            
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const newEmail = document.getElementById('newEmail').value;
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                
-                // Hide any previous error
-                errorMessage.style.display = 'none';
-                
-                // Simple validation
-                if (!emailRegex.test(newEmail)) {
-                    errorMessage.style.display = 'block';
-                    return;
-                }
-                
-                // Here you would normally send this to your backend
-                // For demo purposes, we'll redirect to a confirmation page
-                // In a real implementation, replace this with your API call and redirect logic
-                console.log('New email submitted:', newEmail);
-                alert('Email submitted: ' + newEmail + '\nIn a real application, you would be redirected to the next step.');
-                
-                // Example redirect (commented out)
-                // window.location.href = '/confirm-email-change?email=' + encodeURIComponent(newEmail);
-            });
-        });
-    </script> -->
+   
 </body>
 </html>

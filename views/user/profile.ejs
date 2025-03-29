@@ -392,17 +392,7 @@
         <%-include("../../views/partials/profile/aside")%>
 
         <div class="main-content">
-            <form action="/addProfileImage">
-                <div class="content-section">
-                    <h2>PROFILE IMAGE</h2>
-                    <div class="profile-image-container">
-                        <img src="<%=user.profileImage || '/api/placeholder/150/150'%>" alt="" class="profile-image" id="profileImagePreview">
-                        <p><%=user.name%></p>
-                    </div>
-                  
-                </div>
-                
-        </form>
+           
             
             <div class="content-section">
                 <h2>PERSONAL INFORMATION</h2>
@@ -411,8 +401,7 @@
                         <div class="form-group">
                             <label for="first-name">Name</label>
                             <h3><%=user.name%></h3>
-                            <!-- <input type="text" id="first-name" class="form-control" value="<%=user.name%>"> -->
-                        </div>
+                         </div>
                     </div>
                 </div>
                 <hr>                
@@ -422,8 +411,7 @@
                             <label for="phone">Phone</label>
                         
                             <h5><%=user.phone%></h5>
-                            <!-- <input type="tel" id="phone" class="form-control" value="<%=user.phone%>"> -->
-                        </div>
+                         </div>
                     </div>                 
                 </div>
                 <div class="form-group">
@@ -437,11 +425,9 @@
                     <div class="form-group">
                         <label for="username">Email</label>
                         <h4><%=user.email%></h4>
-                        <!-- <input type="email" id="username" class="form-control" value="<%=user.email%>" disabled> -->
-                    </div>
+                     </div>
                     
-                    <!-- <button class="edit-btn"><a href="/changeEmail">Edit</a></button> -->
-                </div>
+                 </div>
                 <div class="form-group">
                     <button class="main-btn"><a href="/changeEmail" style="text-decoration: none;">Changes Email</a></button>
                 </div>
@@ -452,10 +438,8 @@
                     <div class="form-group">
                         <label for="password">Password</label>
                         <h4>........</h4>
-                        <!-- <input type="password" id="password" class="form-control" value="********" disabled> -->
-                    </div>
-                    <!-- <button class="edit-btn">Edit</button> -->
-                </div>
+                     </div>
+                 </div>
                 
                 <div class="form-group">
                     <button class="main-btn"><a href="/forgot-password">Changes Password</a></button>
@@ -481,21 +465,7 @@ if (message.trim()) {
 
 
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileImageInput = document.getElementById('profileImageInput');
-            const profileImagePreview = document.getElementById('profileImagePreview');
-            
-            profileImageInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        profileImagePreview.src = e.target.result;
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
+
 
        
     </script>

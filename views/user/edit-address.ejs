@@ -248,8 +248,7 @@
         function ValidChecking() {
     let isValid = true;
     
-    // Address Type validation
-    const addressType = document.getElementById("addressType");
+     const addressType = document.getElementById("addressType");
     if (!addressType.value) {
         document.getElementById("error1").style.display = "block";
         document.getElementById("error1").innerHTML = "Please select an address type.";
@@ -258,8 +257,7 @@
         document.getElementById("error1").style.display = "none";
     }
     
-    // Name validation
-    const nameVal = document.getElementById("name").value.trim();
+     const nameVal = document.getElementById("name").value.trim();
     const namePattern = /^[A-Za-z\s]+$/;
     
     if (!nameVal) {
@@ -274,8 +272,7 @@
         document.getElementById("error2").style.display = "none";
     }
     
-    // City validation
-    const cityVal = document.getElementById("city").value.trim();
+     const cityVal = document.getElementById("city").value.trim();
     if (!cityVal) {
         document.getElementById("error3").style.display = "block";
         document.getElementById("error3").innerHTML = "Enter your city.";
@@ -284,8 +281,7 @@
         document.getElementById("error3").style.display = "none";
     }
     
-    // Landmark validation
-    const landmarkVal = document.getElementById("landMark").value.trim();
+     const landmarkVal = document.getElementById("landMark").value.trim();
     if (!landmarkVal) {
         document.getElementById("error4").style.display = "block";
         document.getElementById("error4").innerHTML = "Enter your landmark.";
@@ -294,8 +290,7 @@
         document.getElementById("error4").style.display = "none";
     }
     
-    // State validation
-    const stateVal = document.getElementById("state").value.trim();
+     const stateVal = document.getElementById("state").value.trim();
     if (!stateVal) {
         document.getElementById("error5").style.display = "block";
         document.getElementById("error5").innerHTML = "Enter your state.";
@@ -304,8 +299,7 @@
         document.getElementById("error5").style.display = "none";
     }
     
-    // Pincode validation
-    const pincodeVal = document.getElementById("pincode").value.trim();
+     const pincodeVal = document.getElementById("pincode").value.trim();
     if (!pincodeVal || pincodeVal.length !== 6 || isNaN(pincodeVal)) {
         document.getElementById("error6").style.display = "block";
         document.getElementById("error6").innerHTML = "Enter a valid 6-digit pincode.";
@@ -314,8 +308,7 @@
         document.getElementById("error6").style.display = "none";
     }
     
-    // Phone validation
-    const phoneVal = document.getElementById("phone").value.trim();
+     const phoneVal = document.getElementById("phone").value.trim();
     if (!phoneVal || phoneVal.length !== 10 || isNaN(phoneVal)) {
         document.getElementById("error7").style.display = "block";
         document.getElementById("error7").innerHTML = "Phone number must be exactly 10 digits.";
