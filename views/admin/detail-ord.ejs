@@ -1,0 +1,640 @@
+<%- include("../../views/partials/admin/header") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAP CART - Order Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --sidebar-width: 240px;
+            --primary-color: #8257ED;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #101022;
+            --lighter-bg: #2a2a3e;
+            --text-color: #ffffff;
+            --border-color: #3a3a4e;
+            --success-color: #00bf8e;
+            --warning-color: #f7c94b;
+            --danger-color: #f75842;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #3a3a4e;
+        }
+
+        .order-details-container {
+            background-color: var(--lighter-bg);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .order-info, .customer-info, .order-items, .return-items {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: var(--darker-bg);
+            border-radius: 8px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background-color: var(--warning-color);
+            color: #000;
+        }
+
+        .status-shipped {
+            background-color: var(--success-color);
+            color: #000;
+        }
+
+        .status-cancelled {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .table-container {
+            background-color: var(--lighter-bg);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--darker-bg);
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(130, 87, 237, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .update-btn, .cancel-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        select {
+    background-color: var(--darker-bg); /* Dark background matching the theme */
+    color: var(--text-color); /* White text for contrast */
+    border: 1px solid var(--border-color); /* Subtle border */
+    border-radius: 8px; /* Slightly rounded corners for elegance */
+    padding: 8px 12px; /* Comfortable padding */
+    font-size: 14px; /* Readable text size */
+    font-weight: 500; /* Slightly bold for a polished look */
+    cursor: pointer; /* Indicates interactivity */
+    outline: none; /* Removes default focus outline */
+    appearance: none; /* Removes default browser styling */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M8 12l-6-6h12l-6 6z'/%3E%3C/svg%3E"); /* Custom dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 12px center; /* Positions arrow on the right */
+    padding-right: 30px; /* Ensures text doesn’t overlap arrow */
+    transition: border-color 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+}
+
+select:hover {
+    border-color: var(--primary-color); /* Highlights border on hover */
+    background-color: #25253a; /* Slightly lighter background on hover */
+}
+
+select:focus {
+    border-color: var(--primary-color); /* Purple border on focus */
+    box-shadow: 0 0 5px rgba(130, 87, 237, 0.5); /* Subtle glow effect */
+}
+
+select:disabled {
+    opacity: 0.6; /* Fades out when disabled */
+    cursor: not-allowed; /* Indicates non-interactivity */
+}button {
+    background-color: var(--primary-color); /* Purple base color */
+    color: var(--text-color); /* White text */
+    border: none; /* No border for a clean look */
+    border-radius: 8px; /* Rounded corners matching select */
+    padding: 8px 16px; /* Comfortable padding */
+    font-size: 14px; /* Readable size */
+    font-weight: 500; /* Slightly bold for elegance */
+    cursor: pointer; /* Indicates interactivity */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+}
+
+button:hover {
+    background-color: #6f46c9; /* Slightly darker purple on hover */
+    transform: translateY(-1px); /* Subtle lift effect */
+}
+
+button:active {
+    transform: translateY(0); /* Reset lift on click */
+    background-color: #5e38a8; /* Even darker on click */
+}
+
+button:disabled {
+    background-color: #3a3a4e; /* Grayed out when disabled */
+    opacity: 0.6; /* Faded appearance */
+    cursor: not-allowed; /* Indicates non-interactivity */
+}.status-badge {
+    padding: 6px 12px; /* Slightly smaller padding for a compact look */
+    border-radius: 12px; /* More rounded for a pill-like shape */
+    font-size: 13px; /* Slightly smaller text for elegance */
+    font-weight: 500; /* Medium weight for clarity */
+    display: inline-block; /* Ensures proper spacing */
+    text-align: center; /* Centers text */
+    transition: background-color 0.3s ease; /* Smooth color transitions */
+}
+
+/* Status-specific styles (unchanged colors, refined design) */
+.status-pending {
+    background-color: var(--warning-color); /* Yellow */
+    color: #000; /* Black text for contrast */
+}
+
+.status-shipped {
+    background-color: var(--success-color); /* Green */
+    color: #000; /* Black text for contrast */
+}
+
+.status-cancelled {
+    background-color: var(--danger-color); /* Red */
+    color: #fff; /* White text for contrast */
+}
+
+/* Hover effect for interactivity */
+.status-badge:hover {
+    filter: brightness(1.1); /* Slight brightening on hover */
+}
+        .update-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .update-btn:hover {
+            background-color: #6f46c9;
+        }
+
+        .cancel-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background-color: #d14836;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr; /* Stack info items vertically */
+            }
+
+            .table-container {
+                overflow-x: auto; /* Horizontal scroll for tables */
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content {
+                padding: 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .order-info, .customer-info, .order-items, .return-items {
+                padding: 10px; /* Reduce padding */
+            }
+
+            th, td {
+                padding: 10px; /* Reduce table padding */
+            }
+        }
+
+        .modal {
+            color: black;
+        }
+
+        /* New Styles for Select and Buttons */
+        select {
+            background-color: var(--darker-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .accept-btn {
+            padding: 5px 10px;
+            background-color: var(--success-color);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .accept-btn:hover {
+            background-color: #009f75;
+        }
+
+        .reject-btn {
+            padding: 5px 10px;
+            background-color: var(--danger-color);
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .reject-btn:hover {
+            background-color: #d14836;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <!-- Header content from partials or custom content -->
+        </div>
+
+        <div class="content">
+            <div class="page-header">
+                <h1 class="page-title">Order Details</h1>
+            </div>
+
+            <div class="order-details-container">
+                <!-- Order Information -->
+                <div class="order-info">
+                    <h2 class="section-title">Order Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Order ID</span>
+                            <span class="info-value"><%=orderData.orderId%></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Order Date</span>
+                            <span class="info-value"><%= orderData.createdAt.toISOString().split('T')[0] %></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status</span>
+                            <input type="hidden" value="<%=orderData._id%>" name="orderId" id="orderId">
+                            <select name="status" id="statusSelect" <%=(orderData.status === "Return Requested" ||
+                            orderData.status==="Returned" || orderData.status === "Return Rejected" ||orderData.status === "Delivered" || orderData.status === "Cancelled" ) ? "disabled" : "" %>>
+                                    <% ["Pending", "Processing" , "Shipped" , "Delivered" , "Cancelled" , "Return Requested" , 
+                                   "Returned" , "Return Rejected"].forEach(option=> { %>
+                                        <option value="<%= option %>" <%=orderData.status===option ? "selected" : "" %>><%=
+                                                option %>
+                                        </option>
+                                        <% }) %>
+                                </select>
+                            <br>
+                                <button onclick="changeStatus()">Change Status</button>
+<br>
+                            <span class="info-value">
+                                <span class="status-badge status-pending"><%=orderData.status%></span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Total Amount</span>
+                            <span class="info-value"><%=orderData.finalAmount%></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Information -->
+                <div class="customer-info">
+                    <h2 class="section-title">Customer Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">User Name</span>
+                            <span class="info-value"><%=orderData.userId.name%></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value"><%=orderData.userId.email%></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Phone</span>
+                            <span class="info-value"><%=orderData.userId.phone%></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Shipping Address</span>
+                            <span class="info-value">Name: <%=orderData.address.name%></span>
+                            <span class="info-value">Phone: <%=orderData.address.phone%></span>
+                            <span class="info-value">City: <%=orderData.address.city%></span>
+                            <span class="info-value">State: <%=orderData.address.state%></span>
+                            <span class="info-value">Pin Code: <%=orderData.address.pincode%></span>
+                            <span class="info-value">Land Mark: <%=orderData.address.landmark%></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="order-items">
+                    <h2 class="section-title">Order Items</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+
+                                    <th>Product</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orderData.orderedItems.forEach(data => { %>
+                                    <% const total = data.price * data.orderQuantity %>
+                                    <tr>
+                                        <td><%=data.product.productName%></td>
+                                        <td><img src="/uploads/product-images/<%=data.product.productImage[0]%>" alt="" style="inline-size: 50px;"></td>
+                                        <td><%=data.orderQuantity %></td>
+                                        <td><%=data.price%></td>
+                                        <td><%=total%></td>
+                                        <td></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <% let  status  %>
+
+                <% orderData.orderedItems.forEach(data => { %>
+                    <% if(data.returnStatus === "Return Requested") { %>
+                        <% let  status = true; %>
+                    <% } %>
+                <% }) %>
+
+                <% if(status) { %>
+                <!-- Returned Items Section -->
+                <div class="return-items">
+                    <h2 class="section-title">Returned Items</h2>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                     <th>Return Status</th>
+                                    <th>Reason</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orderData.orderedItems.forEach(data => { %>
+                                    <% if(data.returnStatus === 'Return Requested' || data.returnStatus === 'Returned') { %>
+                                         <tr>
+                                            <td><img src="/uploads/product-images/<%=data.product.productImage[0]%>" alt="" style="inline-size: 50px;"></td>
+                                            <td><%=data.price%></td>
+                                            <td><%=data.orderQuantity %></td>
+                                             <td><%=data.returnStatus%></td>
+                                            <td><%=data.returnReason || 'N/A'%></td>
+                                            <td>
+                                                <% if(data.returnStatus === 'Return Requested') { %>
+                                                    <button class="accept-btn" onclick="handleReturn('accept', '<%=data._id%>', '<%=orderData._id%>')">Accept</button>
+                                                    <button class="reject-btn" onclick="handleReturn('reject', '<%=data._id%>', '<%=orderData._id%>')">Reject</button>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <% }else{%>
+                    <p>No Return Products</p>
+                <%} %>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+
+<%- include("../../views/partials/admin/footer") %>
+
+<script>
+   
+
+    function changeStatus() {
+        const status = document.getElementById('statusSelect').value;
+        const orderId = document.getElementById('orderId').value;
+        console.log(status, orderId);
+
+        $.ajax({
+            url: '/admin/change-status',
+            method: 'POST',
+            data: {
+                status: status,
+                orderId: orderId
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message
+                    })
+                    setTimeout(()=>{
+                        location.reload();   
+                    },1000)
+                    
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Request failed: ' + error
+                });
+            }
+        });
+    }
+
+    function handleReturn(action, itemId, orderId) {
+        console.log('Handling return:', action, itemId, orderId);
+
+        $.ajax({
+            url: '/admin/handle-return',
+            method: 'POST',
+            data: {
+                action: action,
+                itemId: itemId,
+                orderId: orderId
+            },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message,
+                        willClose: () => {
+                            location.reload(); 
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        text: response.message
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Request failed: ' + error
+                });
+            }
+        });
+    }
+</script>

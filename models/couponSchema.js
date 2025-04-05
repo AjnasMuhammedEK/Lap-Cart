@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const couponSchema = new Schema({
@@ -30,12 +30,12 @@ const couponSchema = new Schema({
     },
     userId : {
         type : Schema.Types.ObjectId,
-        ref : "User",
+        ref : 'User',
     }
-})
+});
 
 
 
 
-const Coupon = mongoose.model("Coupon",couponSchema)
-module.exports = Coupon
+const Coupon = mongoose.model('Coupon',couponSchema);
+module.exports = Coupon;

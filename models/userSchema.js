@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const {Schema} = mongoose
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
 
 const userSchema = new Schema({
@@ -44,21 +44,8 @@ const userSchema = new Schema({
         type : Boolean,
         default : false
     },
-
-    cart : [{
-        type : Schema.Types.ObjectId,
-        ref :'cart',
-    }],
-
-    wallet : [{
-        type : Schema.Types.ObjectId,
-        ref : "wishlist"
-    }],
-
-    OrderHistory:[{
-        type : Schema.Types.ObjectId,
-        // ref : "Order"
-    }],
+ 
+   
 
     // createdOn : {
     //     type : Date,
@@ -77,7 +64,7 @@ const userSchema = new Schema({
 
     redeemedUsers:[{
         type : Schema.Types.ObjectId,
-        ref : "user",
+        ref : 'user',
         // required:true
 
     }],
@@ -85,7 +72,7 @@ const userSchema = new Schema({
     searchHistory : [{
         category : {
             type : Schema.Types.ObjectId,
-            ref : "Category",
+            ref : 'Category',
         },
         brand : {
             type : String
@@ -98,7 +85,7 @@ const userSchema = new Schema({
      
 },
  { timestamps: true }
-)
+);
 
-const User = mongoose.model('User',userSchema)
+const User = mongoose.model('User',userSchema);
 module.exports = User;

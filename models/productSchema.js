@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const productSchema= new Schema({
@@ -16,7 +16,7 @@ const productSchema= new Schema({
     },
     category:{
         type:Schema.Types.ObjectId,
-        ref:"Category",
+        ref:'Category',
         required : true
     },
     regularPrice:{
@@ -78,8 +78,8 @@ const productSchema= new Schema({
     }
 
 
-},{timestamps:true})
+},{timestamps:true});
 
-const Product = mongoose.model("Product",productSchema)
+const Product = mongoose.model('Product',productSchema);
 
-module.exports = Product
+module.exports = Product;

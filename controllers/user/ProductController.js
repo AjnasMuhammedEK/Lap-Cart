@@ -1,53 +1,54 @@
-const Product = require('../../models/productSchema')
-const Category = require('../../models/categorySchema')
-const Brand = require('../../models/brandSchema')
-const User = require('../../models/userSchema')
-const { options } = require('../../routes/userRouter')
+const Product = require('../../models/productSchema');
+const Category = require('../../models/categorySchema');
+const Brand = require('../../models/brandSchema');
+const User = require('../../models/userSchema');
+const { options } = require('../../routes/userRouter');
 
 const productDetailes = async (req,res) => {
     try {
 
         console.log('1');
         
-        // const userId = req.session.user
-        // const userData = await User.findById(userId)
+        const userId = req.session.user
+        const userData = await User.findById(userId)
 
-        const productId = req.query.id
+        const productId = req.query.id;
         console.log(productId);
-        const product = await Product.findOne({_id:productId,isDeleted:false,isListed:true}).populate('category')
+        const product = await Product.findOne({_id:productId,isDeleted:false,isListed:true}).populate('category');
 
         if(!product){
-            return res.redirect('/')
+            return res.redirect('/');
         }
        
         const relatedProducts = await Product.find({
-          category: product.category._id,  
+          category: product.category._id,
+          isDeleted:false,isListed:true  ,
           _id: { $ne: productId },        
       }).limit(4);
 
-        const findCategory = product.category
+        const findCategory = product.category;
         res.render('pro-detaile',{
-            // user:userData,
+            user:userData,
             product:product,
             quantity:product.quantity,
             category:findCategory,
             relatedProducts: relatedProducts,  
-        })
+        });
 
     } catch (error) {
 
-        console.error("error for fetching product detailes ",error)
-        res.redirect('/pageNotFound')
+        console.error('error for fetching product detailes ',error);
+        res.redirect('/pageNotFound');
         
     }
-}
+};
 
 
 
 const loadShop = async (req, res) => {
   try {
       const user = req.session.user;
-      let userData = null
+      let userData = null;
       if (user) {
         userData = await User.findById(user);
         if (userData && userData.isBlocked) {
@@ -70,13 +71,13 @@ const loadShop = async (req, res) => {
 
     const query = {
         isDeleted: false,
-        // isListed:true,
+        isListed:true,
         quantity: { $gt: 0 },
         salePrice: { $gt: minPrice, $lt: maxPrice }
     };
 
     if (search) {
-        query.productName = { $regex: ".*" + search + ".*", $options: "i" };
+        query.productName = { $regex: '.*' + search + '.*', $options: 'i' };
     }
 
     if (category) {
@@ -154,4 +155,4 @@ const loadShop = async (req, res) => {
 module.exports = {
     productDetailes,
     loadShop,
-}
+};

@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const {Schema} = mongoose
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
 const brandSchema = new Schema({
 
@@ -31,8 +31,8 @@ const brandSchema = new Schema({
         type:Boolean,
         default:false
     }
-})
+});
 
 
-const Brand = mongoose.model("Brand",brandSchema)
-module.exports = Brand 
+const Brand = mongoose.model('Brand',brandSchema);
+module.exports = Brand; 

@@ -1,27 +1,27 @@
-const Product = require('../../models/productSchema')
-const Category = require('../../models/categorySchema')
-const Brand = require('../../models/brandSchema')
-const User = require('../../models/userSchema')
-const fs = require('fs')
-const path = require('path')
-const sharp = require('sharp')
+const Product = require('../../models/productSchema');
+const Category = require('../../models/categorySchema');
+const Brand = require('../../models/brandSchema');
+const User = require('../../models/userSchema');
+const fs = require('fs');
+const path = require('path');
+const sharp = require('sharp');
 
 
 const loadProduct = async (req,res)=>{
 
     try {
         
-        const search = req.query.search || ""
-        const page = req.query.page || 1
-        const limit = 4
+        const search = req.query.search || '';
+        const page = req.query.page || 1;
+        const limit = 4;
 
         const productData = await Product.find({
             $and:[
                 {isDeleted:false},
                 {
                     $or:[
-                        {productName:{$regex:new RegExp(".*"+search+".*","i")}},
-                        {brand:{$regex:new RegExp(".*"+search+".*","i")}},
+                        {productName:{$regex:new RegExp('.*'+search+'.*','i')}},
+                        {brand:{$regex:new RegExp('.*'+search+'.*','i')}},
                     ],
 
                 }
@@ -30,18 +30,18 @@ const loadProduct = async (req,res)=>{
         }).limit(limit*1)
           .skip((page-1)*limit)
           .populate('category')
-          .exec()
+          .exec();
 
           const count = await Product.find({
             $or:[
-                {productName:{$regex:new RegExp(".*"+search+".*","i")}},
-                {brand:{$regex:new RegExp(".*"+search+".*","i")}}
+                {productName:{$regex:new RegExp('.*'+search+'.*','i')}},
+                {brand:{$regex:new RegExp('.*'+search+'.*','i')}}
             ],
-          }).countDocuments()
+          }).countDocuments();
          
 
-          const category = await Category.find({isListed:true,isDeleted:false})
-          const brand = await Brand.find({isListed:true,isDeleted:false})
+          const category = await Category.find({isListed:true,isDeleted:false});
+          const brand = await Brand.find({isListed:true,isDeleted:false});
 
         //   console.log(productData);
 
@@ -53,41 +53,41 @@ const loadProduct = async (req,res)=>{
                 totalPages:Math.ceil(count/limit),
                 cat:category,
                 brand:brand
-            })
+            });
           }else{
-            res.render('page-404')
+            res.render('page-404');
           }
 
 
     } catch (error) {
-        res.redirect('/admin/pageerror')
+        res.redirect('/admin/pageerror');
     }
 
     
-}
+};
 
 
 const loadAddProduct = async (req,res)=>{
     try {
 
-        const category = await Category.find({isListed:true,isDeleted:false})
+        const category = await Category.find({isListed:true,isDeleted:false});
         
-        const brand = await Brand.find({isListed:true,isDeleted:false})
+        const brand = await Brand.find({isListed:true,isDeleted:false});
         
         // const status = await Product.find({})
         // console.log(status)
         
-        res.render("product-add",{
+        res.render('product-add',{
             cat:category,
             brand:brand
-        })
+        });
         
     } catch (error) {
 
-        res.redirect('/pageerror')
+        res.redirect('/pageerror');
         
     }
-}
+};
 
 
 
@@ -95,23 +95,23 @@ const loadeditProduct = async(req,res)=>{
     try {
         const id = req.query.id;
         const product = await Product.findOne({_id:id});
-        const category = await Category.find({isListed:true,isDeleted:false})
-        const brand = await Brand.find({isListed:true,isDeleted:false})
-        res.render("edit-product",{
+        const category = await Category.find({isListed:true,isDeleted:false});
+        const brand = await Brand.find({isListed:true,isDeleted:false});
+        res.render('edit-product',{
             product:product,
             cat:category,
             brand:brand
-        })
+        });
     } catch (error) {
-        res.redirect('/admin/pageerror')
+        res.redirect('/admin/pageerror');
     }
-}
+};
 
 
 const deleteProduct = async (req,res) =>{
     try {
 
-        const {productId} = req.body
+        const {productId} = req.body;
         console.log('1');
         console.log(productId);
       
@@ -123,14 +123,14 @@ const deleteProduct = async (req,res) =>{
 
         
         
-        console.log('2')
-        res.redirect("/admin/product")
-        console.log('3')
+        console.log('2');
+        res.redirect('/admin/product');
+        console.log('3');
         
     } catch (error) {
         
     }
-}
+};
 
 
 const ensureDirectoryExists = (dir) => {
@@ -149,7 +149,7 @@ const addProduct = async (req, res) => {
         const productExists = await Product.findOne({ productName: product.productName });
         
         if (productExists) {
-            return res.status(400).json({ error: "Product already exists" });
+            return res.status(400).json({ error: 'Product already exists' });
         }
         
         const images = [];
@@ -182,7 +182,7 @@ const addProduct = async (req, res) => {
         
         const categoryId = await Category.findOne({ name: product.category });
         if (!categoryId) {
-            return res.status(400).json({ error: "Invalid category name" });
+            return res.status(400).json({ error: 'Invalid category name' });
         }
         
         const newProduct = new Product({
@@ -205,7 +205,7 @@ const addProduct = async (req, res) => {
         await newProduct.save();
         return res.redirect('/admin/product');
     } catch (error) {
-        console.error("Error saving product:", error);
+        console.error('Error saving product:', error);
         return res.status(500).json({ error: error.message });
     }
 };
@@ -223,7 +223,7 @@ const editProduct = async (req, res) => {
         });
         
         if (existingProduct) {
-            return res.status(400).json({ error: "Product with this name already exists." });
+            return res.status(400).json({ error: 'Product with this name already exists.' });
         }
         
         const existingImages = Array.isArray(product.productImage) ? product.productImage : [];
@@ -241,7 +241,7 @@ const editProduct = async (req, res) => {
                     const position = imagePositions[i] !== undefined ? imagePositions[i] : i;
                     
                     const filename = `cropped-image-${Date.now()}-${i}.jpg`;
-                    const base64Data = croppedImage.replace(/^data:image\/\w+;base64,/, "");
+                    const base64Data = croppedImage.replace(/^data:image\/\w+;base64,/, '');
                     
                     fs.writeFileSync(path.join(productImagesDir, filename), Buffer.from(base64Data, 'base64'));
                     
@@ -296,7 +296,7 @@ const editProduct = async (req, res) => {
         console.error(error);
         res.redirect('/admin/pageerror');
     }
-}
+};
 
 
 
@@ -309,31 +309,31 @@ const getListProduct = async (req,res) => {
        
 
 
-        let id = req.query.id
+        let id = req.query.id;
         console.log(id);
-        await Product.updateOne({_id:id},{$set:{isListed:false}})
-        res.redirect('/admin/product')
+        await Product.updateOne({_id:id},{$set:{isListed:false}});
+        res.redirect('/admin/product');
         
     } catch (error) {
         console.log('error from listproduct');
-        res.redirect('/pageerror')
+        res.redirect('/pageerror');
     }
-}
+};
 
 
 const getunListProduct = async (req,res) => {
     try {
 
         console.log('getunListProduct');
-        let id = req.query.id
+        let id = req.query.id;
         console.log(`id = ${id}`);
-        await Product.updateOne({_id:id},{$set:{isListed:true}})
-        res.redirect('/admin/product')
+        await Product.updateOne({_id:id},{$set:{isListed:true}});
+        res.redirect('/admin/product');
         
     } catch (error) {
-        res.redirect('/pageerror')
+        res.redirect('/pageerror');
     }
-}
+};
 
 module.exports = {
     loadProduct,
@@ -344,4 +344,4 @@ module.exports = {
     deleteProduct,
     getListProduct,
     getunListProduct
-}
+};

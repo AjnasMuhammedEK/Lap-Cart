@@ -1,0 +1,276 @@
+<%-include("../../views/partials/user/header")%>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ 
+<style>
+    .page-content {
+        display: flex;
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    /* Address management styles */
+    .addr-container {
+        flex: 1;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-top: 40px;
+    }
+    .addr-heading {
+        color: #333;
+        margin-top: 0;
+    }
+    .addr-form-section {
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .addr-form-row {
+        display: flex;
+        flex-wrap: wrap;
+        margin-bottom: 15px;
+    }
+    .addr-form-group {
+        margin-right: 20px;
+        margin-bottom: 15px;
+        min-width: 200px;
+        flex: 1;
+    }
+    .addr-label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    .addr-input, .addr-select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .addr-button {
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: all 0.3s ease;
+    }
+    .addr-button:hover {
+        background-color: #0b7dda;
+    }
+    .addr-button-cancel {
+        background-color: #f44336;
+    }
+    .addr-button-cancel:hover {
+        background-color: #d32f2f;
+    }
+    
+    /* Enhanced Table Styles */
+    .addr-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background-color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        border-radius: 8px;
+        overflow: hidden;
+        table-layout: auto; /* Changed from fixed to auto for better column sizing */
+    }
+
+    .addr-th {
+        background-color: #2196F3;
+        color: white;
+        padding: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        white-space: nowrap; /* Prevents header text from wrapping */
+    }
+
+    .addr-td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        color: #333;
+        transition: background-color 0.2s ease;
+        word-wrap: break-word; /* Allows long content to wrap */
+        max-width: 150px; /* Limits column width */
+    }
+
+    .addr-tr {
+        transition: all 0.2s ease;
+    }
+
+    .addr-tr:hover {
+        background-color: #f8f9fa;
+        transform: translateY(-1px);
+    }
+
+    .addr-tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+
+    .addr-td:first-child {
+        font-weight: 500;
+    }
+
+    /* Enhanced Action Buttons Styles */
+    .addr-action-btns {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+    }
+
+    .addr-button-edit, .addr-button-delete {
+        padding: 6px 12px;
+        font-size: 14px;
+        border-radius: 4px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .addr-button-edit {
+        background-color: #4CAF50;
+    }
+
+    .addr-button-edit:hover {
+        background-color: #45a049;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .addr-button-delete {
+        background-color: #f44336;
+    }
+
+    .addr-button-delete:hover {
+        background-color: #d32f2f;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .addr-hidden {
+        display: none;
+    }
+    .addr-add-btn {
+        margin-bottom: 20px;
+    }
+
+    /* Improved Responsive Design */
+    @media (max-width: 768px) {
+        .page-content {
+            flex-direction: column;
+        }
+        .aside-wrapper {
+            width: 100%;
+        }
+        .addr-table {
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+            white-space: nowrap; /* Prevents wrapping on small screens */
+        }
+        .addr-th, .addr-td {
+            min-width: 100px; /* Reduced min-width for better mobile fit */
+            padding: 10px; /* Reduced padding on mobile */
+        }
+        .addr-action-btns {
+            flex-direction: column; /* Stack buttons vertically on small screens */
+            gap: 5px;
+        }
+        .addr-button-edit, .addr-button-delete {
+            padding: 5px 8px; /* Smaller buttons on mobile */
+            font-size: 12px;
+        }
+    }
+
+    @keyframes tableFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .addr-table tbody tr {
+        animation: tableFadeIn 0.3s ease-in;
+    }
+
+    .addr-th:before {
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        margin-right: 8px;
+        opacity: 0.8;
+    }
+
+    .aside-wrapper {
+        flex: 0 0 200px;
+        background-color: white;
+        border-radius: 8px;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        position: relative;
+        height: fit-content;
+        margin-top: 40px;
+    }
+</style>
+
+<div class="page-content">
+    <%-include("../../views/partials/profile/aside")%>
+
+    <div class="addr-container">
+         
+         
+        
+        
+        <div id="addr-list">
+            <h2>Your Orders</h2>
+                 <table id="addrTable" class="addr-table">
+                    <thead>
+                        <tr class="addr-tr">
+                            <th class="addr-th">Order Id</th>
+                            <th class="addr-th">Date</th>
+                            <th class="addr-th">Status</th>
+                            <th class="addr-th">Actions</th>
+                        </tr>
+                    </thead>
+
+                       
+                    <tbody id="addrTableBody">
+                        <%orderData.forEach(data => {%>
+ 
+                             <tr class="addr-tr">
+                                <td class="addr-td"><%=data.orderId%></td>
+                                 <td class="addr-td"><%=data.status%></td>  
+                                 <td class="addr-td"><%=data.createdAt.toISOString().split('T')[0]%></td>  
+
+                                 <td>
+                                    <a href="/ord-detailes?orderId=<%=data._id%>"><button class="addr-button addr-button-edit">View Details</button></a>          
+                                </td>
+                            </tr>
+                            
+                         <%})%>
+                     </tbody>
+                </table>
+          </div>
+    </div>
+</div>
+
+<%-include("../../views/partials/user/footer")%>

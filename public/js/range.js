@@ -1,11 +1,11 @@
 (function() {
 
-  var parent = document.querySelector(".range-slider");
+  var parent = document.querySelector('.range-slider');
   if(!parent) return;
 
   var
-    rangeS = parent.querySelectorAll("input[type=range]"),
-    numberS = parent.querySelectorAll("input[type=number]");
+    rangeS = parent.querySelectorAll('input[type=range]'),
+    numberS = parent.querySelectorAll('input[type=number]');
 
   rangeS.forEach(function(el) {
     el.oninput = function() {
@@ -21,7 +21,7 @@
 
       numberS[0].value = slide1;
       numberS[1].value = slide2;
-    }
+    };
   });
 
   numberS.forEach(function(el) {
@@ -38,7 +38,7 @@
       rangeS[0].value = number1;
       rangeS[1].value = number2;
 
-    }
+    };
   });
 
 })();

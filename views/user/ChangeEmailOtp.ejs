@@ -94,7 +94,7 @@
             const $resendLink = $('#resendLink');
             const $otpInput = $('#otpInput');
             const $form = $('#otpForm');
-            let timeLeft = 60; // 60 seconds
+            let timeLeft = 60; 
             let timerId;
 
             function startTimer() {
@@ -125,11 +125,9 @@
                 }, 1000);
             }
 
-            // Start timer on page load
-            startTimer();
+             startTimer();
 
-            // Handle OTP verification
-            $form.on('submit', function(e) {
+             $form.on('submit', function(e) {
                 e.preventDefault();
                 const otp = $otpInput.val();
 
@@ -176,8 +174,7 @@
                 });
             });
 
-            // Handle OTP resend
-            $resendLink.on('click', function(e) {
+             $resendLink.on('click', function(e) {
                 e.preventDefault();
                 
                 if (timeLeft > 0) {

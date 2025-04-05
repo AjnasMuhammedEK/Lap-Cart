@@ -5,7 +5,7 @@
 
 (function($) {
 
-	"use strict";
+	'use strict';
 
 	var isMobile = {
 		Android: function() {
@@ -72,7 +72,7 @@
 	    nav:false,
 	    autoplayHoverPause: false,
 	    items: 1,
-	    navText : ["<span class='ion-md-arrow-back'></span>","<span class='ion-chevron-right'></span>"],
+	    navText : ['<span class=\'ion-md-arrow-back\'></span>','<span class=\'ion-chevron-right\'></span>'],
 	    responsive:{
 	      0:{
 	        items:1
@@ -181,7 +181,7 @@
 
 			if( direction === 'down' && !$(this.element).hasClass('ftco-animated') ) {
 
-				var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',')
+				var comma_separator_number_step = $.animateNumber.numberStepFactories.separator(',');
 				$('.number').each(function(){
 					var $this = $(this),
 						num = $this.data('number');
@@ -198,7 +198,7 @@
 
 		} , { offset: '95%' } );
 
-	}
+	};
 	counter();
 
 	var contentWayPoint = function() {
@@ -240,7 +240,7 @@
 
 	// navigation
 	var OnePageNav = function() {
-		$(".smoothscroll[href^='#'], #ftco-nav ul li a[href^='#']").on('click', function(e) {
+		$('.smoothscroll[href^=\'#\'], #ftco-nav ul li a[href^=\'#\']').on('click', function(e) {
 		 	e.preventDefault();
 
 		 	var hash = this.hash,
@@ -258,7 +258,7 @@
 		});
 		$('body').on('activate.bs.scrollspy', function () {
 		  console.log('nice');
-		})
+		});
 	};
 	OnePageNav();
 
@@ -313,7 +313,7 @@
 
 	function makeTimer() {
 
-		var endTime = new Date("21 December 2019 9:56:00 GMT+01:00");			
+		var endTime = new Date('21 December 2019 9:56:00 GMT+01:00');			
 		endTime = (Date.parse(endTime) / 1000);
 
 		var now = new Date();
@@ -326,14 +326,14 @@
 		var minutes = Math.floor((timeLeft - (days * 86400) - (hours * 3600 )) / 60);
 		var seconds = Math.floor((timeLeft - (days * 86400) - (hours * 3600) - (minutes * 60)));
 
-		if (hours < "10") { hours = "0" + hours; }
-		if (minutes < "10") { minutes = "0" + minutes; }
-		if (seconds < "10") { seconds = "0" + seconds; }
+		if (hours < '10') { hours = '0' + hours; }
+		if (minutes < '10') { minutes = '0' + minutes; }
+		if (seconds < '10') { seconds = '0' + seconds; }
 
-		$("#days").html(days + "<span>Days</span>");
-		$("#hours").html(hours + "<span>Hours</span>");
-		$("#minutes").html(minutes + "<span>Minutes</span>");
-		$("#seconds").html(seconds + "<span>Seconds</span>");		
+		$('#days').html(days + '<span>Days</span>');
+		$('#hours').html(hours + '<span>Hours</span>');
+		$('#minutes').html(minutes + '<span>Minutes</span>');
+		$('#seconds').html(seconds + '<span>Seconds</span>');		
 
 }
 

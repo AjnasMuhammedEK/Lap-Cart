@@ -943,7 +943,7 @@
 								else if (this.component)
 									element = this.element.find('input');
 								if (element)
-									element.val("").change();
+									element.val('').change();
 								this.update();
 								this._trigger('changeDate');
 								if (this.o.autoclose)
@@ -1402,7 +1402,7 @@
 		minViewMode: 0,
 		multidate: false,
 		multidateSeparator: ',',
-		orientation: "auto",
+		orientation: 'auto',
 		rtl: false,
 		startDate: -Infinity,
 		startView: 0,
@@ -1418,13 +1418,13 @@
 	$.fn.datepicker.Constructor = Datepicker;
 	var dates = $.fn.datepicker.dates = {
 		en: {
-			days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-			daysShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-			daysMin: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-			months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-			monthsShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-			today: "Today",
-			clear: "Clear"
+			days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+			daysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+			daysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+			months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+			monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+			today: 'Today',
+			clear: 'Clear'
 		}
 	};
 
@@ -1459,7 +1459,7 @@
 			var separators = format.replace(this.validParts, '\0').split('\0'),
 				parts = format.match(this.validParts);
 			if (!separators || !separators.length || !parts || parts.length === 0){
-				throw new Error("Invalid date format.");
+				throw new Error('Invalid date format.');
 			}
 			return {separators: separators, parts: parts};
 		},

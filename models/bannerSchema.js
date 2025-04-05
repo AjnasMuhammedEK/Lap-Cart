@@ -1,4 +1,4 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const bannerSchema = new Schema({
@@ -25,9 +25,9 @@ const bannerSchema = new Schema({
         type:Date,
         required:true
     }
-})
+});
 
-const Banner = mongoose.model("Banner",bannerSchema)
-module.exports = Banner
+const Banner = mongoose.model('Banner',bannerSchema);
+module.exports = Banner;
 
 

@@ -1,145 +1,151 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Success | Lapcart</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
-            font-family: 'Poppins', sans-serif;
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .success-container {
-            max-width: 600px;
-            padding: 40px;
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .success-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-        }
-        
-        .logo {
-            margin-bottom: 30px;
-            font-weight: 700;
-            font-size: 2.5rem;
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
-        
-        .success-icon {
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            color: white;
-            border-radius: 50%;
-            width: 90px;
-            height: 90px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin: 0 auto 25px;
-            box-shadow: 0 10px 20px rgba(71, 118, 230, 0.3);
-        }
-        
-        .thank-you-message {
-            color: #333;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-        
-        .order-id {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 25px 0;
-            font-size: 1.1rem;
-            border: 1px dashed #e0e0e0;
-        }
-        
-        .order-id-value {
-            font-weight: 600;
-            color: #4776E6;
-            font-size: 1.2rem;
-            margin-top: 5px;
-        }
-        
-        .btn-shop {
-            background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
-            border: none;
-            padding: 12px 35px;
-            font-weight: 500;
-            border-radius: 30px;
-            box-shadow: 0 8px 15px rgba(71, 118, 230, 0.2);
-            transition: all 0.3s ease;
-            margin-top: 15px;
-        }
-        
-        .btn-shop:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 20px rgba(71, 118, 230, 0.4);
-        }
-        
-        .message-text {
-            color: #666;
-            line-height: 1.6;
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f0f;
-            opacity: 0;
-        }
-    </style>
-</head>
-<body>
-    <div class="success-container">
-        <div class="logo">LapCart</div>
-        
-        <div class="success-icon">
-            <i class="fas fa-check"></i>
+<%-include("../../views/partials/user/header")%>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    /* Ensure Google Fonts loads, with fallbacks */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+    /* Reset default styles to avoid conflicts */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Isolate the page content */
+    .order-success-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(120deg, #e0f7fa 0%, #b2ebf2 100%) !important;
+        font-family: 'Inter', 'Arial', sans-serif !important;
+        padding: 20px;
+    }
+
+    /* Ensure container styles apply with high specificity */
+    .order-success-wrapper .purchase-confirmation {
+        max-width: 550px;
+        width: 100%;
+        padding: 35px;
+        background: white !important;
+        border-radius: 20px !important;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1) !important;
+        text-align: center;
+        position: relative;
+        border-top: 4px solid #00acc1 !important;
+        margin-top: 20px;
+    }
+
+    .order-success-wrapper .brand-title {
+        font-size: 2.2rem !important;
+        font-weight: 700 !important;
+        color: #00acc1 !important;
+        margin-bottom: 25px !important;
+        letter-spacing: -0.5px !important;
+    }
+
+    .order-success-wrapper .check-circle {
+        width: 80px !important;
+        height: 80px !important;
+        background: #00acc1 !important;
+        color: white !important;
+        border-radius: 50% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 36px !important;
+        margin: 0 auto 20px !important;
+        box-shadow: 0 5px 15px rgba(0, 172, 193, 0.3) !important;
+    }
+
+    .order-success-wrapper .gratitude-text {
+        color: #263238 !important;
+        font-size: 1.7rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 15px !important;
+    }
+
+    .order-success-wrapper .confirmation-note {
+        color: #546e7a !important;
+        font-size: 0.95rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 25px !important;
+    }
+
+    .order-success-wrapper .order-details {
+        background: #f5f6f5 !important;
+        padding: 15px 25px !important;
+        border-radius: 10px !important;
+        margin: 20px 0 !important;
+        border: 2px solid #e0f7fa !important;
+    }
+
+    .order-success-wrapper .order-ref {
+        font-weight: 600 !important;
+        color: #00acc1 !important;
+        font-size: 1.15rem !important;
+        margin-top: 8px !important;
+    }
+
+    .order-success-wrapper .shop-more-btn {
+        background: #00acc1 !important;
+        border: none !important;
+        padding: 12px 40px !important;
+        color: white !important;
+        font-weight: 500 !important;
+        border-radius: 50px !important;
+        text-decoration: none !important;
+        display: inline-block !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 5px 15px rgba(0, 172, 193, 0.2) !important;
+    }
+
+    .order-success-wrapper .shop-more-btn:hover {
+        background: #00838f !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(0, 172, 193, 0.3) !important;
+    }
+
+    .order-success-wrapper .decorative-dot {
+        position: absolute !important;
+        width: 12px !important;
+        height: 12px !important;
+        background: #00acc1 !important;
+        border-radius: 50% !important;
+        opacity: 0.2 !important;
+    }
+
+    .order-success-wrapper .dot-1 { top: 10% !important; left: 10% !important; }
+    .order-success-wrapper .dot-2 { bottom: 15% !important; right: 15% !important; }
+    .order-success-wrapper .dot-3 { top: 50% !important; left: 5% !important; }
+</style>
+<div class="order-success-wrapper">
+        <div class="purchase-confirmation">
+            <div class="brand-title">LapCart</div>
+            
+            <div class="check-circle">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h1 class="gratitude-text">Order Confirmed!</h1>
+            
+            <p class="confirmation-note">Thank you for shopping with us! Your laptop order is confirmed and will be on its way soon.</p>
+            
+            <div class="order-details">
+                <span>Order Reference</span>
+                <div class="order-ref"><%= order.orderId %></div>
+            </div>
+            
+            <a href="/shop" class="shop-more-btn">
+                <i class="fas fa-laptop me-2"></i>Shop More
+            </a>
+            
+            <div class="decorative-dot dot-1"></div>
+            <div class="decorative-dot dot-2"></div>
+            <div class="decorative-dot dot-3"></div>
         </div>
-        
-        <h1 class="thank-you-message">Thank You for Your Purchase!</h1>
-        
-        <p class="message-text">Your order has been successfully placed. We're preparing your new laptop with care and will ship it as soon as possible.</p>
-        
-        <div class="order-id">
-            <span>Order Reference</span>
-            <div class="order-id-value"><%= order.orderId %></div>
-        </div>
-        
-         
-        <a href="/shop" class="btn btn-primary btn-lg btn-shop">
-            <i class="fas fa-laptop me-2"></i>Continue Shopping
-        </a>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-</body>
-</html>
+    <%-include("../../views/partials/user/footer")%>

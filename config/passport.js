@@ -8,7 +8,7 @@ const env = require('dotenv').config();
 passport.use(new GoogleStrategy({
     clientID:process.env.GOOGLE_CLIENT_ID,
     clientSecret:process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL:"/auth/google/callback"
+    callbackURL:'/auth/google/callback'
 },
 
 
@@ -39,21 +39,21 @@ async (accessToken, refreshToken, profile, done) => {
     }
 }
 
-))
+));
 
 passport.serializeUser((user,done)=>{
-    done(null,user.id)
-})
+    done(null,user.id);
+});
 
 passport.deserializeUser((id,done)=>{
     User.findById(id)
     .then(user=>{
-        done(null,user)
+        done(null,user);
     })
     .catch(err =>{
-        done(err,null)
-    })
-})
+        done(err,null);
+    });
+});
 
 
 module.exports = passport;

@@ -1,16 +1,16 @@
-const User = require('../../models/userSchema')
-const Category = require('../../models/categorySchema')
-const Product = require('../../models/productSchema')
-const Address = require('../../models/addressSchema') 
-const nodemailer = require('nodemailer')
-const env = require("dotenv").config()
-const bcrypt = require('bcrypt')
+const User = require('../../models/userSchema');
+const Category = require('../../models/categorySchema');
+const Product = require('../../models/productSchema');
+const Address = require('../../models/addressSchema'); 
+const nodemailer = require('nodemailer');
+const env = require('dotenv').config();
+const bcrypt = require('bcrypt');
 
 
 
 
 function generateOtp(){
-    return Math.floor(100000 + Math.random()*900000).toString()
+    return Math.floor(100000 + Math.random()*900000).toString();
 }
 async function sentVerificationEmail(email, otp) {
     try {
@@ -28,7 +28,7 @@ async function sentVerificationEmail(email, otp) {
         const info = await transporter.sendMail({
             from: process.env.NODEMAILER_EMAIL,
             to: email,
-            subject: "Verify your account",
+            subject: 'Verify your account',
             text: `Your OTP is ${otp}`,
             html: `<b>Your OTP is: ${otp}</b>`
         });
@@ -60,13 +60,13 @@ const verifyEmailChange = async (req, res) => {
             } else {
                 return res.render('change-email', {
                     user: await User.findById(req.session.user),
-                    message: "Failed to send OTP. Please try again."
+                    message: 'Failed to send OTP. Please try again.'
                 });
             }
         } else {
             return res.render('change-email', {
                 user: await User.findById(req.session.user),
-                message: "User with this email doesn't exist"
+                message: 'User with this email doesn\'t exist'
             });
         }
     } catch (error) {
@@ -74,6 +74,15 @@ const verifyEmailChange = async (req, res) => {
         res.redirect('/pageNotFound');
     }
 };
+
+
+
+const loadEmailOtp =  (req, res) => {
+    if (!req.session.userOtp) {
+        return res.redirect('/changeEmail');
+    }
+    res.render('ChangeEmailOtp');
+}
 
 const verifyEmailOtp = async (req, res) => {
     try {
@@ -96,6 +105,16 @@ const verifyEmailOtp = async (req, res) => {
     }
 };
 
+
+
+const newEmail =  (req, res) => {
+    if (!req.session.verifiedForEmailChange) {
+        return res.redirect('/changeEmail');
+    }
+    const userId = req.session.user;
+    res.render('new-email', { user: { _id: userId } });  
+}
+
 const updateEmail = async (req, res) => {
     try {
         if (!req.session.verifiedForEmailChange) {
@@ -109,7 +128,7 @@ const updateEmail = async (req, res) => {
         delete req.session.verifiedForEmailChange;
         delete req.session.userOtp;
         
-        req.session.userMsg = "Email updated successfully";
+        req.session.userMsg = 'Email updated successfully';
         res.redirect('/userProfile');
     } catch (error) {
         console.error('Error in updateEmail:', error);
@@ -150,36 +169,36 @@ const userProfile = async (req,res)=>{
         let msg ;
 
         if(req.session.userMsg){
-            msg = req.session.userMsg
-            req.session.userMsg = null
+            msg = req.session.userMsg;
+            req.session.userMsg = null;
         }
 
-        const userId = req.session.user
+        const userId = req.session.user;
         const userData = await User.findById(userId);
-        const addressData = await  Address.findOne({userId:userId})
+        const addressData = await  Address.findOne({userId:userId});
         if(msg){
            return res.render('profile',{
                 user:userData,
                 userAddress:addressData,
                 msg:msg
-            })
+            });
 
         } 
             res.render('profile',{
                 user:userData,
                 userAddress:addressData,
                 msg:msg
-            })
+            });
        
        
         
     } catch (error) {
 
         console.error('error for profile data',error);
-        res.redirect('/pageNotFound')
+        res.redirect('/pageNotFound');
         
     }
-}
+};
 
  
 
@@ -187,53 +206,53 @@ const userProfile = async (req,res)=>{
 const changeEmail = async (req,res)=>{
     try {
 
-        const userId = req.session.user
+        const userId = req.session.user;
         const userData = await User.findById(userId);
 
         res.render('change-email',{
             user:userData
-        })
+        });
         
     } catch (error) {
-        res.redirect("/pageNotFound")
+        res.redirect('/pageNotFound');
     }
-}
+};
 
  
 const loadeditProfile = async (req,res) => {
     try {
-        const userId = req.session.user
+        const userId = req.session.user;
         console.log(userId);
-        const userData = await User.findById(userId)
+        const userData = await User.findById(userId);
         console.log(userData);
         res.render('edit-profile',{
             user:userData
-        })
+        });
         
     } catch (error) {
         
     }
-}
+};
 
 const updateProfile = async (req,res) => {
     try {
 
-        const userId = req.session.user
-        const {username,phone} = req.body
-        const updateUser = await User.findByIdAndUpdate(userId,{name:username,phone:phone})
+        const userId = req.session.user;
+        const {username,phone} = req.body;
+        const updateUser = await User.findByIdAndUpdate(userId,{name:username,phone:phone});
 
-        req.session.userMsg = "Updated Successfully"
+        req.session.userMsg = 'Updated Successfully';
 
-        res.redirect('/userProfile')
+        res.redirect('/userProfile');
     } catch (error) {
         
     }
-}
+};
 const loadAddress = async (req, res) => {
     try {
        
             const userId = req.session.user;
-            const userData = await User.findById(userId)
+            const userData = await User.findById(userId);
 
             const userAddress = await Address.findOne({ userId: userId });
             res.render('address', {
@@ -250,76 +269,76 @@ const loadAddress = async (req, res) => {
 const addAddress = async (req,res) => {
     try {
 
-        const user = req.session.user
+        const user = req.session.user;
         
-        res.render("add-address",{user:user})
+        res.render('add-address',{user:user});
         
     } catch (error) {
         
     }
-}
+};
 
 
  
 const postAddAddress = async (req, res) => {
     try {
-        const userId = req.session.user
-        const userData = await User.findOne({_id: userId})
-        const {addressType, name, city, landMark, state, pincode, phone} = req.body
+        const userId = req.session.user;
+        const userData = await User.findOne({_id: userId});
+        const {addressType, name, city, landMark, state, pincode, phone} = req.body;
          
-        const userAddress = await Address.findOne({userId: userData._id})
+        const userAddress = await Address.findOne({userId: userData._id});
         
         if (!userAddress) {
             const newAddress = new Address({
                 userId: userData._id,
                 address: [{addressType, name, city, landMark, state, pincode, phone}]
-            })
-            await newAddress.save()
+            });
+            await newAddress.save();
          } else {
-             userAddress.address.push({addressType, name, city, landMark, state, pincode, phone})
-            await userAddress.save()   
+             userAddress.address.push({addressType, name, city, landMark, state, pincode, phone});
+            await userAddress.save();   
         }
         console.log('4');
 
-        res.redirect('/address')
+        res.redirect('/address');
     } catch (error) {
-        console.error('error from newAddress save', error)
-        res.redirect('/pageNotFound')
+        console.error('error from newAddress save', error);
+        res.redirect('/pageNotFound');
     }
-}
+};
 
 const editAddress = async (req,res) =>{
     try {
 
-        const addressId = req.query.addressId
+        const addressId = req.query.addressId;
         console.log(addressId);
-        const user = req.session.user
+        const user = req.session.user;
         const currentAddress = await Address.findOne({
-            "address._id": addressId
+            'address._id': addressId
         });
  
         if (!currentAddress) {
-            return res.redirect("/pageNotFound");
+            return res.redirect('/pageNotFound');
         }
 
         const addressData = currentAddress.address.find((item)=>{
-            return item._id.toString()===addressId.toString()
-        })
+            return item._id.toString()===addressId.toString();
+        });
 
         if(!addressData){
-            return res.redirect('/pageNotFound')
+            return res.redirect('/pageNotFound');
         }
 
-        res.render('edit-address',{address:addressData,user:user})
+        res.render('edit-address',{address:addressData,user:user});
         console.log(addressData);
         
     } catch (error) {
 
-        console.error('error in edit address',error)
-        res.redirect('/pageNotFound')
+        console.error('error in edit address',error);
+        res.redirect('/pageNotFound');
         
     }
-}
+};
 
 const postEditAddress = async (req, res) => {
     try {
@@ -327,36 +346,36 @@ const postEditAddress = async (req, res) => {
 
         const { addressId , addressType, name, city, landMark, state, pincode, phone } = req.body;
 
-        console.log(addressId)
+        console.log(addressId);
         const findAddress =  await Address.findOne({
-            "address._id": addressId
+            'address._id': addressId
         });
         if(!findAddress){
-            return res.redirect("/pageNotFound")
+            return res.redirect('/pageNotFound');
         }
         await Address.updateOne(
-            { "address._id": addressId },
+            { 'address._id': addressId },
             {
                 $set: {
-                    "address.$.addressType": addressType,
-                    "address.$.name": name,
-                    "address.$.city": city,
-                    "address.$.landMark": landMark,
-                    "address.$.state": state,
-                    "address.$.pincode": pincode,
-                    "address.$.phone": phone
+                    'address.$.addressType': addressType,
+                    'address.$.name': name,
+                    'address.$.city': city,
+                    'address.$.landMark': landMark,
+                    'address.$.state': state,
+                    'address.$.pincode': pincode,
+                    'address.$.phone': phone
                 }
             }
-        )
+        );
 
-        return res.redirect("/address")
+        return res.redirect('/address');
         
 
 
     } catch (error) {
-        console.error("Error in edit address:", error);
+        console.error('Error in edit address:', error);
        
-        return res.redirect("/pageNotFound");
+        return res.redirect('/pageNotFound');
         
     }
 };
@@ -365,13 +384,13 @@ const postEditAddress = async (req, res) => {
 const deleteAddress = async (req,res) => {
     try {
 
-        const addressId = req.query.id
-        const findAddress = await Address.findOne({"address._id":addressId})
+        const addressId = req.query.id;
+        const findAddress = await Address.findOne({'address._id':addressId});
         if(!findAddress){
-            return res.status(404).send("Address Not Found")
+            return res.status(404).send('Address Not Found');
         }
         await Address.updateOne({
-            "address._id":addressId
+            'address._id':addressId
         },
         {
             $pull : {
@@ -380,14 +399,15 @@ const deleteAddress = async (req,res) => {
                 }
             }
         }
-    )        
-    res.redirect('/address')
+    );        
+    res.redirect('/address');
     } catch (error) {
-        console.error("erron in delete address")
-        res.redirect("/pageNotFound")
+        console.error('erron in delete address');
+        res.redirect('/pageNotFound');
         
     }
-}
+};
+
 
 
 
@@ -395,7 +415,9 @@ module.exports = {
     userProfile,
     changeEmail,
     verifyEmailChange,
+    loadEmailOtp,
     verifyEmailOtp,
+    newEmail,
     updateEmail,
     loadeditProfile,
     updateProfile,
@@ -407,4 +429,4 @@ module.exports = {
     postEditAddress,
     deleteAddress,
      
-}
+};

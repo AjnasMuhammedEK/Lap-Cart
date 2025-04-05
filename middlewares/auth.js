@@ -1,41 +1,41 @@
-const User = require('../models/userSchema')
+const User = require('../models/userSchema');
 const userAuth = (req,res,next)=>{
     if(req.session.user){
         User.findById(req.session.user)
         .then(data=>{
             if(data && !data.isBlocked){
-                 next()
+                 next();
             }else{
-                 res.redirect('/login')
+                 res.redirect('/login');
             }
         })
         .catch(error=>{
             console.log('Error in user auth middleware');
-            res.status(500).send('Internal Server Error')
-        })
+            res.status(500).send('Internal Server Error');
+        });
     }else{
-        res.redirect("/login")
+        res.redirect('/login');
     }
-}
+};
 
 const adminAuth = (req,res,next)=>{
     User.findOne({isAdmin:true})
     .then(data=>{
         if(data){
             if(data){
-                next()
+                next();
             }else{
-                res.redirect('/admin/login')
+                res.redirect('/admin/login');
             }
         }
     })
     .catch(error=>{
-        console.log('Error in adminAuth middleware')
-        res.status(500).send("Internal Server Error")
-    })
-}
+        console.log('Error in adminAuth middleware');
+        res.status(500).send('Internal Server Error');
+    });
+};
 
 module.exports = {
     userAuth,
     adminAuth
-}
+};

@@ -1,0 +1,205 @@
+<%- include("../../views/partials/admin/header") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAP CART - ORDER Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --sidebar-width: 240px;
+            --primary-color: #8257ED;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #101022;
+            --lighter-bg: #2a2a3e;
+            --text-color: #ffffff;
+            --border-color: #3a3a4e;
+            --success-color: #00bf8e;
+            --warning-color: #f7c94b;
+            --danger-color: #f75842;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+        }
+
+        /* Sidebar Styles */
+        .logo { padding: 20px; display: flex; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .logo span { font-size: 24px; font-weight: bold; }
+        .logo span:first-child { color: var(--primary-color); }
+        .menu { list-style: none; padding: 10px 0; }
+        .menu-item { padding: 15px 20px; display: flex; align-items: center; transition: all 0.3s ease; cursor: pointer; }
+        .menu-item:hover, .menu-item.active { background-color: rgba(130, 87, 237, 0.1); }
+        .menu-item.active { border-left: 4px solid var(--primary-color); }
+        .menu-item i { margin-right: 10px; width: 20px; text-align: center; }
+        .submenu { padding-left: 20px; }
+
+        /* Main Content Styles */
+        .main-content { flex: 1; margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); overflow-x: hidden; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--darker-bg); border-bottom: 1px solid var(--border-color); }
+        .search-container { position: relative; width: 300px; }
+        .search-container input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--lighter-bg); color: var(--text-color); }
+        .search-container button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-color); cursor: pointer; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-profile .status { width: 10px; height: 10px; background-color: var(--success-color); border-radius: 50%; }
+
+        /* Content Area */
+        .content { padding: 30px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .page-title { font-size: 24px; font-weight: bold; }
+        .add-button { padding: 10px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 500; transition: all 0.3s ease; }
+        .add-button:hover { background-color: #6f46c9; }
+
+        /* Search Component */
+        .search-component { display: flex; margin-bottom: 20px; gap: 10px; align-items: center; }
+        .search-component input { flex: 1; padding: 12px 15px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--lighter-bg); color: var(--text-color); }
+        .search-component button { padding: 12px 20px; border-radius: 5px; border: none; cursor: pointer; font-weight: 500; }
+        .search-btn { background-color: var(--primary-color); color: white; }
+        .search-btn:hover { background-color: #6f46c9; }
+        .clear-btn { background-color: var(--lighter-bg); color: var(--text-color); border: 1px solid var(--border-color); }
+        .clear-btn:hover { background-color: #3a3a4e; }
+
+        /* Table Styles */
+        .table-container { background-color: var(--lighter-bg); border-radius: 10px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: var(--darker-bg); font-weight: 600; }
+        tbody tr:hover { background-color: rgba(130, 87, 237, 0.05); }
+        .action-cell { display: flex; gap: 10px; }
+        .edit-btn, .delete-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: none; cursor: pointer; color: white; }
+        .edit-btn { background-color: var(--warning-color); }
+        .delete-btn { background-color: var(--danger-color); }
+
+        /* Pagination */
+        .pagination { margin-top: 20px; }
+        .pagination .page-link { background-color: var(--lighter-bg); color: var(--text-color); border: 1px solid var(--border-color); }
+        .pagination .page-link:hover { background-color: #3a3a4e; }
+        .pagination .page-item.active .page-link { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
+        .pagination .page-item.disabled .page-link { background-color: var(--lighter-bg); color: #aaa; opacity: 0.5; cursor: not-allowed; }
+
+        /* Responsive styles */
+        @media (max-width: 992px) {
+            .sidebar { width: 70px; }
+            .sidebar .logo span, .sidebar .menu-item span { display: none; }
+            .sidebar .menu-item { justify-content: center; padding: 15px 0; }
+            .sidebar .menu-item i { margin-right: 0; }
+            .main-content { margin-left: 70px; width: calc(100% - 70px); }
+        }
+
+        @media (max-width: 768px) {
+            .header { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .search-container { width: 100%; }
+            .user-profile { align-self: flex-end; }
+            .search-component { flex-direction: column; align-items: stretch; }
+            .action-cell { flex-direction: column; gap: 5px; }
+            .table-container { overflow-x: auto; }
+            .pagination { flex-direction: column; gap: 15px; align-items: flex-start; }
+        }
+
+        @media (max-width: 576px) {
+            .content { padding: 15px; }
+        }
+
+        .modal-content { color: #000; background-color: #fff; }
+        .modal-body label, .modal-title { color: #000; }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <!-- Your header content if any -->
+        </div>
+
+        <div class="content">
+            <div class="page-header">
+                <h1 class="page-title">Order Management</h1>
+            </div>
+
+            <div class="search-component">
+                <form action="/admin/orderList" method="GET" id="searchForm">
+                    <input type="text" name="search" id="searchInput" 
+                           value="<%= searchQuery || '' %>" 
+                           placeholder="Search by order ID or user name">
+                    <button type="submit" class="search-btn">Search</button>
+                    <button type="button" class="clear-btn" onclick="clearSearch()">Clear</button>
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>OrderId</th>
+                            <th>Status</th>
+                            <th></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orderData.forEach(data => { %>
+                            <tr>
+                                <td><%= data.userId.name %></td>
+                                <td><%= data.orderId %></td>
+                                <td><%= data.status %></td>
+                                <td></td>
+                                <td class="action-cell">
+                                    <a href="/admin/detail-ord?orderId=<%= data._id %>">
+                                        <button class="edit-btn">👁️</button>
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination (Matching Your Original Style) -->
+            <div class="container mt-3">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center mb-20">
+                        <!-- Previous Button -->
+                        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= searchQuery || '' %>">Previous</a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a class="page-link" href="?page=<%= i %>&search=<%= searchQuery || '' %>"><%= i %></a>
+                            </li>
+                        <% } %>
+
+                        <!-- Next Button -->
+                        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= searchQuery || '' %>">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            window.location.href = '/admin/orderList?page=1';
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+
+<%- include("../../views/partials/admin/footer") %>

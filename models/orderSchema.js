@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const {Schema} = mongoose;
-const {v4:uuidv4} = require('uuid')
+const {v4:uuidv4} = require('uuid');
 
 const orderSchema = new Schema({
     orderId:{
@@ -10,19 +10,19 @@ const orderSchema = new Schema({
     },
     userId :{
         type:Schema.Types.ObjectId,
-        ref:"User",
+        ref:'User',
         required:true
     },
 
     orderedItems:[{
         product:{
             type:Schema.Types.ObjectId,
-            ref:"Product",
+            ref:'Product',
             required:true
         },
-        quantity:{
+        orderQuantity:{
             type:Number,
-            required:true
+            requiread:true
         },
         price:{
             type:Number,
@@ -30,9 +30,14 @@ const orderSchema = new Schema({
         },
         returnStatus: {
             type: String,
-            enum: ["Not Returned", "Return Requested", "Returned"],
-            default: "Not Returned",
-        }
+            enum: ['Not Returned', 'Return Requested', 'Returned','Return Rejected'],
+            default: 'Not Returned',
+        },
+        returnReason:{
+            type:String,
+            required:false,
+            default:''
+        },
 
     }],
     totalPrice:{
@@ -69,9 +74,9 @@ const orderSchema = new Schema({
     },
     paymentMethod: {  
         type: String,
-        enum: ["COD", "UPI", "Credit/Debit Card"], 
+        enum: ['COD', 'UPI', 'Credit/Debit Card'], 
         required: true,
-        default: "COD"
+        default: 'COD'
     },
     invoiceDate:{
         type:Date,
@@ -80,9 +85,10 @@ const orderSchema = new Schema({
     status:{
         type:String,
         required:true,
-        enum:["Pending","Processing","Shipped", "Out for Delivery","Delivered","Cancelled","Return Request","Returned"],
-        default:"Pending"
+        enum:['Pending','Processing','Shipped', 'Out for Delivery','Delivered','Cancelled','Return Request','Returned' ,'Return Rejected'],
+        default:'Pending'
     },
+   
     createdAt:{
         type:Date,
         default:Date.now,
@@ -92,8 +98,8 @@ const orderSchema = new Schema({
         type:Boolean,
         default:false
     }
-})
+});
 
 
-const Order = mongoose.model("Order",orderSchema)
-module.exports = Order
+const Order = mongoose.model('Order',orderSchema);
+module.exports = Order;

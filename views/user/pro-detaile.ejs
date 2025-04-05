@@ -20,22 +20,38 @@
     <link rel="stylesheet" href="/css/style.css">
 
     <style>
-       .zoom-container {
+      .zoom-container {
           position: relative;
           overflow: hidden;
-          cursor: zoom-in;
+          width: 100%;
+          height: 400px; /* Matches your original height */
       }
 
       .zoom-container img {
-          transition: transform 0.3s ease;
-          transform-origin: center center;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
       }
 
-      .zoom-container:hover img {
-          transform: scale(1.5);  
+      .zoom-lens {
+          position: absolute;
+          width: 120px; /* Slightly larger for better visibility */
+          height: 120px;
+          border: 2px solid #fff; /* Clear white border */
+          border-radius: 50%; /* Circular lens */
+          background: rgba(0, 0, 0, 0.2); /* Subtle dark overlay */
+          opacity: 0; /* Hidden by default */
+          pointer-events: none; /* Allows mouse events to pass through */
+          transition: opacity 0.2s ease; /* Smooth fade */
+          z-index: 100; /* Above carousel elements */
       }
 
-       .add-to-cart-container {
+      .zoom-container:hover .zoom-lens {
+          opacity: 1; /* Visible on hover */
+      }
+
+      .add-to-cart-container {
           margin-top: 20px;
           padding: 10px 0;
           clear: both;  
@@ -79,7 +95,7 @@
           pointer-events: none !important;
       }
 
-       .product-details button.add-to-cart,
+      .product-details button.add-to-cart,
       .product-details:hover button.add-to-cart,
       *:hover button.add-to-cart {
           display: inline-block !important;
@@ -87,7 +103,7 @@
           opacity: 1 !important;
       }
       
-       .btn-primary, .btn-black, .add-to-cart {
+      .btn-primary, .btn-black, .add-to-cart {
           display: inline-block !important;
           visibility: visible !important;
           opacity: 1 !important;
@@ -108,6 +124,18 @@
       </div>
     </div>
 
+    <div class="page-header breadcrumb-wrap">
+      <div class="container">
+          <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/">Home</a></li>
+                  <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                  <li class="breadcrumb-item active" aria-current="page"><%= product.productName %></li>
+              </ol>
+          </nav>
+      </div>
+  </div>
+
     <section class="ftco-section">
       <div class="container">
         <div class="row">
@@ -116,9 +144,12 @@
               <% for(let i = 0; i < 3 && i < product.productImage.length; i++) { %>
                 <div class="item">
                   <div class="zoom-container">
-                    <a href="/uploads/product-images/<%=product.productImage[i]%>" class="image-popup zoom-image">
-                      <img src="/uploads/product-images/<%=product.productImage[i]%>" class="img-fluid" alt="product image">
+                    <a href="/uploads/product-images/<%=product.productImage[i]%>" class="image-popup">
+                      <img src="/uploads/product-images/<%=product.productImage[i]%>" 
+                           class="img-fluid zoom-image" 
+                           alt="product image">
                     </a>
+                    <div class="zoom-lens"></div>
                   </div>
                 </div>
               <% } %>
@@ -181,14 +212,14 @@
                 </button>
               </span>
             </div>
-             <div class="add-to-cart-container" style="z-index: 1000;">
+            <div class="add-to-cart-container" style="z-index: 1000;">
               <% if(product.quantity > 0) { %>
-                <button type="button" id="add-to-cart"   data-product-id="<%= product._id %>" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Add to Cart</button>
+                <button type="button" id="add-to-cart" data-product-id="<%= product._id %>" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Add to Cart</button>
               <% } else { %>
                 <button type="button" class="add-to-cart disabled-btn" disabled style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Out of Stock</button>
               <% } %>
               <a href="/addWhishlist?productId=<%=product._id%>" class="btn btn-black py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Add to Wishlist</a>
-              <a href="/cart" class="btn btn-primary py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Buy now</a>
+              <!-- <a href="/cart" class="btn btn-primary py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Buy now</a> -->
             </div>
           </div>
         </div>
@@ -259,7 +290,6 @@
 
     <script>
     $(document).ready(function(){
- 
         var quantitiy = 0;
         $('.quantity-right-plus').click(function(e){
             e.preventDefault();
@@ -286,7 +316,7 @@
             dots: true
         });
 
-        $('.zoom-image').magnificPopup({
+        $('.image-popup').magnificPopup({
             type: 'image',
             closeOnContentClick: true,
             mainClass: 'mfp-img-mobile',
@@ -302,7 +332,52 @@
             }
         });
 
-         $('#add-to-cart').click(function() {
+         function initializeZoom(container) {
+            const img = container.querySelector('.zoom-image');
+            const lens = container.querySelector('.zoom-lens');
+
+            if (!img || !lens) return; 
+            img.addEventListener('load', () => {
+                const rect = container.getBoundingClientRect();
+                const zoomFactor = 2.5;
+
+                container.addEventListener('mousemove', (e) => {
+                    const rect = container.getBoundingClientRect();
+                    let posX = e.clientX - rect.left;
+                    let posY = e.clientY - rect.top;
+
+                    const lensWidth = lens.offsetWidth;
+                    const lensHeight = lens.offsetHeight;
+                    posX = Math.max(lensWidth / 2, Math.min(posX, rect.width - lensWidth / 2));
+                    posY = Math.max(lensHeight / 2, Math.min(posY, rect.height - lensHeight / 2));
+
+                    lens.style.left = `${posX - lensWidth / 2}px`;
+                    lens.style.top = `${posY - lensHeight / 2}px`;
+
+                    lens.style.backgroundImage = `url(${img.src})`;
+                    lens.style.backgroundSize = `${img.width * zoomFactor}px ${img.height * zoomFactor}px`;
+                    lens.style.backgroundPosition = `-${(posX * zoomFactor) - (lensWidth / 2)}px -${(posY * zoomFactor) - (lensHeight / 2)}px`;
+
+                    lens.style.opacity = '1'; 
+                });
+
+                container.addEventListener('mouseleave', () => {
+                    lens.style.opacity = '0';
+                });
+            });
+
+             if (img.complete) {
+                img.dispatchEvent(new Event('load'));
+            }
+        }
+
+         document.querySelectorAll('.zoom-container').forEach(initializeZoom);
+
+         $('.product-slider').on('changed.owl.carousel', function() {
+            document.querySelectorAll('.zoom-container').forEach(initializeZoom);
+        });
+
+        $('#add-to-cart').click(function() {
             if ($(this).hasClass('disabled-btn')) return;
 
             const productId = $(this).data('product-id');
@@ -338,7 +413,7 @@
             });
         });
 
-         $('.btn-black[href^="/addWhishlist"]').click(function(e) {
+        $('.btn-black[href^="/addWhishlist"]').click(function(e) {
             e.preventDefault();
             const href = $(this).attr('href');
             const button = $(this);
