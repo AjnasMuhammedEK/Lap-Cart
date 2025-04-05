@@ -383,7 +383,7 @@ const addToCartFromWishlist = async (req, res) => {
 
     res.status(200).json({ 
       message: 'Product added to cart and removed from wishlist',
-      redirect: '/cart'
+      redirect: '/getCart'
     });
   } catch (error) {
     console.log('Error in addToCartFromWishlist:', error);

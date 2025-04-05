@@ -388,9 +388,7 @@ button:disabled {
 </head>
 <body>
     <div class="main-content">
-        <div class="header">
-            <!-- Header content from partials or custom content -->
-        </div>
+        
 
         <div class="content">
             <div class="page-header">
@@ -477,7 +475,7 @@ button:disabled {
                                     <th>Quantity</th>
                                     <th>Unit Price</th>
                                     <th>Total</th>
-                                    <th></th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -489,7 +487,7 @@ button:disabled {
                                         <td><%=data.orderQuantity %></td>
                                         <td><%=data.price%></td>
                                         <td><%=total%></td>
-                                        <td></td>
+                                        <td><%=data.returnStatus%></td>
                                     </tr>
                                 <% }) %>
                             </tbody>
@@ -501,7 +499,7 @@ button:disabled {
 
                 <% orderData.orderedItems.forEach(data => { %>
                     <% if(data.returnStatus === "Return Requested") { %>
-                        <% let  status = true; %>
+                        <% status = true; %>
                     <% } %>
                 <% }) %>
 
