@@ -2,17 +2,26 @@ const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const couponSchema = new Schema({
-    name : {
+    couponName : {
         type:String,
         required : true,
         unique:true
     },
-    createdOn:{
+    couponCode:{
+        type:String,
+        required:true
+    },
+    startDate:{
         type:Date,
         default:Date.now,
         required:true
     },
-    expireOn:{
+    description:{
+        type:String,
+        required:true,
+    },
+     
+    endDate:{
         type:Date,
         required:true
     },
@@ -27,6 +36,10 @@ const couponSchema = new Schema({
     isListed:{
         type:Boolean,
         default:true
+    },
+    isDeleted:{
+        type : Boolean,
+        default:false
     },
     userId : {
         type : Schema.Types.ObjectId,

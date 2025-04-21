@@ -141,8 +141,9 @@
                             <th>User</th>
                             <th>OrderId</th>
                             <th>Status</th>
-                            <th></th>
-                            <th>Actions</th>
+                            <th>Date</th>
+                             <th>Actions</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -151,13 +152,18 @@
                                 <td><%= data.userId.name %></td>
                                 <td><%= data.orderId %></td>
                                 <td><%= data.status %></td>
-                                <td></td>
+                                <td><%= data.createdAt.toDateString()%></td>
                                 <td class="action-cell">
-                                    <a href="/admin/detail-ord?orderId=<%= data._id %>">
+                                    <a href="/admin/detail-ord?orderId=<%= data._id %>" style="text-decoration: none;">
                                         <button class="edit-btn">👁️</button>
                                     </a>
-                                </td>
-                            </tr>
+                                    <%data.orderedItems.forEach(product => {%>
+                                        <%if(product.returnStatus==='Return Requested'){%>
+                                            <i class="fa-solid fa-flag-checkered fa-beat" style="color: #ff0000;"> 
+                                        <%}%>  
+                                    <%})%>
+                                </td>         
+                          </tr>
                         <% }) %>
                     </tbody>
                 </table>

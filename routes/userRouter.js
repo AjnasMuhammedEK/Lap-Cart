@@ -5,6 +5,7 @@ const productController = require('../controllers/user/ProductController');
 const profileController = require('../controllers/user/profileContoller');
 const cartController = require('../controllers/user/CartMgmtController ');
 const orderController = require('../controllers/user/orderController');
+const walletController = require('../controllers/user/walletController')
 const passport = require('passport');
 const { userAuth } = require('../middlewares/auth');
 const Product = require('../models/productSchema');
@@ -57,7 +58,7 @@ router.get('/shop',userAuth,productController.loadShop);
 router.get('/userProfile',userAuth,profileController.userProfile);
  
 router.get('/edit-profile',userAuth,profileController.loadeditProfile);
-router.post('/updateProfile',userAuth,profileController.updateProfile);
+router.post('/updateProfile', userAuth, upload.single('userImage'), profileController.updateProfile);
 router.post('/forPassReOtp',userAuth,profileController.emailReOtp);
 router.get('/changeEmail', userAuth, profileController.changeEmail);
 router.post('/verifyEmailChange', userAuth, profileController.verifyEmailChange);
@@ -93,9 +94,18 @@ router.post('/checkeditAddress',userAuth,cartController.checkoutEditAddress);
 
 router.post('/place-order',userAuth,orderController.placeOrder);
 router.get('/order-success',userAuth,orderController.loadOrderSuccess);
+router.get('/paymentfailedpage',userAuth,orderController.loadPaymentFailedPage)
 router.get('/listOrder',userAuth,orderController.listOrder);
 router.get('/ord-detailes',userAuth,orderController.loadOrdDetailes);
 router.get('/downloadInvoice',orderController.invoicePdf);
 router.get('/cancelOrder',userAuth,orderController.cancelOrder);
+router.post('/singleCancel',userAuth,orderController.singleCancel)
 router.post('/returnProduct',userAuth,orderController.returnProduct);
+
+//Wallet Mangment
+
+router.get('/wallet',userAuth,walletController.loadWallet)
+router.post('/applyCoupon',userAuth,cartController.applyCoupon)
+router.post('/removeCoupon',userAuth,cartController.removeCoupon)
+
 module.exports = router;

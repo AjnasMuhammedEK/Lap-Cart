@@ -1,6 +1,6 @@
 <%-include("../../views/partials/user/header")%>
 <!-- END nav -->
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <section id="home-section" class="hero">
 	  <div class="home-slider owl-carousel">
 	  <div class="slider-item js-fullheight">
@@ -15,7 +15,7 @@
 						<h1 class="mb-4 mt-3">NEW LAPTOPS</h1>
 						<!-- <p class="mb-4">A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country.</p> -->
 						
-						<p><a href="#" class="btn-custom">Discover Now</a></p>
+						<p><a href="#" class="btn-custom"></i>Discover Now</a></p>
 					  </div>
 				</div>
 			  </div>
@@ -88,11 +88,10 @@
 			<div class="text py-3 pb-4 px-3">
 			  <h3><a href="/productDetaile?id=<%= products[i]._id %>"><%= products[i].productName %></a></h3>
 			  <div class="pricing">
-				<p class="price"><span>$<%= products[i].regularPrice %></span></p>
+				<p class="price"><span>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></span></p>
 			  </div>
 			  <p class="bottom-area d-flex px-3">
-				<a href="#" class="add-to-cart text-center py-2 mr-1"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
-				<a href="/productDetaile?id=<%= products[i]._id %>" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
+ 					<a href="/productDetaile?id=<%= products[i]._id %>" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
 			  </p>
 			</div>
 		  </div>

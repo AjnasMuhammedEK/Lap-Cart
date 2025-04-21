@@ -6,6 +6,8 @@
     <title>SignUp | LapCart</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         * {
             margin: 0;
@@ -61,7 +63,7 @@
         }
 
         .form-group {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         label {
@@ -82,7 +84,8 @@
         .error-message {
             color: red;
             font-size: 0.75rem;
-            display: none;
+            min-height: 18px; /* Reserve space for error message */
+            display: block; /* Always block to maintain space */
             margin-top: 3px;
         }
 
@@ -135,6 +138,27 @@
             height: 20px;
         }
 
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+        }
+
+        .password-toggle:hover {
+            color: #333;
+        }
+
         @media screen and (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -162,7 +186,7 @@
             <h1>Sign Up</h1>
             <form id="signform" action="/signup" method="POST">
                 <div class="form-group">
-                    <label for="fullname">Full Name:</label>
+                    <label for="name">Full Name:</label>
                     <input type="text" id="name" name="name" placeholder="Enter your full name">
                     <div id="error1" class="error-message"></div>
                 </div>
@@ -181,37 +205,46 @@
 
                 <div class="form-group">
                     <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" placeholder="Enter password">
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter your password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', 'toggleIcon1')">
+                            <i id="toggleIcon1" class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <div id="error4" class="error-message"></div>
                 </div>
 
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password:</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password">
+                    <div class="password-wrapper">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password">
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', 'toggleIcon2')">
+                            <i id="toggleIcon2" class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     <div id="error5" class="error-message"></div>
                 </div>
 
-                <%if(locals.message && message.length>0){%>
+                <% if (locals.referralCode && referralCode) { %>
+                    <input type="hidden" name="ref" value="<%= referralCode %>">
+                <% } %>
+
+                <% if (locals.message && message.length > 0) { %>
                     <div class="alert alert-danger text-center">
-                        <%=message%>
+                        <%= message %>
                     </div>
-                <%}%>
-                
+                <% } %>
 
                 <div class="button-container">
                     <button type="submit" class="signup-btn">Sign Up</button>
-                </form>
-
-                
-                    <a href="/auth/google" type="button" class="google-signup-btn">
-                        <!-- <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google_icon.svg" alt="Google Logo"> -->
-                        Sign Up with Google
-                    </a>
                 </div>
-            
+            </form>
+
+            <a href="/auth/google" class="google-signup-btn">
+                <img src="https://www.google.com/favicon.ico" alt="Google Icon"> Sign Up with Google
+            </a>
         </div>
     </div>
-
 
     <script>
         const nameid = document.getElementById("name");
@@ -228,6 +261,7 @@
 
         const signform = document.getElementById("signform");
 
+        // Name validation
         function nameValidChecking() {
             const nameval = nameid.value.trim();
             const namepattern = /^[A-Za-z\s]+$/;
@@ -235,77 +269,134 @@
             if (!nameval) {
                 error1.style.display = "block";
                 error1.innerHTML = "Please enter a valid name.";
+                return false;
             } else if (!namepattern.test(nameval)) {
                 error1.style.display = "block";
                 error1.innerHTML = "Name can only contain alphabets and spaces.";
+                return false;
             } else {
-                error1.style.display = "none";
+                error1.style.display = "block";
+                error1.innerHTML = "";
+                return true;
             }
         }
 
+        nameid.addEventListener('input', nameValidChecking);
+
+        // Email validation
         function emailValidChecking() {
             const emailval = emailid.value.trim();
             const emailpattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-            if (!emailpattern.test(emailval)) {
+            if (!emailval) {
+                error2.style.display = "block";
+                error2.innerHTML = "Please enter an email address.";
+                return false;
+            } else if (!emailpattern.test(emailval)) {
                 error2.style.display = "block";
                 error2.innerHTML = "Invalid email format.";
+                return false;
             } else {
-                error2.style.display = "none";
+                error2.style.display = "block";
+                error2.innerHTML = "";
+                return true;
             }
         }
 
-        function phoneValidChecking() {
+        emailid.addEventListener('input', emailValidChecking);
+
+         function phoneValidChecking() {
             const phoneval = phoneid.value.trim();
 
             if (!phoneval) {
                 error3.style.display = "block";
-                error3.innerHTML = "Enter a valid phone number.";
+                error3.innerHTML = "Please enter a phone number.";
+                return false;
             } else if (phoneval.length !== 10 || isNaN(phoneval)) {
                 error3.style.display = "block";
                 error3.innerHTML = "Phone number must be exactly 10 digits.";
+                return false;
+            }else if (phoneval === "0000000000") {
+                error3.style.display = "block";
+                error3.innerHTML = "Phone number cannot be all zeros.";
+                return false;
             } else {
-                error3.style.display = "none";
+                error3.style.display = "block";
+                error3.innerHTML = "";
+                return true;
             }
         }
 
-        function passValidChecking() {
+        phoneid.addEventListener('input', phoneValidChecking);
+
+         function passValidChecking() {
             const passval = passid.value;
             const cpassval = cpassid.value;
             const alpha = /[a-zA-Z]/;
             const digit = /\d/;
+            let isValid = true;
 
-            if (passval.length < 8) {
+            if (!passval) {
+                error4.style.display = "block";
+                error4.innerHTML = "Please enter a password.";
+                isValid = false;
+            } else if (passval.length < 8) {
                 error4.style.display = "block";
                 error4.innerHTML = "Password must be at least 8 characters.";
+                isValid = false;
             } else if (!alpha.test(passval) || !digit.test(passval)) {
                 error4.style.display = "block";
                 error4.innerHTML = "Password must contain letters and numbers.";
+                isValid = false;
             } else {
-                error4.style.display = "none";
+                error4.style.display = "block";
+                error4.innerHTML = "";
             }
 
-            if (passval !== cpassval) {
+            if (!cpassval) {
+                error5.style.display = "block";
+                error5.innerHTML = "Please confirm your password.";
+                isValid = false;
+            } else if (passval !== cpassval) {
                 error5.style.display = "block";
                 error5.innerHTML = "Passwords do not match.";
+                isValid = false;
             } else {
-                error5.style.display = "none";
+                error5.style.display = "block";
+                error5.innerHTML = "";
+            }
+
+            return isValid;
+        }
+
+        passid.addEventListener('input', passValidChecking);
+        cpassid.addEventListener('input', passValidChecking);
+
+         function togglePassword(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(iconId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
             }
         }
 
-        signform.addEventListener("submit", function (e) {
-            nameValidChecking();
-            emailValidChecking();
-            phoneValidChecking();
-            passValidChecking();
+         signform.addEventListener("submit", function (e) {
+            const isNameValid = nameValidChecking();
+            const isEmailValid = emailValidChecking();
+            const isPhoneValid = phoneValidChecking();
+            const isPassValid = passValidChecking();
 
-            if (document.querySelector(".error-message[style='display: block;']")) {
+            if (!isNameValid || !isEmailValid || !isPhoneValid || !isPassValid) {
                 e.preventDefault();
             }
         });
-
-       
-        
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>

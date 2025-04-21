@@ -25,6 +25,13 @@ app.use(session({
     }
 }));
 
+
+
+app.use((req,res,next)=>{
+    res.set('cache-control','no-store')
+    next()
+})
+
 app.use(passport.initialize());
 app.use(passport.session());
 

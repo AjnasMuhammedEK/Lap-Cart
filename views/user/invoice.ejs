@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Invoice</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
       body {
@@ -78,25 +79,24 @@
         font-weight: bold;
         text-transform: uppercase;
       }
-      /* Fixed column widths for alignment */
       th:nth-child(1),
       td:nth-child(1) {
         width: 40%;
         text-align: left;
-      } /* Product Name */
+      }
       th:nth-child(2),
       td:nth-child(2) {
         width: 20%;
-      } /* Image */
+      }
       th:nth-child(3),
       td:nth-child(3) {
         width: 20%;
-      } /* Quantity */
+      }
       th:nth-child(4),
       td:nth-child(4) {
         width: 20%;
         text-align: right;
-      } /* Amount */
+      }
       td img {
         width: 60px;
         height: 60px;
@@ -113,7 +113,7 @@
         margin-bottom: 15px;
       }
       .totals tr {
-        background-color: #ff0000;
+        background-color: #007bff;
         color: white;
         font-weight: bold;
       }
@@ -129,14 +129,6 @@
         width: 50%;
         text-align: right;
       }
-      .signature {
-        text-align: right;
-        margin-bottom: 15px;
-      }
-      .signature p {
-        margin: 5px 0;
-        font-size: 11px;
-      }
       .footer {
         text-align: center;
         font-size: 10px;
@@ -145,7 +137,7 @@
         padding-top: 10px;
         position: absolute;
         bottom: 10mm;
-        width: calc(100% - 20mm); /* Adjust for padding */
+        width: calc(100% - 20mm);
       }
       .btn-download {
         background-color: #4caf50;
@@ -160,8 +152,6 @@
       .btn-download:hover {
         background-color: #45a049;
       }
-
-      /* Print-specific styles */
       @media print {
         body {
           margin: 0;
@@ -173,6 +163,7 @@
           padding: 10mm;
           box-sizing: border-box;
           margin: 0;
+          border: none;
         }
         .btn-download {
           display: none;
@@ -194,18 +185,24 @@
       <div class="main-content">
         <div class="header">
           <h1>INVOICE</h1>
+          <div class="company-info">
+            <p>Home Furnishings</p>
+            <p>123 Main Street, Auckland 1010, New Zealand</p>
+            <p>Email: info@homefurnishings.co.nz</p>
+          </div>
         </div>
 
         <div class="bill-to">
           <div class="customer-details">
             <p><strong>Bill To:</strong></p>
-            <p>Name : <%=orderData.address.name%></p>
-            <p>Place : <%=orderData.address.city%></p>
-            <p>State : <%=orderData.address.state%></p>
-            <p>Pin code : <%=orderData.address.pincode%></p>
+            <p>Name: <%= orderData.address.name %></p>
+            <p>Place: <%= orderData.address.city %></p>
+            <p>State: <%= orderData.address.state %></p>
+            <p>Pin code: <%= orderData.address.pincode %></p>
           </div>
           <div class="invoice-details">
-            <p><strong>Date:</strong><%=orderDate%></p>
+            <p><strong>Invoice Number:</strong> <%= invoiceNumber %></p>
+            <p><strong>Date:</strong> <%= orderDate %></p>
           </div>
         </div>
 
@@ -214,35 +211,34 @@
             <tr>
               <th>Product Name</th>
               <th>Image</th>
-              <th>QUANTITY</th>
-              <th>AMOUNT</th>
+              <th>Quantity</th>
+              <th>Amount</th>
             </tr>
           </thead>
           <tbody>
             <% orderData.orderedItems.forEach(data => { %>
-                <tr>
-                  <td><%= data.product.productName %></td>
-                  <td>
-                    <img
-                      src="/uploads/product-images/<%= data.product.productImage[0] %>"
-                      alt=""
-                    />
-                  </td>
-                  <td><%= data.orderQuantity %></td>
-                  <td><%= data.price %></td>
-                </tr>
-              <% }) %>
+            <tr>
+              <td><%= data.product.productName %></td>
+              <td>
+                <img
+                  src="<%= data.product.productImage[0] %>"
+                  alt="Product Image"
+                  onerror="this.src='https://via.placeholder.com/60';"
+                />
+              </td>
+              <td><%= data.orderQuantity %></td>
+              <td><%= data.price.toFixed(2) %></td>
+            </tr>
+            <% }) %>
           </tbody>
         </table>
 
         <table class="totals">
-            <tr>
-                <td class="label">TOTAL DUE:</td>
-                <td class="amount"><%= orderData.finalAmount %></td>
-              </tr>
+          <tr>
+            <td class="label">TOTAL DUE:</td>
+            <td class="amount">$<%= orderData.finalAmount.toFixed(2) %></td>
+          </tr>
         </table>
-
-        
       </div>
 
       <div class="footer">
@@ -252,35 +248,53 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        function downloadInvoice() {
+        async function downloadInvoice() {
           const element = document.querySelector(".invoice-container");
           if (!element) {
             console.error("Invoice container not found!");
             return;
           }
 
-           const downloadButton = document.querySelector(".btn-download");
+          const downloadButton = document.querySelector(".btn-download");
           if (downloadButton) downloadButton.style.display = "none";
 
-           element.style.width = "210mm";
-          element.style.minHeight = "297mm"; 
+          // Preload images to avoid CORS or loading issues
+          const images = element.querySelectorAll("img");
+          const imagePromises = Array.from(images).map((img) => {
+            return new Promise((resolve) => {
+              if (img.complete) {
+                resolve();
+              } else {
+                img.onload = resolve;
+                img.onerror = () => {
+                  img.src = "https://via.placeholder.com/60";
+                  resolve();
+                };
+              }
+            });
+          });
+
+          await Promise.all(imagePromises);
+
+          // Ensure A4 dimensions (210mm x 297mm)
+          element.style.width = "210mm";
+          element.style.minHeight = "297mm";
           element.style.padding = "10mm";
           element.style.boxSizing = "border-box";
           element.style.backgroundColor = "#ffffff";
 
-          //  const orderId = "INV12345"; 
-          const filename = `invoice_${orderId}.pdf`;
+          const filename = `invoice_<%= invoiceNumber %>.pdf`;
 
-           const opt = {
-            margin: 10,  
+          const opt = {
+            margin: [10, 10, 10, 10], // Top, Right, Bottom, Left (in mm)
             filename: filename,
             image: { type: "jpeg", quality: 0.98 },
             html2canvas: {
-              scale: 2, 
-              useCORS: true,  
-              logging: true,  
-              width: 794,  
-              height: 1123, 
+              scale: 2,
+              useCORS: true,
+              logging: false,
+              width: 794, // A4 width in pixels at 96 DPI
+              height: 1123, // A4 height in pixels at 96 DPI
               scrollX: 0,
               scrollY: 0,
               backgroundColor: "#ffffff",
@@ -291,20 +305,19 @@
               orientation: "portrait",
               compress: true,
             },
-            pagebreak: { mode: ["css", "legacy"], avoid: "tr" },
+            pagebreak: { mode: ["css", "legacy"], avoid: ["tr", ".totals"] },
           };
 
-          html2pdf()
-            .set(opt)
-            .from(element)
-            .save()
-            .then(() => {
-              if (downloadButton) downloadButton.style.display = "block";
-            })
-            .catch((error) => {
-              console.error("Error generating PDF:", error);
-              if (downloadButton) downloadButton.style.display = "block";
-            });
+          try {
+            await html2pdf()
+              .set(opt)
+              .from(element)
+              .save();
+          } catch (error) {
+            console.error("Error generating PDF:", error);
+          } finally {
+            if (downloadButton) downloadButton.style.display = "block";
+          }
         }
 
         document

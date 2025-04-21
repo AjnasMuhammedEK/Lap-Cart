@@ -2,6 +2,7 @@ const Category = require('../../models/categorySchema');
 const User = require('../../models/userSchema');
 const Order = require('../../models/orderSchema');
 const Product = require('../../models/productSchema');
+const Wallet = require('../../models/walletSchema')
 
 
 
@@ -97,14 +98,13 @@ const changeStatus = async (req,res)=>{
 }
 
 
-
 const handleReturn = async (req, res) => {
     try {
         const { action, itemId, orderId } = req.body;
         console.log('Handling return:', action, itemId, orderId);
 
         const order = await Order.findOne({ _id: orderId }).populate('orderedItems.product');
-
+  
         if (!order) {
             return res.json({ success: false, message: "Order Not Found" });
         }
@@ -120,10 +120,21 @@ const handleReturn = async (req, res) => {
                 return res.json({ success: false, message: "Failed to update return status" });
             }
 
-            const returnedItem = updatedOrder.orderedItems.find(
-                item => item._id.toString() === itemId.toString()
-            );
+            const returnedItem = updatedOrder.orderedItems.find(item => item._id.toString() === itemId.toString());
 
+            const userId = req.session.user;
+            const product = returnedItem.product;
+            updatedOrder.finalAmount = updatedOrder.finalAmount - product.salePrice 
+            const wallet = await Wallet.findOneAndUpdate({userId:userId},{ $inc: { balance: product.salePrice -updatedOrder.discount }},{new:true})
+            wallet.transactions.push({
+                amount: product.salePrice -updatedOrder.discount,
+                type: "Credit",
+                method: "Refund",
+                status: "Completed",
+                description: "Product Cancelled"
+              });
+              await wallet.save() 
+            
             if (returnedItem && returnedItem.returnStatus === "Returned") {
                 await Product.findByIdAndUpdate(
                     returnedItem.product._id,
@@ -131,6 +142,9 @@ const handleReturn = async (req, res) => {
                     { new: true }
                 );
             }
+
+
+
 
             return res.json({ success: true, message: "Order Return Accepted" });
 

@@ -7,22 +7,12 @@ const brandSchema = new Schema({
         type : String,
         required : true
     },
-    // brandImage : {
-    //     type :[String],
-    //     required : true
-    // },
-    // isBlocked : {
-    //     type : Boolean,
-    //     default:false
-    // },
+     
     isListed:{
         type:Boolean,
         default:true
     },
-    // categoryOffer:{
-    //     type:Number,
-    //     default:0
-    // },
+    
     createdAt: {
         type: Date,
         default: Date.now

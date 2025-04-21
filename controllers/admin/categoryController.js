@@ -23,13 +23,8 @@ const categoryInfo = async (req,res) => {
         })
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit);
+            .limit(limit);   
 
-
-        
-
-       
-        
 
         const totalCategories = await Category.countDocuments();
         const totalPages = Math.ceil(totalCategories / limit);
@@ -75,8 +70,7 @@ const addCategory = async(req, res) => {
         });
         
         await newCategory.save();
-        console.log('newCategory.save');
-
+ 
         req.session.admMsg = 'Category added successfully';
         res.redirect('/admin/category');
         
@@ -93,12 +87,10 @@ const deleteCategory = async (req,res) =>{
     try {
 
         const {categoryId} = req.body;
-        console.log('1');
-        console.log(categoryId);
+        
 
         const existProductWithCategory = await Product.find({category:categoryId});
-        console.log(existProductWithCategory);
-        if(existProductWithCategory.length===0){
+         if(existProductWithCategory.length===0){
 
             const updateCategory = await Category.findOneAndUpdate(
                 { _id: categoryId }, 
@@ -109,18 +101,12 @@ const deleteCategory = async (req,res) =>{
         }else{
             req.session.admMsg = 'Have some products with this categories';
             return res.redirect('/admin/category');
-
-           
-
         }
       
-        
 
-        req.session.admMsg ='Category Deleted successfully';
-        
-        console.log('2');
+        req.session.admMsg ='Category Deleted successfully'
+
         res.redirect('/admin/category');
-        console.log('3');
         
     } catch (error) {
         
@@ -152,8 +138,7 @@ const getListCategory = async (req,res) => {
 
 
         let id = req.query.id;
-        console.log(id);
-        await Category.updateOne({_id:id},{$set:{isListed:false}});
+         await Category.updateOne({_id:id},{$set:{isListed:false}});
         res.redirect('/admin/category');
         
     } catch (error) {

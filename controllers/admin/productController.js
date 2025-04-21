@@ -10,40 +10,35 @@ const sharp = require('sharp');
 const loadProduct = async (req,res)=>{
 
     try {
+
+        console.log('1');
         
         const search = req.query.search || '';
         const page = req.query.page || 1;
         const limit = 4;
+        console.log('90909090');
 
-        const productData = await Product.find({
-            $and:[
-                {isDeleted:false},
-                {
-                    $or:[
-                        {productName:{$regex:new RegExp('.*'+search+'.*','i')}},
-                        {brand:{$regex:new RegExp('.*'+search+'.*','i')}},
-                    ],
-
-                }
-            ]
-            
-        }).limit(limit*1)
-          .skip((page-1)*limit)
-          .populate('category')
-          .exec();
-
-          const count = await Product.find({
-            $or:[
-                {productName:{$regex:new RegExp('.*'+search+'.*','i')}},
-                {brand:{$regex:new RegExp('.*'+search+'.*','i')}}
-            ],
-          }).countDocuments();
-         
-
+        const query = {
+            isDeleted: false,
+          };
+          if (search) {
+            query.productName = { $regex: new RegExp('.*' + search + '.*', 'i') };
+          }
+      
+          const productData = await Product.find(query)
+            .limit(limit)
+            .skip((page - 1) * limit)
+            .populate(['category', 'brand'])
+            .exec();
+          console.log('m,m,m,m,m,');
+      
+          // Apply the same query to count
+          const count = await Product.find(query).countDocuments();
+          console.log('2'); 
+ 
           const category = await Category.find({isListed:true,isDeleted:false});
-          const brand = await Brand.find({isListed:true,isDeleted:false});
-
-        //   console.log(productData);
+          const brand = await Brand.find({isListed:true,isDeleted:false})
+          console.log('brands===============',brand);
 
 
           if(category && brand){
@@ -145,7 +140,7 @@ ensureDirectoryExists(productImagesDir);
 const addProduct = async (req, res) => {
     try {
         const product = req.body;
-        
+        console.log(req.body);
         const productExists = await Product.findOne({ productName: product.productName });
         
         if (productExists) {
@@ -184,11 +179,13 @@ const addProduct = async (req, res) => {
         if (!categoryId) {
             return res.status(400).json({ error: 'Invalid category name' });
         }
+
+        const bradId = await Brand.findOne({brandName:product.brand})
         
         const newProduct = new Product({
             productName: product.productName,
             description: product.productDescription,
-            brand: product.brand,
+            brand: bradId._id,
             category: categoryId._id,
             regularPrice: product.productAmount,
             salePrice: product.salePrice,
@@ -274,11 +271,14 @@ const editProduct = async (req, res) => {
             }
             newImages = newImages.filter(img => img !== null);
         }
+
+        const bradId = await Brand.findOne({brandName:data.brand})
+
         
         const updateFields = {
             productName: data.productName,
             description: data.productDescription,
-            brand: data.brand,
+            brand: bradId._id,
             category: data.category,
             regularPrice: data.productAmount,
             salePrice: data.salePrice,

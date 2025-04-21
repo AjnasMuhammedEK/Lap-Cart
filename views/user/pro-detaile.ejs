@@ -24,7 +24,7 @@
           position: relative;
           overflow: hidden;
           width: 100%;
-          height: 400px; /* Matches your original height */
+          height: 400px;
       }
 
       .zoom-container img {
@@ -36,34 +36,34 @@
 
       .zoom-lens {
           position: absolute;
-          width: 120px; /* Slightly larger for better visibility */
+          width: 120px;
           height: 120px;
-          border: 2px solid #fff; /* Clear white border */
-          border-radius: 50%; /* Circular lens */
-          background: rgba(0, 0, 0, 0.2); /* Subtle dark overlay */
-          opacity: 0; /* Hidden by default */
-          pointer-events: none; /* Allows mouse events to pass through */
-          transition: opacity 0.2s ease; /* Smooth fade */
-          z-index: 100; /* Above carousel elements */
+          border: 2px solid #fff;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.2);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+          z-index: 100;
       }
 
       .zoom-container:hover .zoom-lens {
-          opacity: 1; /* Visible on hover */
+          opacity: 1;
       }
 
       .add-to-cart-container {
           margin-top: 20px;
           padding: 10px 0;
-          clear: both;  
-          display: block !important; 
-          position: relative; 
-          z-index: 100;  
+          clear: both;
+          display: block !important;
+          position: relative;
+          z-index: 100;
       }
 
       button.add-to-cart {
           display: inline-block !important;
-          visibility: visible !important;  
-          opacity: 1 !important;  
+          visibility: visible !important;
+          opacity: 1 !important;
           background-color: #000000 !important;
           color: #ffffff !important;
           padding: 12px 24px !important;
@@ -76,8 +76,8 @@
           min-width: 150px !important;
           transition: background-color 0.3s ease !important;
           box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-          position: relative !important;  
-          z-index: 10 !important;  
+          position: relative !important;
+          z-index: 10 !important;
       }
 
       button.add-to-cart:hover {
@@ -108,6 +108,105 @@
           visibility: visible !important;
           opacity: 1 !important;
       }
+      
+      .offers-banner {
+          background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ebcc 100%);
+          border-radius: 8px;
+          padding: 30px;
+          margin-bottom: 40px;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+          border-top: 4px solid #ff6c00;
+      }
+      
+      .offers-banner h3 {
+          color: #333;
+          font-weight: 600;
+          margin-bottom: 20px;
+          font-size: 22px;
+      }
+      
+      .offers-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 20px;
+      }
+      
+      .offer-card {
+          background: white;
+          border-radius: 6px;
+          padding: 15px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .offer-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      }
+      
+      .offer-card .icon {
+          color: #ff6c00;
+          font-size: 24px;
+          margin-bottom: 10px;
+      }
+      
+      .offer-card h4 {
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 8px;
+          color: #333;
+      }
+      
+      .offer-card p {
+          font-size: 14px;
+          color: #666;
+          line-height: 1.4;
+          margin-bottom: 5px;
+      }
+      
+      .offer-card .badge {
+          background: #ffeee0;
+          color: #ff6c00;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+          font-weight: 600;
+          margin-bottom: 10px;
+          display: inline-block;
+      }
+      
+      .offer-details {
+          font-size: 13px;
+          color: #555;
+      }
+
+      /* New styles for best offer highlight */
+      .best-offer-container {
+          display: flex;
+          align-items: center;
+          background: #e6f3e6;
+          border: 1px solid #28a745;
+          border-radius: 5px;
+          padding: 10px;
+          margin: 15px 0;
+      }
+
+      .best-offer-container .icon {
+          color: #28a745;
+          font-size: 20px;
+          margin-right: 10px;
+      }
+
+      .best-offer-container p {
+          margin: 0;
+          font-size: 14px;
+          font-weight: 600;
+          color: #333;
+      }
+
+      .best-offer-container p span {
+          color: #28a745;
+      }
     </style>
   </head>
   <body class="goto-here">
@@ -134,7 +233,7 @@
               </ol>
           </nav>
       </div>
-  </div>
+    </div>
 
     <section class="ftco-section">
       <div class="container">
@@ -144,8 +243,8 @@
               <% for(let i = 0; i < 3 && i < product.productImage.length; i++) { %>
                 <div class="item">
                   <div class="zoom-container">
-                    <a href="/uploads/product-images/<%=product.productImage[i]%>" class="image-popup">
-                      <img src="/uploads/product-images/<%=product.productImage[i]%>" 
+                    <a href="/Uploads/product-images/<%=product.productImage[i]%>" class="image-popup">
+                      <img src="/Uploads/product-images/<%=product.productImage[i]%>" 
                            class="img-fluid zoom-image" 
                            alt="product image">
                     </a>
@@ -175,14 +274,37 @@
               </p>
             </div>
             <p class="price">
-              <span style="text-decoration: line-through; color: gray; margin-right: 10px;">
-                ₹<%= product.regularPrice %>
-              </span>
-              <span style="font-weight: bold; color: rgb(0, 0, 0);">
-                ₹<%= product.salePrice %>
-              </span>
+              <% if (finalPrice < product.salePrice) { %>
+                <span style="text-decoration: line-through; color: gray; margin-right: 10px;">
+                  ₹<%= product.salePrice %>
+                </span>
+                <span style="font-weight: bold; color: rgb(0, 0, 0);">
+                  ₹<%= finalPrice %>
+                </span>
+              <% } else { %>
+                <span style="font-weight: bold; color: rgb(0, 0, 0);">
+                  ₹<%= product.salePrice %>
+                </span>
+              <% } %>
             </p>
-            <p>You are saved ₹<%=product.regularPrice - product.salePrice %></p>
+            <p>You are saved ₹<%= (product.salePrice - finalPrice).toFixed(2) %></p>
+            
+            <!-- Best Offer Display -->
+            <% if (bestOffer) { %>
+              <div class="best-offer-container">
+                <span class="icon"><i class="ion-ios-checkmark-circle"></i></span>
+                <p>Best Offer Applied: <span><%= bestOffer.offerName %></span> - 
+                  <%= bestOffer.discountType === 'percentage' ? `${bestOffer.discountAmount}% Off` : `₹${bestOffer.discountAmount} Flat Off` %>
+                  (Save ₹<%= discountAmount %>)
+                </p>
+              </div>
+            <% } else { %>
+              <div class="best-offer-container" style="background: #f8e1e1; border-color: #dc3545;">
+                <span class="icon" style="color: #dc3545;"><i class="ion-ios-information-circle"></i></span>
+                <p>No offers available. Buy now at the best price!</p>
+              </div>
+            <% } %>
+
             <div class="row mt-4">
               <div class="col-md-12">
                 <% if(product.quantity <= 0) { %>
@@ -204,7 +326,7 @@
                 </button>
               </span>
               <input type="text" id="quantity" name="quantity" class="quantity form-control input-number" 
-                     value="1" min="1" max="<%= product.quantity %>" 
+                     value="1" min="1" max="5" 
                      <%= product.quantity <= 0 ? 'disabled' : '' %>>
               <span class="input-group-btn ml-2">
                 <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
@@ -218,8 +340,7 @@
               <% } else { %>
                 <button type="button" class="add-to-cart disabled-btn" disabled style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Out of Stock</button>
               <% } %>
-              <a href="/addWhishlist?productId=<%=product._id%>" class="btn btn-black py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Add to Wishlist</a>
-              <!-- <a href="/cart" class="btn btn-primary py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Buy now</a> -->
+              <a  onclick="addToWhishlist('<%=product._id%>')" class="btn btn-black py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Add to Wishlist</a>
             </div>
           </div>
         </div>
@@ -228,6 +349,39 @@
 
     <section class="ftco-section ftco-no-pt ftco-no-pb">
       <div class="container">
+        <!-- Updated Offers Section -->
+        <div class="offers-banner ftco-animate">
+          <h3><i class="icon-gift mr-2"></i>Exclusive Offers & Benefits</h3>
+          <% if (offers && offers.length > 0 && bestOffer) { %>
+            <div class="offers-grid">
+              <% offers.forEach(data => { %>
+                <div class="offer-card <%= bestOffer && bestOffer._id.toString() === data._id.toString() ? 'best-offer' : '' %>">
+                  <span class="badge"><%= data.offerName %></span>
+                  <div class="icon">
+                    <i class="icon-shield"></i>
+                  </div>
+                  <h4><%= data.offerType %> Offer</h4>
+                  <p><%= data.description %></p>
+                  <p class="offer-details">
+                    <strong>Discount:</strong> 
+                    <%= data.discountType === 'percentage' ? `${data.discountAmount}% Off` : `₹${data.discountAmount} Flat Off` %>
+                  </p>
+                  <p class="offer-details">
+                    <strong>Valid Until:</strong> <%= new Date(data.validUpto).toLocaleDateString() %>
+                  </p>
+                  <% if (bestOffer && bestOffer._id.toString() === data._id.toString()) { %>
+                    <p class="offer-details" style="color: #28a745; font-weight: 600;">
+                      <i class="ion-ios-checkmark-circle"></i> Best Offer Applied
+                    </p>
+                  <% } %>
+                </div>
+              <% }) %>
+            </div>
+          <% } else { %>
+            <p>No exclusive offers available at the moment. Check back soon!</p>
+          <% } %>
+        </div>
+        
         <div class="row justify-content-center mb-5 pb-3">
           <div class="col-md-12 heading-section ftco-animate text-center">
             <h2 class="mb-4">Related Products</h2>
@@ -240,7 +394,7 @@
               <div class="col-md-6 col-lg-3 ftco-animate">
                 <div class="product">
                   <a href="/productDetaile?id=<%= relatedProduct._id %>" class="img-prod">
-                    <img class="img-fluid" src="/uploads/product-images/<%= relatedProduct.productImage[0] %>" 
+                    <img class="img-fluid" src="/Uploads/product-images/<%= relatedProduct.productImage[0] %>" 
                          alt="<%= relatedProduct.productName %>">
                   </a>
                   <div class="text py-3 px-3">
@@ -358,7 +512,7 @@
                     lens.style.backgroundSize = `${img.width * zoomFactor}px ${img.height * zoomFactor}px`;
                     lens.style.backgroundPosition = `-${(posX * zoomFactor) - (lensWidth / 2)}px -${(posY * zoomFactor) - (lensHeight / 2)}px`;
 
-                    lens.style.opacity = '1'; 
+                    lens.style.opacity = '1';
                 });
 
                 container.addEventListener('mouseleave', () => {
@@ -382,6 +536,7 @@
 
             const productId = $(this).data('product-id');
             const quantity = parseInt($('#quantity').val());
+            const finalPrice = '<%= finalPrice %>';
             const button = $(this);
 
             button.addClass('loading').text('Adding...');
@@ -389,7 +544,7 @@
             $.ajax({
                 url: '/cartAdd',
                 method: 'POST',
-                data: { productId, quantity },
+                data: { productId, quantity, finalPrice },
                 success: function(response) {
                     button.removeClass('loading').text('Add to Cart');
                     Swal.fire({
@@ -413,39 +568,32 @@
             });
         });
 
-        $('.btn-black[href^="/addWhishlist"]').click(function(e) {
-            e.preventDefault();
-            const href = $(this).attr('href');
-            const button = $(this);
-
-            button.text('Adding...').prop('disabled', true);
-
-            $.ajax({
-                url: href,
-                method: 'GET',
-                success: function(response) {
-                    button.text('Add to Wishlist').prop('disabled', false);
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: response.message,
-                        confirmButtonColor: '#3085d6'
-                    }).then(() => {
-                        window.location.href = response.redirect;
-                    });
-                },
-                error: function(err) {
-                    button.text('Add to Wishlist').prop('disabled', false);
-                    Swal.fire({
-                        icon: err.status === 400 ? 'warning' : 'error',
-                        title: err.status === 400 ? 'Warning' : 'Error',
-                        text: err.responseJSON.message,
-                        confirmButtonColor: '#dc3545'
-                    });
-                }
-            });
-        });
+       
     });
+
+    
+function addToWhishlist(proId){
+    console.log(proId);
+    $.ajax({
+        url:'/addWhishlist',
+        method:'get',
+        data:{productId:proId},
+        success:function(response){
+            if(response.success){
+                Swal.fire({
+                    icon:'success',
+                    text:response.message
+                })
+            }else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'An unexpected error occurred'
+                });
+            }
+        }
+    })
+}
     </script>
   </body>
 </html>

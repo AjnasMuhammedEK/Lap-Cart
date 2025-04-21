@@ -168,9 +168,9 @@
                         <label class="add-addr-label" for="addressType">Address Type</label>
                         <select class="add-addr-select" id="addressType" name="addressType" >
                             <option value="">Select Address Type</option>
-                            <option value="Home">Home</option>
-                            <option value="Work">Work</option>
-                            <option value="Other">Other</option>
+                            <option value="Home" <%= address.addressType === 'Home' ? 'selected':''%>>Home</option>
+                            <option value="Work" <%= address.addressType === 'Work' ? 'selected':''%>>Work</option>
+                            <option value="Other" <%= address.addressType === 'Other' ? 'selected':''%>>Other</option>
                         </select>
                         <div id="error1" class="error-message"></div>
 

@@ -1,4 +1,5 @@
 <%- include("../partials/user/header.ejs") %>
+
 <style>
   * {
     margin: 0;
@@ -96,8 +97,13 @@
     margin-bottom: 0.75rem;
   }
 
-  .stock.available { color: #26A69A; }
-  .stock.unavailable { color: #EF5350; }
+  .stock.available {
+    color: #26A69A;
+  }
+
+  .stock.unavailable {
+    color: #EF5350;
+  }
 
   .price-details {
     display: flex;
@@ -125,6 +131,27 @@
     background: #FCE4EC;
     padding: 0.25rem 0.5rem;
     border-radius: 1rem;
+  }
+
+  .offer-details {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+  }
+
+  .offer-label {
+    font-weight: 600;
+    color: #263238;
+  }
+
+  .offer-description {
+    color: #26A69A;
+    background: #E0F2F1;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-weight: 500;
   }
 
   .product-actions {
@@ -274,6 +301,155 @@
     background: #1976D2;
   }
 
+  .coupon-section {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  }
+
+  .coupon-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #263238;
+    margin-bottom: 0.5rem;
+  }
+
+  .coupon-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .coupon-item {
+    border: 1px solid #ECEFF1;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F5F7FA;
+    transition: all 0.2s;
+  }
+
+  .coupon-item:hover {
+    background: #E3F2FD;
+  }
+
+  .coupon-info {
+    flex: 1;
+  }
+
+  .coupon-info h4 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #263238;
+    margin-bottom: 0.1rem;
+  }
+
+  .coupon-info p {
+    font-size: 0.65rem;
+    color: #607D8B;
+    margin-bottom: 0.1rem;
+  }
+
+  .coupon-info .discount {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #26A69A;
+  }
+
+  .coupon-copy-btn {
+    padding: 0.25rem 0.5rem;
+    background: #1E88E5;
+    border: none;
+    border-radius: 0.2rem;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .coupon-copy-btn:hover {
+    background: #1976D2;
+  }
+
+  .coupon-copy-btn.copied {
+    background: #26A69A;
+  }
+
+  .coupon-copy-btn:disabled {
+    background: #B0BEC5;
+    cursor: not-allowed;
+  }
+
+  .coupon-input-container {
+    display: flex;
+    gap: 0.3rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .coupon-input {
+    flex: 1;
+    padding: 0.3rem;
+    border: 1px solid #ECEFF1;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+  }
+
+  .coupon-apply-button {
+    padding: 0.3rem 0.75rem;
+    background: #1E88E5;
+    border: none;
+    border-radius: 0.25rem;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .coupon-apply-button:hover {
+    background: #1976D2;
+  }
+
+  .coupon-details {
+    background: #E0F2F1;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    color: #263238;
+  }
+
+  .coupon-details p {
+    margin-bottom: 0.15rem;
+  }
+
+  .coupon-details .coupon-name {
+    font-weight: 600;
+  }
+
+  .coupon-details .remove-coupon {
+    color: #EF5350;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .coupon-details .remove-coupon:hover {
+    color: #D81B60;
+  }
+
+  .remove-coupon-btn {
+    background: #EF5350 !important;
+  }
+
+  .remove-coupon-btn:hover {
+    background: #D81B60 !important;
+  }
+
   @media (max-width: 768px) {
     .cart-grid {
       grid-template-columns: 1fr;
@@ -292,6 +468,12 @@
       flex-direction: column;
       gap: 0.75rem;
     }
+
+    .coupon-item {
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
   }
 </style>
 
@@ -301,67 +483,129 @@
 
 <section class="cart-content">
   <div class="cart-container">
+    <!-- Available Coupons Section -->
+    <% if (coupons && coupons.length > 0) { %>
+      <div class="coupon-section">
+        <h3>Available Coupons</h3>
+        <div class="coupon-input-container">
+          <input type="text" id="coupon-code-input" class="coupon-input" placeholder="Enter coupon code">
+          <button id="coupon-apply-button" class="coupon-apply-button" onclick="applyCoupon()">Apply</button>
+        </div>
+        
+        <div class="coupon-list">
+          <% coupons.forEach(coupon => { %>
+            <div class="coupon-item">
+              <div class="coupon-info">
+                <h4><%= coupon.couponName %></h4>
+                <p>Code: <strong><%= coupon.couponCode %></strong></p>
+                <p>Discount: ₹<%= coupon.offerPrice.toLocaleString('en-IN') %></p>
+                <p>Min Purchase: ₹<%= coupon.minimumPrice.toLocaleString('en-IN') %></p>
+              </div>
+              <% if (appliedCoupon && appliedCoupon.couponCode === coupon.couponCode) { %>
+                <button class="coupon-copy-btn remove-coupon-btn" data-coupon-id="<%= coupon._id %>" onclick="removeCoupon(this)">
+                  Remove
+                </button>
+              <% } else { %>
+                <button class="coupon-copy-btn" data-coupon-code="<%= coupon.couponCode %>" onclick="copyCoupon('<%= coupon.couponCode %>')">
+                  Copy
+                </button>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+
     <% if (cartItems && cartItems.length > 0) { %>
       <div class="cart-grid">
         <div class="cart-products">
-          <% cartItems.forEach(item => { %>
-            <div class="cart-product" data-product-id="<%= item.productId._id %>">
-              <img src="/uploads/product-images/<%= item.productId.productImage[0] || 'default.jpg' %>" 
-                   alt="<%= item.productId.productName %>">
+          <% result.forEach(data => { %>
+            <div class="cart-product" data-product-id="<%= data.product.productId._id %>">
+              <img src="/Uploads/product-images/<%= data.product.productId.productImage[0] || 'default.jpg' %>"
+                alt="<%= data.product.productId.productName %>">
               <div class="product-info">
-                <h5><%= item.productId.productName %></h5>
-                <p class="details">Seller: <%= item.productId.brand || "Generic" %></p>
+                <h5><%= data.product.productId.productName %></h5>
+                <p class="details">Seller: <%= data.product.productId.brand.brandName || "Generic" %></p>
                 <p class="details">Delivery by Thu Mar 27 | Free</p>
                 <% 
                   let stockClass = 'available';
-                  let stockText = `In Stock (${item.productId.quantity} available)`;
-                  if (!item.productId.isListed || item.productId.isDeleted) {
+                  let stockText = `In Stock (${data.product.productId.quantity.toLocaleString('en-IN')} available)`;
+                  if (!data.product.productId.isListed || data.product.productId.isDeleted) {
                     stockClass = 'unavailable';
                     stockText = 'Out of Stock';
-                  } else if (item.productId.quantity <= 0) {
+                  } else if (data.product.productId.quantity <= 0) {
                     stockClass = 'unavailable';
                     stockText = 'Out of Stock';
-                  } else if (item.productId.status === 'sold-out') {
+                  } else if (data.product.productId.status === 'sold-out') {
                     stockClass = 'unavailable';
                     stockText = 'Sold Out';
-                  } else if (item.productId.status === 'unavailable') {
+                  } else if (data.product.productId.status === 'unavailable') {
                     stockClass = 'unavailable';
                     stockText = 'Currently Unavailable';
                   }
                 %>
                 <p class="stock <%= stockClass %>"><%= stockText %></p>
                 <div class="price-details">
-                  <span class="current-price">₹<%= item.productId.salePrice %></span>
-                  <span class="original-price">₹<%= item.productId.regularPrice %></span>
-                  <% const discountPercent = Math.round((1 - item.productId.salePrice / item.productId.regularPrice) * 100); %>
-                  <% if (discountPercent > 0) { %>
-                    <span class="discount"><%= discountPercent %>% Off</span>
+                  <% 
+                    let singlePrice = data.product.productId.salePrice;
+                    let discountAmount = 0;
+                    if (data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) {
+                      discountAmount = data.bestOffer.discountAmount;
+                      singlePrice -= discountAmount;
+                    } else if (data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) {
+                      discountAmount = (data.product.productId.salePrice * data.bestOffer.discountAmount) / 100;
+                      singlePrice -= discountAmount;
+                    }
+                    let totalItemPrice = (singlePrice) * data.product.quantity;
+                    let totalOriginalPrice = data.product.productId.salePrice * data.product.quantity;
+                    let totalDiscount = (discountAmount * data.product.quantity);
+                  %>
+                  <span class="current-price">₹<%= totalItemPrice.toLocaleString('en-IN') %></span>
+                  <% if (totalDiscount > 0) { %>
+                    <span class="original-price">₹<%= totalOriginalPrice.toLocaleString('en-IN') %></span>
+                  <% } %>
+                  <% if (data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) { %>
+                    <span class="discount">₹<%= totalDiscount.toLocaleString('en-IN') %> Off</span>
+                  <% } else if (data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) { %>
+                    <span class="discount"><%= data.bestOffer.discountAmount.toLocaleString('en-IN') %>% Off</span>
+                  <% } %>
+                </div>
+                <div class="offer-details">
+                  <% if (data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) { %>
+                    <span class="offer-label">Offer: <%= data.bestOffer.offerName %></span>
+                    <span class="offer-description">Special Offer: ₹<%= data.bestOffer.discountAmount.toLocaleString('en-IN') %></span>
+                  <% } else if (data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) { %>
+                    <span class="offer-label">Offer: <%= data.bestOffer.offerName %></span>
+                    <span class="offer-description">Special Offer: <%= data.bestOffer.discountAmount.toLocaleString('en-IN') %> % Extra Discount</span>
                   <% } %>
                 </div>
                 <div class="product-actions">
                   <div class="quantity-box">
-                    <button class="minus" data-product-id="<%= item.productId._id %>">-</button>
-                    <input type="text" class="quantity-input" value="<%= item.quantity %>" readonly>
-                    <button class="plus" data-product-id="<%= item.productId._id %>">+</button>
+                    <button class="minus" data-product-id="<%= data.product.productId._id %>">-</button>
+                    <input type="text" class="quantity-input" value="<%= data.product.quantity.toLocaleString('en-IN') %>" readonly>
+                    <button class="plus" data-product-id="<%= data.product.productId._id %>">+</button>
                   </div>
-                  <a href="#" class="remove-link" data-product-id="<%= item.productId._id %>">Remove</a>
+                  <a href="#" class="remove-link" data-product-id="<%= data.product.productId._id %>">Remove</a>
                 </div>
               </div>
             </div>
-          <% }); %>
+          <% }) %>
         </div>
 
         <div class="cart-summary">
           <h3>Order Summary</h3>
           <div class="summary-line">
-            <span>Subtotal (<span id="item-count"><%= cartItems.length %></span> items)</span>
-            <span id="subtotal">₹<%= subtotal %></span>
+            <span>Subtotal (<span id="item-count"><%= cartItems.length.toLocaleString('en-IN') %></span> items)</span>
+            <span id="subtotal">₹<%= subtotal.toLocaleString('en-IN') %></span>
           </div>
           <div class="summary-line">
-            <span>Discount</span>
+            <span>Offer Discount</span>
+            <span class="discount-amount">-₹<span id="discount-amount"><%= totalDiscount.toLocaleString('en-IN') %></span></span>
+          </div>
+          <div class="summary-line">
+            <span>Coupon Discount</span>
             <span class="discount-amount">
-              <!-- <% let totalDiscount = cartItems.reduce((sum, item) => sum + ((item.productId.regularPrice - item.productId.salePrice) * item.quantity), 0); %> -->
-              -₹<span id="discount-amount"><%= totalDiscount %></span>
+              -₹<span id="coupon-discount"><%= couponDiscount.toLocaleString('en-IN') %></span>
             </span>
           </div>
           <div class="summary-line">
@@ -370,7 +614,7 @@
           </div>
           <div class="summary-line total">
             <span>Total</span>
-            <span id="cart-total">₹<%= total %></span>
+            <span id="cart-total">₹<%= total.toLocaleString('en-IN') %></span>
           </div>
           <button class="checkout-button">Proceed to Checkout</button>
         </div>
@@ -388,12 +632,12 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
+    // Quantity Update
     $('.quantity-box button').click(function(e) {
       e.preventDefault();
       const productId = $(this).data('product-id');
       const action = $(this).hasClass('plus') ? 'increment' : 'decrement';
       const $quantityInput = $(this).siblings('.quantity-input');
-      const $productCard = $(this).closest('.cart-product');
       const $button = $(this);
 
       $button.prop('disabled', true);
@@ -406,16 +650,40 @@
           const newQuantity = response.cart.items.find(item => 
             item.productId._id.toString() === productId
           ).quantity;
-          $quantityInput.val(newQuantity);
+          $quantityInput.val(newQuantity.toLocaleString('en-IN'));
 
-          $('#subtotal').text(`₹${response.subtotal}`);
-          $('#cart-total').text(`₹${response.total}`);
-          
-          let totalDiscount = 0;
-          response.cart.items.forEach(item => {
-            totalDiscount += (item.productId.regularPrice - item.productId.salePrice) * item.quantity;
-          });
-          $('#discount-amount').text(totalDiscount);
+          // Update UI with backend-provided values
+          $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
+          $('#cart-total').text(`₹${response.total.toLocaleString('en-IN')}`);
+          $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
+          $('#coupon-discount').text(response.couponDiscount.toLocaleString('en-IN') || 0);
+
+          // Update individual product price
+          const $product = $(`div[data-product-id="${productId}"]`);
+          const item = response.cart.items.find(item => item.productId._id.toString() === productId);
+          let singlePrice = item.productId.salePrice;
+          let discountAmount = 0;
+          if (item.bestOffer && item.bestOffer.discountType === 'flat' && item.bestOffer.discountAmount > 0) {
+            discountAmount = item.bestOffer.discountAmount;
+            singlePrice -= discountAmount;
+          } else if (item.bestOffer && item.bestOffer.discountType === 'percentage' && item.bestOffer.discountAmount > 0) {
+            discountAmount = (item.productId.salePrice * item.bestOffer.discountAmount) / 100;
+            singlePrice -= discountAmount;
+          }
+          const totalItemPrice = (singlePrice) * newQuantity;
+          const totalOriginalPrice = item.productId.salePrice * newQuantity;
+          const totalDiscount = (discountAmount * newQuantity);
+
+          $product.find('.current-price').text(`₹${totalItemPrice.toLocaleString('en-IN')}`);
+          if (totalDiscount > 0) {
+            $product.find('.original-price').text(`₹${totalOriginalPrice.toLocaleString('en-IN')}`);
+            $product.find('.discount').text(discountAmount > 0 ? 
+              (item.bestOffer.discountType === 'flat' ? `₹${totalDiscount.toLocaleString('en-IN')} Off` : `${item.bestOffer.discountAmount.toLocaleString('en-IN')}% Off`) : 
+              '');
+          } else {
+            $product.find('.original-price').remove();
+            $product.find('.discount').remove();
+          }
 
           $button.prop('disabled', false);
         },
@@ -424,13 +692,14 @@
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: err.responseJSON.message,
+            text: err.responseJSON.message || 'Failed to update quantity',
             confirmButtonColor: '#1E88E5'
           });
         }
       });
     });
 
+    // Remove Product
     $('.remove-link').click(function(e) {
       e.preventDefault();
       const productId = $(this).data('product-id');
@@ -445,18 +714,19 @@
         success: function(response) {
           $(`div[data-product-id="${productId}"]`).remove();
           
-          $('#subtotal').text(`₹${response.subtotal}`);
-          $('#cart-total').text(`₹${response.total}`);
-          $('#item-count').text(response.cart.items.length);
-          
-          let totalDiscount = 0;
-          response.cart.items.forEach(item => {
-            totalDiscount += (item.productId.regularPrice - item.productId.salePrice) * item.quantity;
-          });
-          $('#discount-amount').text(totalDiscount);
+          $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
+          $('#cart-total').text(`₹${response.total.toLocaleString('en-IN')}`);
+          $('#item-count').text(response.cart.items.length.toLocaleString('en-IN'));
+          $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
+          $('#coupon-discount').text(response.couponDiscount.toLocaleString('en-IN') || 0);
 
           if (response.cart.items.length === 0) {
-            location.reload();
+            $('.cart-grid').replaceWith(`
+              <div class="empty-cart">
+                <p>Your cart is empty</p>
+                <a href="/shop">Continue Shopping</a>
+              </div>
+            `);
           }
 
           Swal.fire({
@@ -466,6 +736,7 @@
             showConfirmButton: false,
             timer: 1500
           });
+          $link.text('Remove');
         },
         error: function(err) {
           $link.text('Remove');
@@ -479,6 +750,164 @@
       });
     });
 
+    // Copy Coupon
+    window.copyCoupon = function(couponCode) {
+      navigator.clipboard.writeText(couponCode).then(() => {
+        $('#coupon-code-input').val(couponCode);
+        Swal.fire({
+          icon: 'success',
+          text: 'Coupon code copied to clipboard!',
+          showConfirmButton: false,
+          timer: 1500
+        });
+      }).catch(() => {
+        Swal.fire({
+          icon: 'error',
+          text: 'Failed to copy coupon code',
+          confirmButtonColor: '#1E88E5'
+        });
+      });
+    };
+
+    // Apply Coupon
+    window.applyCoupon = function() {
+      const couponCode = $('#coupon-code-input').val().trim();
+      if (!couponCode) {
+        Swal.fire({
+          icon: 'warning',
+          text: 'Please enter a coupon code',
+          confirmButtonColor: '#1E88E5'
+        });
+        return;
+      }
+
+      const coupons = <%- JSON.stringify(coupons || []) %>;
+      const coupon = coupons.find(
+        (c) => c.couponCode.toLowerCase() === couponCode.toLowerCase()
+      );
+      if (!coupon) {
+        Swal.fire({
+          icon: 'error',
+          text: 'Invalid coupon code',
+          confirmButtonColor: '#1E88E5'
+        });
+        return;
+      }
+
+      $.ajax({
+        url: '/applyCoupon',
+        method: 'POST',
+        data: { couponId: coupon._id },
+        success: function(response) {
+          if (response.success) {
+            $('#coupon-discount').text(response.couponDiscount.toLocaleString('en-IN'));
+            $('#cart-total').text(`₹${response.total.toLocaleString('en-IN')}`);
+            $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
+            $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
+
+            // Update coupon list
+            const $couponList = $('.coupon-list');
+            $couponList.empty();
+            coupons.forEach(c => {
+              const isApplied = c._id === coupon._id;
+              const buttonText = isApplied ? 'Remove' : 'Copy';
+              const buttonClass = isApplied ? 'coupon-copy-btn remove-coupon-btn' : 'coupon-copy-btn';
+              const buttonAction = isApplied ? `removeCoupon(this)` : `copyCoupon('${c.couponCode}')`;
+              const couponHtml = `
+                <div class="coupon-item">
+                  <div class="coupon-info">
+                    <h4>${c.couponName}</h4>
+                    <p>Code: <strong>${c.couponCode}</strong></p>
+                    <p>Discount: ₹${c.offerPrice.toLocaleString('en-IN')}</p>
+                    <p>Min Purchase: ₹${c.minimumPrice.toLocaleString('en-IN')}</p>
+                  </div>
+                  <button class="${buttonClass}" data-coupon-id="${c._id}" data-coupon-code="${c.couponCode}" onclick="${buttonAction}">${buttonText}</button>
+                </div>
+              `;
+              $couponList.append(couponHtml);
+            });
+
+            Swal.fire({
+              icon: 'success',
+              text: response.message,
+              showConfirmButton: false,
+              timer: 1500
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              text: response.message,
+              confirmButtonColor: '#1E88E5'
+            });
+          }
+        },
+        error: function(err) {
+          Swal.fire({
+            icon: 'error',
+            text: 'Failed to apply coupon',
+            confirmButtonColor: '#1E88E5'
+          });
+        }
+      });
+    };
+
+    // Remove Coupon
+    window.removeCoupon = function(button) {
+      const couponId = $(button).data('coupon-id');
+      const coupons = <%- JSON.stringify(coupons || []) %>;
+
+      $.ajax({
+        url: '/removeCoupon',
+        method: 'POST',
+        success: function(response) {
+          if (response.success) {
+            $('#coupon-discount').text(response.couponDiscount.toLocaleString('en-IN') || 0);
+            $('#cart-total').text(`₹${response.total.toLocaleString('en-IN')}`);
+            $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
+            $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
+
+            const $couponList = $('.coupon-list');
+            $couponList.empty();
+            coupons.forEach(coupon => {
+              const couponHtml = `
+                <div class="coupon-item">
+                  <div class="coupon-info">
+                    <h4>${coupon.couponName}</h4>
+                    <p>Code: <strong>${coupon.couponCode}</strong></p>
+                    <p>Discount: ₹${coupon.offerPrice.toLocaleString('en-IN')}</p>
+                    <p>Min Purchase: ₹${coupon.minimumPrice.toLocaleString('en-IN')}</p>
+                  </div>
+                  <button class="coupon-copy-btn" data-coupon-code="${coupon.couponCode}" onclick="copyCoupon('${coupon.couponCode}')">Copy</button>
+                </div>
+              `;
+              $couponList.append(couponHtml);
+            });
+
+            Swal.fire({
+              icon: 'success',
+              text: response.message,
+              showConfirmButton: false,
+              timer: 1500
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              text: response.message,
+              confirmButtonColor: '#1E88E5'
+            });
+          }
+        },
+        error: function(err) {
+          Swal.fire({
+            icon: 'error',
+            text: 'Failed to remove coupon',
+            confirmButtonColor: '#1E88E5'
+          });
+        }
+      });
+    };
+
+    // Proceed to Checkout
     $('.checkout-button').click(function() {
       if (this.disabled) return;
       $.ajax({
@@ -491,7 +920,7 @@
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: err.responseJSON.message,
+            text: err.responseJSON.message || 'Failed to proceed to checkout',
             confirmButtonColor: '#1E88E5'
           });
         }
@@ -499,4 +928,5 @@
     });
   });
 </script>
+
 <%- include("../partials/user/footer.ejs") %>

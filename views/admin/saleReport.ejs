@@ -1,0 +1,441 @@
+<%- include("../../views/partials/admin/header") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAP CART - Sales Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <style>
+         * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --sidebar-width: 240px;
+            --primary-color: #8A4AF3;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #101022;
+            --lighter-bg: #2a2a3e;
+            --text-color: #ffffff;
+            --border-color: #3a3a4e;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+        }
+
+        .logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            overflow-x: hidden;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--primary-color), #6f3ac9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .summary-card {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #ffffff;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .card-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .table-container {
+            background-color: var(--lighter-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--darker-bg);
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(138, 74, 243, 0.05);
+        }
+
+        .product-image {
+            width: 40px;
+            height: 40px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        /* Updated styles for sales filter container and buttons */
+        .sales-filter-container {
+            background-color: var(--lighter-bg);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        .sales-filter-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .sales-download-btn {
+            background: linear-gradient(135deg, var(--primary-color), #6f3ac9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sales-download-btn:hover {
+            background: linear-gradient(135deg, #6f3ac9, var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .sales-download-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .sales-date-picker {
+            background-color: var(--darker-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .form-select, .form-control {
+            background-color: var(--darker-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .form-label {
+            color: var(--text-color);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        /* Media queries (updated for button alignment) */
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+
+            .sales-filter-actions {
+                flex-direction: row;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .row-cols-md-4 {
+                flex-direction: column;
+            }
+
+            .sales-filter-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sales-download-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .content {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .summary-card {
+                padding: 15px;
+            }
+
+            .card-value {
+                font-size: 20px;
+            }
+
+            .sales-filter-container {
+                padding: 15px;
+            }
+
+            .sales-download-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="header"></div>
+
+        <div class="content">
+            <div class="page-header">
+                <h1 class="page-title">
+                    SALES REPORT 
+                    <%= dateRange ? `(${dateRange.charAt(0).toUpperCase() + dateRange.slice(1)}${startDate && endDate ? `: ${moment(startDate).format('DD-MM-YYYY')} to ${moment(endDate).format('DD-MM-YYYY')}` : ''})` : '(All Time)' %>
+                </h1>
+            </div>
+
+            <!-- Updated Filter Section -->
+            <div class="sales-filter-container">
+                <form id="salesFilterForm" action="/admin/saleReport" method="GET">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Date Range</label>
+                            <select name="dateRange" class="form-select" onchange="toggleSalesCustomDate()">
+                                <option value="">All Time</option>
+                                <option value="daily" <%= dateRange === 'daily' ? 'selected' : '' %>>Daily</option>
+                                <option value="weekly" <%= dateRange === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                                <option value="monthly" <%= dateRange === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                                <option value="yearly" <%= dateRange === 'yearly' ? 'selected' : '' %>>Yearly</option>
+                                <option value="custom" <%= startDate && endDate ? 'selected' : '' %>>Custom</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3" id="salesCustomDateRange" style="<%= startDate && endDate ? '' : 'display: none' %>">
+                            <label class="form-label">Select Dates</label>
+                            <input type="text" class="form-control sales-date-picker" id="salesDatePicker" name="dateRangePicker" 
+                                   value="<%= startDate && endDate ? `${moment(startDate).format('YYYY-MM-DD')} to ${moment(endDate).format('YYYY-MM-DD')}` : '' %>">
+                            <input type="hidden" name="startDate" id="salesStartDate" value="<%= startDate %>">
+                            <input type="hidden" name="endDate" id="salesEndDate" value="<%= endDate %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="sales-filter-actions">
+                                <button type="submit" class="sales-download-btn">Apply Filter</button>
+                                <button type="button" class="sales-download-btn" onclick="downloadSalesReport('pdf')">Download PDF</button>
+                                <button type="button" class="sales-download-btn" onclick="downloadSalesReport('excel')">Download Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Summary Cards (unchanged) -->
+            <div class="row row-cols-1 row-cols-md-4 g-3">
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Total Sales</div>
+                        <div class="card-value">₹ <%= totalSaleAmount.toFixed(2) %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Items Sold</div>
+                        <div class="card-value"><%= totalProducts %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Orders Count</div>
+                        <div class="card-value"><%= totalOrderCount %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Total Discounts</div>
+                        <div class="card-value">₹ <%= totalOfferApplied.toFixed(2) %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Coupons Applied</div>
+                        <div class="card-value">₹ <%= totalCouponsApplied.toFixed(2) %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Cancelled Orders</div>
+                        <div class="card-value"><%= cancelledOrders %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Returns</div>
+                        <div class="card-value"><%= returnedOrders %></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table (unchanged) -->
+            <div class="table-container">
+                <h4 style="padding: 15px 20px; background-color: var(--darker-bg);">Order Details</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Order ID</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Discount</th>
+                            <th>Coupon Applied</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% allOrders.forEach(data => { %>
+                            <tr>
+                                <td><%= data.userId?.name || 'Unknown' %></td>
+                                <td><%= data.orderId %></td>
+                                <td><%= data.status %></td>
+                                <td><%= moment(data.createdAt).format('DD-MM-YYYY') %></td>
+                                <td>₹<%= data.finalAmount.toFixed(2) %></td>
+                                <td>₹<%= data.discount.toFixed(2) %></td>
+                                <td class="action-cell">
+                                    <%=data.couponApplied%>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+         flatpickr("#salesDatePicker", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates) {
+                if (selectedDates.length === 2) {
+                    document.getElementById('salesStartDate').value = moment(selectedDates[0]).format('YYYY-MM-DD');
+                    document.getElementById('salesEndDate').value = moment(selectedDates[1]).format('YYYY-MM-DD');
+                }
+            }
+        });
+
+        function toggleSalesCustomDate() {
+            const dateRange = document.querySelector('select[name="dateRange"]').value;
+            const customDateRange = document.getElementById('salesCustomDateRange');
+            customDateRange.style.display = dateRange === 'custom' ? 'block' : 'none';
+        }
+
+        function downloadSalesReport(type) {
+            const form = document.getElementById('salesFilterForm');
+            const currentAction = form.action;
+            form.action = `/admin/sale-report/download-${type}`;
+            form.submit();
+            form.action = currentAction;
+        }
+
+        let message = document.getElementById("message")?.value;
+        if (message?.trim()) {
+            Swal.fire({
+                title: "Notification",
+                text: message,
+                icon: "success"
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>
+<%- include("../../views/partials/admin/footer") %>

@@ -4,7 +4,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-
+ 
 <style>
     :root {
         --primary-color: #4a6fdc;
@@ -67,6 +67,43 @@
         font-weight: 600;
     }
 
+    .referral-section {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-top: 2rem;
+    border: 1px solid #e5e7eb;
+  }
+  .referral-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+  .referral-input {
+    width: 100%;
+    padding: 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #374151;
+    font-size: 1rem;
+  }
+  .referral-button {
+    background: #3b82f6;
+    color: white;
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+  }
+  .referral-button:hover {
+    background: #2563eb;
+  }
     .form-group {
         margin-bottom: 1rem;
     }
@@ -170,20 +207,17 @@
                 <h2>PERSONAL INFORMATION</h2>
                 
                  
-
-                <div id="cropModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px;">
-                        <img id="imageToCrop" style="max-width: 500px; max-height: 500px;">
-                        <div style="margin-top: 20px; text-align: center;">
-                            <button id="cropButton" class="main-btn">Crop & Save</button>
-                            <button id="cancelCrop" class="main-btn" style="background-color: #6c757d;">Cancel</button>
-                        </div>
-                    </div>
-                </div>
+ 
 
                 <div class="form-row">
                     <div class="form-col">
+
                         <div class="form-group">
+                            <div>
+                                <img src="/uploads/products/<%=user.userImage%>" alt="" style="border-radius: 100px;" >
+
+                            </div>
+ <br>
                             <label for="first-name">Name</label>
                             <h3><%= user.name %></h3>
                         </div>
@@ -226,12 +260,42 @@
                     <button class="main-btn"><a href="/forgot-password">Change Password</a></button>
                 </div>
             </div>
+            <div class="container">
+                 
+              
+                <div class="referral-section">
+                  <h3>Your Referral Link</h3>
+                  <p>Invite friends and earn ₹100 for each successful signup!</p>
+                  <input type="text" class="referral-input" value="http://localhost:3000/signup?ref=<%= user.referralCode %>" readonly>
+                  <button class="referral-button" onclick="copyReferralLink()">Copy Link</button>
+                </div>
+              </div>
+              
+              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+              <script>
+                function copyReferralLink() {
+                  const link = document.querySelector('.referral-input');
+                  link.select();
+                  document.execCommand('copy');
+                  Swal.fire({
+                    icon: 'success',
+                    title: 'Link Copied!',
+                    text: 'Share it with your friends.',
+                  });
+                }
+              </script>
         </div>
+       
     </div>
 
     <input type="text" value="<%= msg %>" id="message" hidden>
 
-    
+ 
     <%- include("../../views/partials/user/footer") %>
 </body>
 </html>
+
+  
+
+
+ 

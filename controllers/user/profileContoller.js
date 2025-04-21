@@ -222,9 +222,7 @@ const changeEmail = async (req,res)=>{
 const loadeditProfile = async (req,res) => {
     try {
         const userId = req.session.user;
-        console.log(userId);
         const userData = await User.findById(userId);
-        console.log(userData);
         res.render('edit-profile',{
             user:userData
         });
@@ -234,20 +232,59 @@ const loadeditProfile = async (req,res) => {
     }
 };
 
-const updateProfile = async (req,res) => {
-    try {
+ 
 
-        const userId = req.session.user;
-        const {username,phone} = req.body;
-        const updateUser = await User.findByIdAndUpdate(userId,{name:username,phone:phone});
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const { username, phone } = req.body;
+    console.log(req.body);
 
-        req.session.userMsg = 'Updated Successfully';
-
-        res.redirect('/userProfile');
-    } catch (error) {
-        
+    // Find the existing user
+    const user = await User.findById(userId);
+    if (!user) {
+      req.session.userMsg = 'Session timeout!';
+      return res.redirect('/login');
     }
+
+    let profileImage;
+
+    // Check if a new image is uploaded
+    if (req.file) {
+      profileImage = req.file.filename;
+
+      // Delete old image if it exists
+      if (user.profileImage) {
+        const oldImagePath = path.join(__dirname, '../public/uploads/profiles', user.userImage);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+    }
+
+    // Prepare update data
+    const updateData = {
+      name: username,
+      phone: phone,
+    };
+
+    if (profileImage) {
+      updateData.userImage = profileImage;
+    }
+
+    
+    await User.findByIdAndUpdate(userId, { $set: updateData });
+
+    req.session.userMsg = 'Updated Successfully';
+    res.redirect('/userProfile');
+  } catch (error) {
+    console.error(error);
+    req.session.userMsg = 'An error occurred while updating your profile';
+    res.redirect('/userProfile');
+  }
 };
+
+
 const loadAddress = async (req, res) => {
     try {
        

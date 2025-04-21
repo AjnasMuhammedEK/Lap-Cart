@@ -54,6 +54,8 @@ const brandInfo = async (req,res) => {
 };
 
 
+
+
 const addBrand = async(req, res) => {
     const {brandName} = req.body
     console.log(brandName)
@@ -71,11 +73,9 @@ const addBrand = async(req, res) => {
             brandName
             
         });
-        console.log('brand saved')
-        
+         
         await newBrand.save();
-        console.log('newBrand.save')
-
+ 
         req.session.admMsg = 'Category added successfully'
         res.redirect('/admin/brand')
         
@@ -90,9 +90,7 @@ const deleteBrand = async (req,res) =>{
     try {
 
         const {brandId} = req.body
-        console.log('1')
-        console.log(brandId)
-      
+       
         const updateBrand = await Brand.findOneAndUpdate(
             { _id: brandId }, 
             { $set: { isDeleted: true } },
@@ -101,12 +99,11 @@ const deleteBrand = async (req,res) =>{
 
         req.session.admMsg ='Brand Deleted successfully'
         
-        console.log('2')
-        res.redirect('/admin/brand')
-        console.log('3')
-        
+         res.redirect('/admin/brand')
+         
     } catch (error) {
-        
+        res.redirect('/pageerror');
+
     }
 };
 

@@ -1,4 +1,6 @@
 <%-include("../../views/partials/user/header")%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     /* Main Layout Adjustments */
     .container {
@@ -112,13 +114,13 @@
     /* Buttons */
     .filter-button, .clear-button {
         width: 100%;
-        padding: 8px; /* Reduced from 12px */
+        padding: 8px;
         border: none;
-        border-radius: 20px; /* Slightly smaller radius */
+        border-radius: 20px;
         font-weight: 600;
-        font-size: 12px; /* Reduced from default */
+        font-size: 12px;
         text-transform: uppercase;
-        letter-spacing: 0.5px; /* Reduced from 1px */
+        letter-spacing: 0.5px;
         cursor: pointer;
         transition: all 0.3s ease;
     }
@@ -226,11 +228,11 @@
             <div class="sidebar-column">
                 <div class="form-container">
                     <form action="/shop" method="GET">
+                        <!-- Search -->
                         <div class="filter-section">
                             <div class="filter-title">Search</div>
                             <div class="filter-content">
-                                <input type="text" id="search" name="search" placeholder="Search products...">
-
+                                <input type="text" id="search" name="search" placeholder="Search products..." value="<%= search || '' %>">
                             </div>
                             <div class="button-container">
                                 <button type="submit" id="searchBtn" class="filter-button">Search</button>
@@ -238,60 +240,85 @@
                             </div>
                         </div>
 
+                        <!-- Brand -->
                         <div class="filter-section">
                             <div class="filter-title">Brand</div>
                             <div class="filter-content">
                                 <select id="brand" name="brand">
                                     <option value="">All Brands</option>
                                     <% for(let i = 0; i < brand.length; i++) { %>
-                                        <option value="<%=brand[i].brandName%>">
-                                            <%=brand[i].brandName%>
+                                        <option value="<%= brand[i]._id %>" <%= selectedBrand === brand[i]._id.toString() ? 'selected' : '' %>>
+                                            <%= brand[i].brandName %>
                                         </option>
                                     <% } %>
                                 </select>
                             </div>
                         </div>
 
+                        <!-- Category -->
                         <div class="filter-section">
                             <div class="filter-title">Category</div>
                             <div class="filter-content">
                                 <select id="category" name="category">
                                     <option value="">All Categories</option>
                                     <% for(let i = 0; i < category.length; i++) { %>
-                                        <option value="<%=category[i].name%>">
-                                            <%=category[i].name%>
+                                        <option value="<%= category[i].name %>" <%= selectedCategory === category[i].name ? 'selected' : '' %>>
+                                            <%= category[i].name %>
                                         </option>
                                     <% } %>
                                 </select>
                             </div>
                         </div>
 
+                        <!-- Sort By -->
                         <div class="filter-section">
                             <div class="filter-title">Sort By</div>
                             <div class="filter-content">
                                 <select id="sort" name="sort">
                                     <option value="">Select Sort</option>
-                                    <option value="a-z">A-Z</option>
-                                    <option value="z-a">Z-A</option>
-                                    <option value="price-low-high">Price: Low to High</option>
-                                    <option value="price-high-low">Price: High to Low</option>
+                                    <option value="a-z" <%= selectedSort === 'a-z' ? 'selected' : '' %>>A-Z</option>
+                                    <option value="z-a" <%= selectedSort === 'z-a' ? 'selected' : '' %>>Z-A</option>
+                                    <option value="price-low-high" <%= selectedSort === 'price-low-high' ? 'selected' : '' %>>Price: Low to High</option>
+                                    <option value="price-high-low" <%= selectedSort === 'price-high-low' ? 'selected' : '' %>>Price: High to Low</option>
                                 </select>
                             </div>
                         </div>
 
+                        <!-- Price Range -->
                         <div class="filter-section">
                             <div class="filter-title">Price Range</div>
                             <div class="filter-content">
                                 <div class="price-range">
-                                    <input type="number" id="min-price" name="minPrice" placeholder="Min">
-                                    <input type="number" id="max-price" name="maxPrice" placeholder="Max">
+                                    <input type="number" id="min-price" name="minPrice" placeholder="Min" value="<%= minPrice || '' %>">
+                                    <input type="number" id="max-price" name="maxPrice" placeholder="Max" value="<%= maxPrice || '' %>">
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Hidden Inputs to Preserve Other Filters -->
+                        <input type="hidden" name="page" value="1">
+                        <% if (search) { %>
+                            <input type="hidden" name="search" value="<%= search %>">
+                        <% } %>
+                        <% if (selectedCategory) { %>
+                            <input type="hidden" name="category" value="<%= selectedCategory %>">
+                        <% } %>
+                        <% if (selectedBrand) { %>
+                            <input type="hidden" name="brand" value="<%= selectedBrand %>">
+                        <% } %>
+                        <% if (selectedSort) { %>
+                            <input type="hidden" name="sort" value="<%= selectedSort %>">
+                        <% } %>
+                        <% if (minPrice) { %>
+                            <input type="hidden" name="minPrice" value="<%= minPrice %>">
+                        <% } %>
+                        <% if (maxPrice) { %>
+                            <input type="hidden" name="maxPrice" value="<%= maxPrice %>">
+                        <% } %>
+
                         <div class="button-container">
                             <button type="submit" class="filter-button">Apply Filters</button>
-                            <!-- <button type="reset" class="clear-button">Clear</button> -->
+                            <button type="button" onclick="window.location.href='/shop'" class="clear-button">Clear All</button>
                         </div>
                     </form>
                 </div>
@@ -299,10 +326,10 @@
 
             <div class="products-column">
                 <div class="product-grid">
-                    <%for(let i = 0 ; i < product.length ; i++) {%>
+                    <% for(let i = 0 ; i < product.length ; i++) { %>
                     <div class="product-item ftco-animate">
                         <div class="product d-flex flex-column">
-                            <a href="/productDetaile?id=<%= product[i]._id %>" class="img-prod"><img class="img-fluid" src="/uploads/product-images/<%=product[i].productImage[0]%>" alt="Colorlib Template">
+                            <a href="/productDetaile?id=<%= product[i]._id %>" class="img-prod"><img class="img-fluid" src="/Uploads/product-images/<%=product[i].productImage[0]%>" alt="Colorlib Template">
                                 <div class="overlay"></div>
                             </a>
                             <div class="text py-3 pb-4 px-3">
@@ -321,30 +348,30 @@
                                     </div>
                                 </div>
                                 <h3><a href="#"><%=product[i].productName%></a></h3>
-                                <h5><%=product[i].brand%></h5>
+                                <h5><%=product[i].brand.brandName%></h5>
                                 <div class="pricing">
                                     <p class="price"><span class="mr-2 price-dc">₹<%=product[i].regularPrice%></span><span>₹<%=product[i].salePrice%></span></p>
                                 </div>
                                 <p class="bottom-area d-flex px-3">
-                                    <a href="#" class="add-to-cart text-center py-2 mr-1"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
+                                    <a onclick="addToWhishlist('<%=product[i]._id%>')" class="add-to-cart text-center py-2 mr-1>"><span>Add to wishlist  <i class="ion-ios-add ml-1"></i></span> </a> 
                                     <a href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <%}%>
+                    <% } %>
                 </div>
 
                 <div class="row mt-5">
                     <div class="pagination" style="width: 100%; text-align: center;">
                         <% if (currentPage > 1) { %>
-                            <a class="btn" href="/shop?page=<%= currentPage - 1 %>">Prev</a>
+                            <a class="btn" href="/shop?page=<%= currentPage - 1 %><%= selectedCategory ? '&category=' + selectedCategory : '' %><%= selectedBrand ? '&brand=' + selectedBrand : '' %><%= selectedSort ? '&sort=' + selectedSort : '' %><%= minPrice ? '&minPrice=' + minPrice : '' %><%= maxPrice ? '&maxPrice=' + maxPrice : '' %><%= search ? '&search=' + search : '' %>">Prev</a>
                         <% } %>
                         <% for (let i = 1; i <= totalPages; i++) { %>
-                            <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/shop?page=<%= i %>"><%= i %></a>
+                            <a class="btn <%= currentPage === i ? 'active' : '' %>" href="/shop?page=<%= i %><%= selectedCategory ? '&category=' + selectedCategory : '' %><%= selectedBrand ? '&brand=' + selectedBrand : '' %><%= selectedSort ? '&sort=' + selectedSort : '' %><%= minPrice ? '&minPrice=' + minPrice : '' %><%= maxPrice ? '&maxPrice=' + maxPrice : '' %><%= search ? '&search=' + search : '' %>"><%= i %></a>
                         <% } %>
                         <% if (currentPage < totalPages) { %>
-                            <a class="btn" href="/shop?page=<%= currentPage + 1 %>">Next</a>
+                            <a class="btn" href="/shop?page=<%= currentPage + 1 %><%= selectedCategory ? '&category=' + selectedCategory : '' %><%= selectedBrand ? '&brand=' + selectedBrand : '' %><%= selectedSort ? '&sort=' + selectedSort : '' %><%= minPrice ? '&minPrice=' + minPrice : '' %><%= maxPrice ? '&maxPrice=' + maxPrice : '' %><%= search ? '&search=' + search : '' %>">Next</a>
                         <% } %>
                     </div>
                 </div>
@@ -411,13 +438,33 @@
 </section>
 
 <script>
-    
-
 function clearSearch() {
-                document.getElementById("search").value = "";
-                document.getElementById('searchBtn').click();
+    document.getElementById("search").value = "";
+    document.querySelector('form').submit();
+}
 
+function addToWhishlist(proId){
+    console.log(proId);
+    $.ajax({
+        url:'/addWhishlist',
+        method:'get',
+        data:{productId:proId},
+        success:function(response){
+            if(response.success){
+                Swal.fire({
+                    icon:'success',
+                    text:response.message
+                })
+            }else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'An unexpected error occurred'
+                });
             }
+        }
+    })
+}
 </script>
 
 <%-include("../../views/partials/user/footer")%>
