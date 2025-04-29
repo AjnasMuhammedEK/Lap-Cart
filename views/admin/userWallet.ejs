@@ -1,0 +1,614 @@
+<%- include("../../views/partials/admin/header") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Details - LapCart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --sidebar-width: 240px;
+            --primary-color: #8257ED;
+            --dark-bg: #1a1a2e;
+            --darker-bg: #101022;
+            --lighter-bg: #2a2a3e;
+            --text-color: #ffffff;
+            --border-color: #3a3a4e;
+            --success-color: #00bf8e;
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #f8f9fa;
+            --text: #333333;
+            --border: #e1e5eb;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --card-bg: #ffffff;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            min-height: 100vh;
+            overflow-y: auto; /* Ensure body is scrollable */
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--darker-bg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span:first-child {
+            color: var(--primary-color);
+        }
+
+        .menu {
+            list-style: none;
+            padding: 10px 0;
+        }
+
+        .menu-item {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(130, 87, 237, 0.1);
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            width: calc(100% - var(--sidebar-width));
+            min-height: 100vh; /* Ensure content area spans full height */
+            overflow-y: auto; /* Enable scrolling */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background-color: var(--darker-bg);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px 40px 10px 15px;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+        }
+
+        .search-container button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-profile .status {
+            width: 10px;
+            height: 10px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            background-color: #6f46c9;
+            transform: translateY(-2px);
+        }
+
+        /* Wallet Balance Card */
+        .wallet-balance-card {
+            background: linear-gradient(135deg, var(--lighter-bg), var(--darker-bg));
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .wallet-balance-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .wallet-balance-card h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .wallet-balance-card p {
+            margin: 0;
+            color: #cccccc;
+        }
+
+        .wallet-balance-card .balance {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--success-color);
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: var(--lighter-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--darker-bg);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        td {
+            color: #e0e0e0;
+        }
+
+        tbody tr:hover {
+            background-color: rgba(130, 87, 237, 0.1);
+        }
+
+        .badge {
+            font-size: 0.9em;
+            padding: 6px 12px;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .card {
+            background.ConcurrentHashMapcolor: var(--card-bg);
+            border: none;
+        }
+
+        .card-body p {
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 1rem;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-details p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .pro-img {
+            inline-size: 50px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .sidebar .logo span, .sidebar .menu-item span {
+                display: none;
+            }
+
+            .sidebar .menu-item {
+                justify-content: center;
+                padding: 15px 0;
+            }
+
+            .sidebar .menu-item i {
+                margin-right: 0;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .wallet-balance-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .wallet-balance-card .balance {
+                font-size: 28px;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .user-profile {
+                align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+           
+            <div class="user-profile">
+                <div class="status"></div>
+                <span>Admin</span>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h1 class="page-title">Wallet Details - <%=user.name%></h1>
+            <a href="/admin/users" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back to Users
+            </a>
+        </div>
+
+        <!-- Wallet Balance -->
+        <div class="wallet-balance-card">
+            <div>
+                <h3>Current Wallet Balance</h3>
+                <p>User: <%=user.name%></p>
+            </div>
+            <div class="balance">
+                ₹<%=userWallet.balance%>
+            </div>
+        </div>
+
+        <!-- Transaction History Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%userWallet.transactions.forEach(data=>{%>
+                    <tr>
+                        <td><%=data.transactionId%></td>
+                        <td>₹<%=data.amount%></td>
+                        <td><%=data.type%></td>
+                        <td><%=data.date.toDateString()%></td>
+                        <td><span class="badge bg-success"><%=data.status%></span></td>
+                        <%if(data.orderId){%>
+                            <td><button class="edit-btn" onclick="walletOrder('<%=data.orderId%>')">👁️</button></td>
+                        <%}else{%>
+                            <td><button class="edit-btn" disabled>👁️</button></td>
+                        <%}%>
+                    </tr>
+                    <%})%>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="walletOrder" tabindex="-1" aria-labelledby="walletOrderLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white;">
+                    <h5 class="modal-title" id="walletOrderLabel">Order Details - <span id="orderIdDisplay"></span></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="background-color: var(--secondary);">
+                    <!-- Order Summary -->
+                    <div class="card mb-3" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: var(--text); font-weight: 600;">Order Summary</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+                                    <p><strong>Order Date:</strong> <span id="invoiceDate"></span></p>
+                                    <p><strong>Status:</strong> <span id="orderStatus" class="badge" style="background-color: var(--primary);"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Payment Method:</strong> <span id="paymentMethod"></span></p>
+                                    <p><strong>Wallet Amount Used:</strong> ₹<span id="walletAmountUsed"></span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Ordered Items -->
+                    <div class="card mb-3" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: var(--text); font-weight: 600;">Ordered Items</h6>
+                            <div id="orderedItems"></div>
+                        </div>
+                    </div>
+                    <!-- Shipping Address -->
+                    <div class="card mb-3" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: var(--text); font-weight: 600;">Shipping Address</h6>
+                            <p><strong>Name:</strong> <span id="addressName"></span></p>
+                            <p><strong>Address:</strong> <span id="addressDetails"></span></p>
+                            <p><strong>Phone:</strong> <span id="addressPhone"></span></p>
+                        </div>
+                    </div>
+                    <!-- Price Breakdown -->
+                    <div class="card" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: var(--text); font-weight: 600;">Price Breakdown</h6>
+                            <div class="d-flex justify-content-between">
+                                <span>Total Price:</span>
+                                <span>₹<span id="totalPrice"></span></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Discount:</span>
+                                <span>-₹<span id="discount"></span></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Offer Discount:</span>
+                                <span>-₹<span id="offerDiscount"></span></span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Coupon Discount:</span>
+                                <span>-₹<span id="couponDiscount"></span></span>
+                            </div>
+                            
+                            <hr>
+                            <div class="d-flex justify-content-between" style="font-weight: 600; color: var(--primary);">
+                                <span>Final Amount:</span>
+                                <span>₹<span id="finalAmount"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: var(--card-bg);">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function walletOrder(orderId) {
+            $.ajax({
+                url: '/admin/getOrder',
+                method: 'POST',
+                data: { orderId },
+                success: (response) => {
+                    if (!response || !response.order) {
+                        console.error('Invalid response structure:', response);
+                        alert('Failed to load order details. Invalid response from server.');
+                        return;
+                    }
+
+                    const order = response.order;
+
+                    // Populate modal fields
+                    document.getElementById('orderIdDisplay').textContent = order.orderId || 'N/A';
+                    document.getElementById('orderId').textContent = order.orderId || 'N/A';
+                    document.getElementById('invoiceDate').textContent = order.invoiceDate 
+                        ? new Date(order.invoiceDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) 
+                        : 'N/A';
+                    document.getElementById('orderStatus').textContent = order.status || 'N/A';
+                    document.getElementById('paymentMethod').textContent = order.paymentMethod || 'N/A';
+                    document.getElementById('walletAmountUsed').textContent = order.walletAmountUsed 
+                        ? order.walletAmountUsed.toFixed(2) 
+                        : '0.00';
+
+                    // Address
+                    const address = order.address || {};
+                    document.getElementById('addressName').textContent = address.name || 'N/A';
+                    document.getElementById('addressDetails').textContent = address.addressType 
+                        ? `${address.addressType}, ${address.landmark || ''}, ${address.city || ''}, ${address.state || ''}, ${address.pincode || ''}`
+                        : 'N/A';
+                    document.getElementById('addressPhone').textContent = address.phone || 'N/A';
+
+                    // Price Breakdown
+                    document.getElementById('totalPrice').textContent = order.totalPrice 
+                        ? order.totalPrice.toFixed(2) 
+                        : '0.00';
+                    document.getElementById('discount').textContent = order.discount 
+                        ? order.discount.toFixed(2) 
+                        : '0.00';
+                    document.getElementById('offerDiscount').textContent = order.offerDiscount 
+                        ? order.offerDiscount.toFixed(2) 
+                        : '0.00';
+                    document.getElementById('couponDiscount').textContent = order.couponDiscount 
+                        ? order.couponDiscount.toFixed(2) 
+                        : '0.00';
+                   
+                    document.getElementById('finalAmount').textContent = order.finalAmount 
+                        ? order.finalAmount.toFixed(2) 
+                        : '0.00';
+
+                    // Populate Ordered Items
+                    const orderedItemsDiv = document.getElementById('orderedItems');
+                    orderedItemsDiv.innerHTML = '';
+                    if (order.orderedItems && Array.isArray(order.orderedItems) && order.orderedItems.length > 0) {
+                        order.orderedItems.forEach(item => {
+                            orderedItemsDiv.innerHTML += `
+                                <div class="item-row">
+                                    <img class="pro-img" src="/Uploads/product-images/${item.product.productImage[0]}" alt="${item.product.productName || 'Product Image'}">
+                                    <div class="item-details">
+                                        <p><strong>${item.product.productName || 'Unknown Item'}</strong></p>
+                                        <p>Quantity: ${item.orderQuantity || 1}</p>
+                                        <p>Price: ₹${item.product.salePrice ? item.product.salePrice.toFixed(2) : '0.00'}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        orderedItemsDiv.innerHTML = '<p>No items found for this order.</p>';
+                    }
+
+                    // Show modal
+                    const walletOrderModal = new bootstrap.Modal(document.getElementById('walletOrder'));
+                    walletOrderModal.show();
+                },
+                error: (xhr, status, error) => {
+                    console.error('AJAX Error:', status, error, xhr.responseText);
+                    alert('Failed to fetch order details. Please try again later.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+<%- include("../../views/partials/admin/footer") %>

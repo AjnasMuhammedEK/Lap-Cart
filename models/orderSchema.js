@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const { v4: uuidv4 } = require('uuid');
+// const { v4: uuidv4 } = require('uuid');
 
 const orderSchema = new Schema({
   orderId: {
     type: String,
-    default: () => uuidv4(),
+    default: () => Math.random().toString(36).substring(2, 10).toUpperCase(),
     unique: true,
   },
   userId: {
@@ -20,13 +20,25 @@ const orderSchema = new Schema({
         ref: 'Product',
         required: true,
       },
-      orderQuantity: {
+      orderQuantity: {  
         type: Number,
         required: true,
       },
       price: {
         type: Number,
         default: 0,
+      },
+      offferId : {
+        type : Schema.Types.ObjectId,
+        ref:'Offer'
+      },
+      offerAmount:{
+        type:Number,
+        default:0
+      },
+      couponId:{
+        type : Schema.Types.ObjectId,
+        ref : 'Coupon'
       },
       returnStatus: {
         type: String,
@@ -58,10 +70,20 @@ couponDiscount: {
     default: 0,
     min: 0
 },
-  tax: {
-    type: Number,
-    default: 0,
-  },
+cancelledCouponAmount:{
+  type:Number,
+  default:0,
+  min:0
+},
+cancelledAmount:{
+ type:Number,
+ default:0
+},
+returnAmount:{
+  type:Number,
+  default:0
+},
+  
   shipping: {
     type: Number,
     default: 0,

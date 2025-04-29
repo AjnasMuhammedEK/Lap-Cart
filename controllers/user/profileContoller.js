@@ -2,6 +2,7 @@ const User = require('../../models/userSchema');
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const Address = require('../../models/addressSchema'); 
+const Cart = require('../../models/cartSchema')
 const nodemailer = require('nodemailer');
 const env = require('dotenv').config();
 const bcrypt = require('bcrypt');
@@ -240,8 +241,7 @@ const updateProfile = async (req, res) => {
     const { username, phone } = req.body;
     console.log(req.body);
 
-    // Find the existing user
-    const user = await User.findById(userId);
+     const user = await User.findById(userId);
     if (!user) {
       req.session.userMsg = 'Session timeout!';
       return res.redirect('/login');
@@ -249,12 +249,10 @@ const updateProfile = async (req, res) => {
 
     let profileImage;
 
-    // Check if a new image is uploaded
-    if (req.file) {
+     if (req.file) {
       profileImage = req.file.filename;
 
-      // Delete old image if it exists
-      if (user.profileImage) {
+       if (user.profileImage) {
         const oldImagePath = path.join(__dirname, '../public/uploads/profiles', user.userImage);
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath);
@@ -262,8 +260,7 @@ const updateProfile = async (req, res) => {
       }
     }
 
-    // Prepare update data
-    const updateData = {
+     const updateData = {
       name: username,
       phone: phone,
     };
@@ -291,10 +288,18 @@ const loadAddress = async (req, res) => {
             const userId = req.session.user;
             const userData = await User.findById(userId);
 
+            if (userId) {
+                const cart = await Cart.findOne({ userId: userId });
+                if (cart) {
+                    items = cart.items.length;
+                }
+            }
+
             const userAddress = await Address.findOne({ userId: userId });
             res.render('address', {
                     user: userData,
-                    userAddress: userAddress   
+                    userAddress: userAddress,
+                    items:items   
                 });
         
     } catch (error) {
@@ -350,6 +355,7 @@ const editAddress = async (req,res) =>{
         const addressId = req.query.addressId;
         console.log(addressId);
         const user = req.session.user;
+        
         const currentAddress = await Address.findOne({
             'address._id': addressId
         });

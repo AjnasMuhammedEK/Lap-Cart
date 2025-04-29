@@ -142,7 +142,6 @@
             display: inline-block;
         }
 
-        /* Updated styles for sales filter container and buttons */
         .sales-filter-container {
             background-color: var(--lighter-bg);
             padding: 20px;
@@ -206,7 +205,47 @@
             margin-bottom: 8px;
         }
 
-        /* Media queries (updated for button alignment) */
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            background: linear-gradient(135deg, var(--primary-color), #6f3ac9);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .pagination-btn:hover {
+            background: linear-gradient(135deg, #6f3ac9, var(--primary-color));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .pagination-btn:disabled {
+            background: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .pagination-btn.active {
+            background: linear-gradient(135deg, #6f3ac9, var(--primary-color));
+            font-weight: bold;
+        }
+
+        /* Media queries */
         @media (max-width: 992px) {
             .main-content {
                 margin-left: 70px;
@@ -243,6 +282,10 @@
                 width: 100%;
                 text-align: center;
             }
+
+            .pagination-container {
+                flex-wrap: wrap;
+            }
         }
 
         @media (max-width: 576px) {
@@ -266,7 +309,7 @@
                 padding: 15px;
             }
 
-            .sales-download-btn {
+            .sales-download-btn, .pagination-btn {
                 padding: 8px 16px;
                 font-size: 13px;
             }
@@ -285,7 +328,7 @@
                 </h1>
             </div>
 
-            <!-- Updated Filter Section -->
+            <!-- Filter Section -->
             <div class="sales-filter-container">
                 <form id="salesFilterForm" action="/admin/saleReport" method="GET">
                     <div class="row g-3">
@@ -308,7 +351,7 @@
                             <input type="hidden" name="endDate" id="salesEndDate" value="<%= endDate %>">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">&nbsp;</label>
+                            <label class="form-label"> </label>
                             <div class="sales-filter-actions">
                                 <button type="submit" class="sales-download-btn">Apply Filter</button>
                                 <button type="button" class="sales-download-btn" onclick="downloadSalesReport('pdf')">Download PDF</button>
@@ -319,7 +362,7 @@
                 </form>
             </div>
 
-            <!-- Summary Cards (unchanged) -->
+            <!-- Summary Cards -->
             <div class="row row-cols-1 row-cols-md-4 g-3">
                 <div class="col">
                     <div class="summary-card">
@@ -329,19 +372,7 @@
                 </div>
                 <div class="col">
                     <div class="summary-card">
-                        <div class="card-title">Items Sold</div>
-                        <div class="card-value"><%= totalProducts %></div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="summary-card">
-                        <div class="card-title">Orders Count</div>
-                        <div class="card-value"><%= totalOrderCount %></div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="summary-card">
-                        <div class="card-title">Total Discounts</div>
+                        <div class="card-title">Total Offer Discounts</div>
                         <div class="card-value">₹ <%= totalOfferApplied.toFixed(2) %></div>
                     </div>
                 </div>
@@ -353,8 +384,32 @@
                 </div>
                 <div class="col">
                     <div class="summary-card">
+                        <div class="card-title">Cancelled / Returned</div>
+                        <div class="card-value">₹ <%= amountOfCancelledandReturned %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Net Sale</div>
+                        <div class="card-value">₹ <%= netSale %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
                         <div class="card-title">Cancelled Orders</div>
                         <div class="card-value"><%= cancelledOrders %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Orders Count</div>
+                        <div class="card-value"><%= totalOrderCount %></div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="summary-card">
+                        <div class="card-title">Items Sold</div>
+                        <div class="card-value"><%= totalProducts %></div>
                     </div>
                 </div>
                 <div class="col">
@@ -365,7 +420,7 @@
                 </div>
             </div>
 
-            <!-- Orders Table (unchanged) -->
+            <!-- Orders Table with Pagination -->
             <div class="table-container">
                 <h4 style="padding: 15px 20px; background-color: var(--darker-bg);">Order Details</h4>
                 <table>
@@ -390,18 +445,26 @@
                                 <td>₹<%= data.finalAmount.toFixed(2) %></td>
                                 <td>₹<%= data.discount.toFixed(2) %></td>
                                 <td class="action-cell">
-                                    <%=data.couponApplied%>
+                                    <%= data.couponApplied %>
                                 </td>
                             </tr>
                         <% }) %>
                     </tbody>
                 </table>
+                <!-- Pagination Controls -->
+                <div class="pagination-container">
+                    <button class="pagination-btn" onclick="navigatePage(<%= currentPage - 1 %>)" <%= currentPage === 1 ? 'disabled' : '' %>>Previous</button>
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <button class="pagination-btn <%= currentPage === i ? 'active' : '' %>" onclick="navigatePage(<%= i %>)"><%= i %></button>
+                    <% } %>
+                    <button class="pagination-btn" onclick="navigatePage(<%= currentPage + 1 %>)" <%= currentPage === totalPages ? 'disabled' : '' %>>Next</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-         flatpickr("#salesDatePicker", {
+        flatpickr("#salesDatePicker", {
             mode: "range",
             dateFormat: "Y-m-d",
             onChange: function(selectedDates) {
@@ -424,6 +487,22 @@
             form.action = `/admin/sale-report/download-${type}`;
             form.submit();
             form.action = currentAction;
+        }
+
+        function navigatePage(page) {
+            const form = document.getElementById('salesFilterForm');
+            const url = new URL(form.action, window.location.origin);
+            url.searchParams.set('page', page);
+            if (form.querySelector('[name="dateRange"]').value) {
+                url.searchParams.set('dateRange', form.querySelector('[name="dateRange"]').value);
+            }
+            if (form.querySelector('[name="startDate"]').value) {
+                url.searchParams.set('startDate', form.querySelector('[name="startDate"]').value);
+            }
+            if (form.querySelector('[name="endDate"]').value) {
+                url.searchParams.set('endDate', form.querySelector('[name="endDate"]').value);
+            }
+            window.location.href = url.toString();
         }
 
         let message = document.getElementById("message")?.value;

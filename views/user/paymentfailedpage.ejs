@@ -13,34 +13,53 @@
         .animate-fadeIn {
             animation: fadeIn 0.6s ease-out forwards;
         }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-red-50 via-gray-50 to-blue-50 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-10 rounded-2xl shadow-2xl max-w-lg w-full text-center transform transition-all animate-fadeIn">
-        <!-- Error Icon -->
+<body class="bg-gradient-to-br from-red-50 via-gray-50 to-blue-50 flex items-center justify-center min-h-screen px-4">
+    <div class="bg-white p-8 md:p-12 rounded-2xl shadow-2xl max-w-md w-full text-center transform transition-all animate-fadeIn">
+        <!-- Icon Section -->
         <div class="relative mb-6">
-            <svg class="w-20 h-20 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-16 h-16 text-red-500 mx-auto animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-red-100 rounded-full opacity-50"></div>
+            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-20 h-20 bg-red-100 rounded-full opacity-40"></div>
         </div>
 
-        <!-- Heading -->
-        <h1 class="text-3xl font-extrabold text-gray-900 mb-3">Payment Failed</h1>
-        <p class="text-gray-600 mb-8 leading-relaxed">Oops! Something went wrong while processing your payment. Please verify your payment details or try a different method.</p>
+        <!-- Title and Message -->
+        <h1 class="text-2xl md:text-3xl font-extrabold text-gray-900 mb-3">Payment Failed</h1>
+        <p class="text-gray-600 mb-4 text-sm md:text-base leading-relaxed">We couldn't process your payment. Please review the details below and try again.</p>
 
-        <!-- Retry Button -->
-        <button  id="retryButton" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-full font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
-           <a href="/checkout"> Retry Payment</a>
-        </button>
+         <% if (errorReason) { %>
+            <div class="bg-red-50 border border-red-200 p-4 mb-6 rounded-lg flex items-start gap-3">
+                <svg class="w-5 h-5 text-red-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path>
+                </svg>
+                <div class="text-left">
+                    <p class="text-red-700 font-medium text-sm md:text-base">Payment Failure Reason: <%= errorReason %></p>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="bg-yellow-50 border border-yellow-200 p-4 mb-6 rounded-lg">
+                <p class="text-yellow-700 font-medium text-sm md:text-base">Please verify your payment details or try a different payment method.</p>
+            </div>
+        <% } %>
 
-        <!-- Additional Help Link -->
-        <p class="mt-6 text-sm text-gray-500">
-            Need assistance? 
-            <a href="/support" class="text-blue-600 hover:underline font-medium">Contact Support</a>
-        </p>
+         <div class="flex flex-col md:flex-row gap-4 justify-center">
+            <button id="retryButton" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-full font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1">
+                <a href="/checkout">Retry Payment</a>
+            </button>
+            
+        </div>
+
+         
     </div>
-
-     
 </body>
 </html>

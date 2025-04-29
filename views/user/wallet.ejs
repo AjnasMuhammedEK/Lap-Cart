@@ -52,11 +52,11 @@
     }
     
     .dw-main-container {
-    max-width: 900px;
-    width: 100%;
-    margin-left: 40px;
-    margin-top: 40px;
-}
+        max-width: 900px;
+        width: 100%;
+        margin-left: 40px;
+        margin-top: 40px;
+    }
     
     .dw-header {
         text-align: center;
@@ -243,6 +243,44 @@
         border-top: 1px solid #eaeaea;
     }
     
+    /* Pagination Styles */
+    .dw-pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+        gap: 10px;
+    }
+    
+    .dw-pagination-btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        transition: background-color 0.3s, transform 0.3s;
+        box-shadow: var(--box-shadow);
+    }
+    
+    .dw-pagination-btn:hover {
+        background-color: var(--primary-hover-color);
+        transform: translateY(-2px);
+    }
+    
+    .dw-pagination-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .dw-pagination-btn.active {
+        background-color: var(--primary-hover-color);
+        font-weight: bold;
+    }
+    
     @media (max-width: 768px) {
         body {
             flex-direction: column;
@@ -275,31 +313,28 @@
         .dw-transactions-table {
             font-size: 14px;
         }
+        
+        .dw-pagination-container {
+            flex-wrap: wrap;
+        }
     }
 </style>
 </head>
 <body>
-   
-
     <div class="dw-content-wrapper">
         <%- include("../../views/partials/profile/aside") %>
 
         <div class="dw-main-container">
-            
-            
-            
             <div class="dw-wallet-container">
                 <section class="dw-card-section">
                     <div class="dw-card">
-                        <div class="dw-card-issuer"><%= user.name%></div>
+                        <div class="dw-card-issuer"><%= user.name %></div>
                         <div class="dw-card-number">**** **** **** 1234</div>
-                        <div class="dw-card-balance">₹
-                             <%= wallet.balance%></div>
+                        <div class="dw-card-balance">₹ <%= wallet.balance.toLocaleString('en-IN') %></div>
                         <div class="dw-card-valid">Valid Thru: 12/26</div>
                     </div>
                 </section>
                 
-                  
                 <section class="dw-transactions-section">
                     <h3>Recent Transactions</h3>
                     <table class="dw-transactions-table">
@@ -309,41 +344,47 @@
                                 <th>Amount</th>
                                 <th>Type</th>
                                 <th>Method</th>
+                                <th>Description</th>
                                 <th>Status</th>
                                 <th>Date</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% let i = 0 %>
-                            <%wallet.transactions.forEach(data => {%>
-                                <%i++%>
-                            <tr>
-                                <td><%=i%></td>
-                                <td class="dw-credit"><%=data.amount%></td>
-                                <td><%=data.type%></td>
-                                <td><%=data.method%></td>
-                                <td><%=data.status%></td>
-                                <td><%= new Date(data.date).toLocaleDateString() %></td>
-                            </tr>
-                            <%})%>
-
-                           
+                            <% let i = (currentPage - 1) * 5 %>
+                            <% wallet.transactions.forEach(data => { %>
+                                <% i++ %>
+                                <tr>
+                                    <td><%= i %></td>
+                                    <td class="dw-credit"><%= data.amount %></td>
+                                    <td><%= data.type %></td>
+                                    <td><%= data.method %></td>
+                                    <td><%= data.description%></td>
+                                    <td><%= data.status %></td>
+                                    <td><%= new Date(data.date).toLocaleDateString() %></td>
+                                </tr>
+                            <% }) %>
                         </tbody>
                     </table>
+                    <!-- Pagination Controls -->
+                    <div class="dw-pagination-container">
+                        <button class="dw-pagination-btn" onclick="navigatePage(<%= currentPage - 1 %>)" <%= currentPage === 1 ? 'disabled' : '' %>>Previous</button>
+                        <% for(let i = 1; i <= totalPages; i++) { %>
+                            <button class="dw-pagination-btn <%= currentPage === i ? 'active' : '' %>" onclick="navigatePage(<%= i %>)"><%= i %></button>
+                        <% } %>
+                        <button class="dw-pagination-btn" onclick="navigatePage(<%= currentPage + 1 %>)" <%= currentPage === totalPages ? 'disabled' : '' %>>Next</button>
+                    </div>
                 </section>
             </div>
-            
-            <footer class="dw-footer">
-                <p>Copyright © 2024 All rights reserved</p>
-
-            </footer>
-
         </div>
-
     </div>
 
-
+    <script>
+        function navigatePage(page) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.toString();
+        }
+    </script>
 </body>
 </html>
 <%- include("../../views/partials/user/footer") %>
-

@@ -197,14 +197,14 @@
           <div class="wishlist-item">
             <div class="wishlist-image">
               <img src="/uploads/product-images/<%= item.productId.productImage[0] %>" 
-                   alt="<%= item.productId.productName %>">
+                   alt="<%= item.productId.productName %>" style="width: 50%; height: 90%; margin-left: 75px;">
             </div>
             <div class="wishlist-content">
               <h3 class="wishlist-title"><%= item.productId.productName %></h3>
               <p class="wishlist-desc"><%= item.productId.description %></p>
               <div class="price-container">
-                <span class="original-price">$<%= item.productId.regularPrice || 'N/A' %></span>
-                <span class="sale-price">$<%= item.productId.salePrice || '1,599.99' %></span>
+                <span class="original-price">₹<%= item.productId.regularPrice  %></span>
+                <span class="sale-price">₹<%= item.productId.salePrice %></span>
               </div>
               <div class="wishlist-actions">
                 <button class="action-btn add-to-cart-btn" 

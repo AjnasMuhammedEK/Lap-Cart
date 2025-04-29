@@ -20,7 +20,6 @@ const upload = require('../helpers/multer');
 router.get('/pageerror',adminController.pageerror);
 router.get('/login',adminController.loadLogin);
 router.post('/login',adminController.login);
-router.get('/',adminAuth,adminController.loadDashboard);
 router.get('/logout',adminController.logout);
 
 //user managment
@@ -107,4 +106,10 @@ router.get('/saleReport',adminAuth,dashboardController.loadSaleReport)
 router.get('/sale-report/download-pdf', dashboardController.downloadPDFReport);
 router.get('/sale-report/download-excel',dashboardController.downloadExcelReport);
 
+//wallet managment
+
+router.get('/userWallet',adminAuth,dashboardController.loadUserWallet)
+router.post('/getOrder',adminAuth,dashboardController.getOrder)
+
+router.get('/dashboard',adminAuth,dashboardController.loadDashboard)
 module.exports = router;

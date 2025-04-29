@@ -4,6 +4,8 @@ const Brand = require('../../models/brandSchema');
 const User = require('../../models/userSchema');
 const Cart = require('../../models/cartSchema');
 const Offer = require('../../models/offerSchema');
+const mongoose = require('mongoose');
+
 
 const productDetailes = async (req, res) => {
     try {
@@ -32,6 +34,7 @@ const productDetailes = async (req, res) => {
             category: product.category._id,
             isDeleted: false,
             isListed: true,
+            quantity:{$gt:0},
             _id: { $ne: productId }
         }).limit(4);
 
@@ -64,10 +67,8 @@ const productDetailes = async (req, res) => {
             );
         });
 
-        // Calculate best offer using getBestOffer
         const bestOffer = getBestOffer(offers, product);
 
-        // Calculate final price based on best offer
         let finalPrice = product.salePrice;
         let discountAmount = 0;
         if (bestOffer) {
@@ -77,7 +78,6 @@ const productDetailes = async (req, res) => {
                 discountAmount = bestOffer.discountAmount;
             }
             finalPrice = product.salePrice - discountAmount;
-            // Ensure final price is not negative
             finalPrice = finalPrice < 0 ? 0 : finalPrice;
         }
 
@@ -93,7 +93,7 @@ const productDetailes = async (req, res) => {
             offers,
             bestOffer,  
             finalPrice: finalPrice.toFixed(2),
-            discountAmount: discountAmount.toFixed(2) // Pass discount amount for display
+            discountAmount: discountAmount.toFixed(2) 
         });
 
     } catch (error) {
@@ -141,6 +141,12 @@ function getBestOffer(applicableOffers, product) {
 }
 
 
+
+
+
+
+
+
 const loadShop = async (req, res) => {
     try {
         const user = req.session.user;
@@ -162,24 +168,28 @@ const loadShop = async (req, res) => {
             }
         }
 
-        // Extract query parameters
         const { category, brand, minPrice, maxPrice, search, sort, page } = req.query;
 
-        // Set defaults for filters
         const selectedCategory = category || null;
         const selectedBrand = brand || null;
         const selectedSort = sort || null;
         const currentPage = parseInt(page) || 1;
         const minPriceValue = Number(minPrice) || 0;
         const maxPriceValue = Number(maxPrice) || Infinity;
-        const searchValue = search || null;
 
-        // Fetch brands and categories
+        let searchValue = null;
+        if (search) {
+            if (Array.isArray(search)) {
+                searchValue = search.find(val => val && val.trim() !== '') || null;
+            } else if (search.trim() !== '') {
+                searchValue = search;
+            }
+        }
+
         const brands = await Brand.find({ isListed: true, isDeleted: false }).lean();
         const categories = await Category.find({ isListed: true, isDeleted: false }).lean();
         const categoryIds = categories.map((cat) => cat._id.toString());
 
-        // Build query object
         const query = {
             isDeleted: false,
             isListed: true,
@@ -192,7 +202,7 @@ const loadShop = async (req, res) => {
         }
 
         if (selectedCategory) {
-            const findCategory = await Category.findOne({ name: selectedCategory });
+            const findCategory = await Category.findOne({ _id: selectedCategory });
             if (findCategory) {
                 query.category = findCategory._id;
             }
@@ -200,19 +210,19 @@ const loadShop = async (req, res) => {
             query.category = { $in: categoryIds };
         }
 
-        if (selectedBrand) {
+        if (selectedBrand && mongoose.Types.ObjectId.isValid(selectedBrand)) {
             const findBrand = await Brand.findOne({ _id: selectedBrand, isListed: true });
             if (findBrand) {
                 query.brand = findBrand._id;
             }
         }
 
-         const limit = 3;
+        const limit = 6;
         const skip = (currentPage - 1) * limit;
         const totalProducts = await Product.countDocuments(query);
         const totalPages = Math.ceil(totalProducts / limit);
 
-         let sortOption = {};
+        let sortOption = {};
         switch (selectedSort) {
             case 'a-z':
                 sortOption = { productName: 1 };
@@ -231,7 +241,7 @@ const loadShop = async (req, res) => {
                 break;
         }
 
-         const products = await Product.find(query)
+        const products = await Product.find(query)
             .populate('brand')
             .populate('category')
             .sort(sortOption)
@@ -239,12 +249,12 @@ const loadShop = async (req, res) => {
             .limit(limit)
             .lean();
 
-         const categoriesWithIds = categories.map(cat => ({
+        const categoriesWithIds = categories.map(cat => ({
             _id: cat._id,
             name: cat.name
         }));
 
-         res.render('shop', {
+        res.render('shop', {
             user: userData,
             category: categoriesWithIds,
             brand: brands,

@@ -336,7 +336,7 @@
             </div>
             <div class="add-to-cart-container" style="z-index: 1000;">
               <% if(product.quantity > 0) { %>
-                <button type="button" id="add-to-cart" data-product-id="<%= product._id %>" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Add to Cart</button>
+                <a type="button" id="add-to-cart" data-product-id="<%= product._id %>" class="btn btn-black py-3 px-5" style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001;">Add to Cart</a>
               <% } else { %>
                 <button type="button" class="add-to-cart disabled-btn" disabled style="display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: relative; z-index: 1001; margin-right: 10px;">Out of Stock</button>
               <% } %>

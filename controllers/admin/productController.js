@@ -11,12 +11,12 @@ const loadProduct = async (req,res)=>{
 
     try {
 
-        console.log('1');
+        // console.log('1');
         
         const search = req.query.search || '';
         const page = req.query.page || 1;
         const limit = 4;
-        console.log('90909090');
+        // console.log('90909090');
 
         const query = {
             isDeleted: false,
@@ -32,13 +32,12 @@ const loadProduct = async (req,res)=>{
             .exec();
           console.log('m,m,m,m,m,');
       
-          // Apply the same query to count
-          const count = await Product.find(query).countDocuments();
-          console.log('2'); 
+           const count = await Product.find(query).countDocuments();
+        //   console.log('2'); 
  
           const category = await Category.find({isListed:true,isDeleted:false});
           const brand = await Brand.find({isListed:true,isDeleted:false})
-          console.log('brands===============',brand);
+        //   console.log('brands===============',brand);
 
 
           if(category && brand){
@@ -107,8 +106,8 @@ const deleteProduct = async (req,res) =>{
     try {
 
         const {productId} = req.body;
-        console.log('1');
-        console.log(productId);
+        // console.log('1');
+        // console.log(productId);
       
         const updateProduct = await Product.findOneAndUpdate(
             { _id: productId }, 
@@ -118,9 +117,9 @@ const deleteProduct = async (req,res) =>{
 
         
         
-        console.log('2');
+       // console.log('2');
         res.redirect('/admin/product');
-        console.log('3');
+       // console.log('3');
         
     } catch (error) {
         
@@ -140,7 +139,7 @@ ensureDirectoryExists(productImagesDir);
 const addProduct = async (req, res) => {
     try {
         const product = req.body;
-        console.log(req.body);
+       // console.log(req.body);
         const productExists = await Product.findOne({ productName: product.productName });
         
         if (productExists) {
@@ -301,7 +300,7 @@ const editProduct = async (req, res) => {
 
 
 const getListProduct = async (req,res) => {
-    console.log('getListProduct');
+    //console.log('getListProduct');
 
 
     try {
@@ -310,7 +309,7 @@ const getListProduct = async (req,res) => {
 
 
         let id = req.query.id;
-        console.log(id);
+        //console.log(id);
         await Product.updateOne({_id:id},{$set:{isListed:false}});
         res.redirect('/admin/product');
         
@@ -324,9 +323,9 @@ const getListProduct = async (req,res) => {
 const getunListProduct = async (req,res) => {
     try {
 
-        console.log('getunListProduct');
+        //console.log('getunListProduct');
         let id = req.query.id;
-        console.log(`id = ${id}`);
+        //console.log(`id = ${id}`);
         await Product.updateOne({_id:id},{$set:{isListed:true}});
         res.redirect('/admin/product');
         

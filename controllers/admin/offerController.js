@@ -70,7 +70,7 @@ const addOffer = async (req, res) => {
         validUpto,
         offerType,
         applicableTo,
-        offerTypeRef // include this!
+        offerTypeRef 
       });
   
       await newOffer.save();
@@ -125,7 +125,7 @@ const editOffer = async (req,res) => {
 
 const deleteOffer = async (req,res) => {
   try {
-
+    
     const {offerId} = req.body
     console.log(offerId);
 

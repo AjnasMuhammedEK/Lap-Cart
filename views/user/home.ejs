@@ -88,7 +88,7 @@
 			<div class="text py-3 pb-4 px-3">
 			  <h3><a href="/productDetaile?id=<%= products[i]._id %>"><%= products[i].productName %></a></h3>
 			  <div class="pricing">
-				<p class="price"><span>₹<%= products[i].regularPrice.toLocaleString('en-IN') %></span></p>
+				<p class="price"><span>₹<%= products[i].salePrice.toLocaleString('en-IN') %></span></p>
 			  </div>
 			  <p class="bottom-area d-flex px-3">
  					<a href="/productDetaile?id=<%= products[i]._id %>" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>

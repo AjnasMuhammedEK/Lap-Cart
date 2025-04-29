@@ -58,7 +58,7 @@ const brandInfo = async (req,res) => {
 
 const addBrand = async(req, res) => {
     const {brandName} = req.body
-    console.log(brandName)
+    // console.log(brandName)
     try {
        
         const existingBrand = await Brand.findOne({brandName:brandName})

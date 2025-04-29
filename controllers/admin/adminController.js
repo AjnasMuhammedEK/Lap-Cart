@@ -23,11 +23,13 @@ const login = async (req,res)=>{
 
         const admin = await User.findOne({email,isAdmin:true});
 
+        console.log('its from admin');
+
         if(admin){
             const passwordMatch = bcrypt.compare(password,admin.password);
             if(passwordMatch){
                 req.session.admin = admin._id;
-                return res.redirect('/admin');
+                return res.redirect('/admin/dashboard');
             }else{
                 return res.redirect('/admin/login');
             }
@@ -41,20 +43,7 @@ const login = async (req,res)=>{
     }
 };
 
-const loadDashboard = async (req,res)=>{
-    try {
-
-        if(req.session.admin){
-            res.render('dashboard');
-        }else{
-            res.redirect('/admin/login');
-        }
-        
-    } catch (error) {
-        res.redirect('/pageerror');
-        
-    }
-};
+ 
 
 
 const logout = async (req,res) =>{
@@ -80,7 +69,6 @@ const logout = async (req,res) =>{
 module.exports = {
     loadLogin,
     login,
-    loadDashboard,
     pageerror,
     logout
 };

@@ -422,8 +422,8 @@
                             <td class="admin-td"><%= data.couponCode %></td>
                             <td class="admin-td"><%= data.startDate.toLocaleDateString() %></td>
                             <td class="admin-td"><%= data.endDate.toLocaleDateString() %></td>
-                            <td class="admin-td">$<%= data.offerPrice %></td>
-                            <td class="admin-td">$<%= data.minimumPrice %></td>
+                            <td class="admin-td">₹<%= data.offerPrice %></td>
+                            <td class="admin-td">₹<%= data.minimumPrice %></td>
                             <%if(data.isListed===true){%>
                                 <td class="admin-td status-active">List</td>
                             <%}else{%>
@@ -579,7 +579,7 @@
             document.getElementById('editOfferPrice').value = couponData.offerPrice;
             document.getElementById('editMinimumPrice').value = couponData.minimumPrice;
         }
-
+            
         // Clear Search
         function clearSearch() {
             document.getElementById("searchInput").value = "";

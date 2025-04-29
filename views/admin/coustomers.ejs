@@ -427,25 +427,27 @@
                 <table >
                     <thead>
                         <tr>
-                            <th>USER IMAGE</th>
+                            <!-- <th>USER IMAGE</th> -->
                             <th>USER NAME</th>
                             <th>EMAIL</th>
                             <th>PHONE</th>
                             <th>DATE OF CREATION</th>
+                            <th>Wallet</th>
                             <th>ACTION</th>
                         </tr>
                     </thead>
                     <tbody>
                         <%for(let i = 0 ; i < data.length ;i++){%>
                             <tr>
-                                <td>
-                                    <div class="user-image"><%= data[i].name.charAt(0).toUpperCase() %></div>
-                                </td>
+                                <!-- <td>
+                                   <img src="/uploads/products/<%=data[i].userImage%>" alt="User-Profile" style="border-radius: 100%; inline-size: 80px">
+                                </td> -->
                                 <td><%=data[i].name%></td>
                                 <td><%=data[i].email%></td>
                                 <td><%=data[i].phone%></td>
-                                <td>6/3/2025</td>
-                                <!-- <td><%= new Date(data[i].createdAt).toLocaleDateString("en-US") %></td> -->
+                                <td><%=data[i].createdAt.toLocaleDateString() %></td>
+                                <td><button type="button" class="btn btn-info"><a href="/admin/userWallet?userId=<%=data[i]._id%>" style="text-decoration: none;">Wallet</a></button>
+                                </td>
                                 <td>
                                     <%if(data[i].isBlocked===false){%>
                                         <button class="btn btn-danger" onclick="return actionValidate('<%=data[i]._id%>')">
@@ -537,6 +539,13 @@
 
             }
 
+        function userWallet(userId){
+            $.ajax({
+                url:'/admin/userWallet',
+                data:{userId:userId},
+
+           })
+        }
 
 
     </script>

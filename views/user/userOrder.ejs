@@ -1,9 +1,9 @@
-<%-include("../../views/partials/user/header")%>
+<%- include("../../views/partials/user/header") %>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
     .page-content {
         display: flex;
@@ -83,7 +83,7 @@
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         border-radius: 8px;
         overflow: hidden;
-        table-layout: auto; /* Changed from fixed to auto for better column sizing */
+        table-layout: auto;
     }
 
     .addr-th {
@@ -94,7 +94,7 @@
         text-transform: uppercase;
         letter-spacing: 0.5px;
         border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        white-space: nowrap; /* Prevents header text from wrapping */
+        white-space: nowrap;
     }
 
     .addr-td {
@@ -102,8 +102,8 @@
         border-bottom: 1px solid #eee;
         color: #333;
         transition: background-color 0.2s ease;
-        word-wrap: break-word; /* Allows long content to wrap */
-        max-width: 150px; /* Limits column width */
+        word-wrap: break-word;
+        max-width: 150px;
     }
 
     .addr-tr {
@@ -170,6 +170,43 @@
         margin-bottom: 20px;
     }
 
+    /* Pagination Styles */
+    .addr-pagination-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px 0;
+        gap: 10px;
+    }
+
+    .addr-pagination-btn {
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .addr-pagination-btn:hover {
+        background-color: #0b7dda;
+        transform: translateY(-2px);
+    }
+
+    .addr-pagination-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .addr-pagination-btn.active {
+        background-color: #0b7dda;
+        font-weight: bold;
+    }
+
     /* Improved Responsive Design */
     @media (max-width: 768px) {
         .page-content {
@@ -181,20 +218,23 @@
         .addr-table {
             display: block;
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
-            white-space: nowrap; /* Prevents wrapping on small screens */
+            -webkit-overflow-scrolling: touch;
+            white-space: nowrap;
         }
         .addr-th, .addr-td {
-            min-width: 100px; /* Reduced min-width for better mobile fit */
-            padding: 10px; /* Reduced padding on mobile */
+            min-width: 100px;
+            padding: 10px;
         }
         .addr-action-btns {
-            flex-direction: column; /* Stack buttons vertically on small screens */
+            flex-direction: column;
             gap: 5px;
         }
         .addr-button-edit, .addr-button-delete {
-            padding: 5px 8px; /* Smaller buttons on mobile */
+            padding: 5px 8px;
             font-size: 12px;
+        }
+        .addr-pagination-container {
+            flex-wrap: wrap;
         }
     }
 
@@ -233,44 +273,51 @@
 </style>
 
 <div class="page-content">
-    <%-include("../../views/partials/profile/aside")%>
+    <%- include("../../views/partials/profile/aside") %>
 
     <div class="addr-container">
-         
-         
-        
-        
         <div id="addr-list">
             <h2>Your Orders</h2>
-                 <table id="addrTable" class="addr-table">
-                    <thead>
+            <table id="addrTable" class="addr-table">
+                <thead>
+                    <tr class="addr-tr">
+                        <th class="addr-th">Order Id</th>
+                        <th class="addr-th">Date</th>
+                        <th class="addr-th">Status</th>
+                        <th class="addr-th">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="addrTableBody">
+                    <% orderData.forEach(data => { %>
                         <tr class="addr-tr">
-                            <th class="addr-th">Order Id</th>
-                            <th class="addr-th">Date</th>
-                            <th class="addr-th">Status</th>
-                            <th class="addr-th">Actions</th>
+                            <td class="addr-td"><%= data.orderId %></td>
+                            <td class="addr-td"><%= data.createdAt.toISOString().split('T')[0] %></td>
+                            <td class="addr-td"><%= data.status %></td>
+                            <td>
+                                <a href="/ord-detailes?orderId=<%= data._id %>"><button class="addr-button addr-button-edit">View Details</button></a>
+                            </td>
                         </tr>
-                    </thead>
-
-                       
-                    <tbody id="addrTableBody">
-                        <%orderData.forEach(data => {%>
- 
-                             <tr class="addr-tr">
-                                <td class="addr-td"><%=data.orderId%></td>
-                                 <td class="addr-td"><%=data.status%></td>  
-                                 <td class="addr-td"><%=data.createdAt.toISOString().split('T')[0]%></td>  
-
-                                 <td>
-                                    <a href="/ord-detailes?orderId=<%=data._id%>"><button class="addr-button addr-button-edit">View Details</button></a>          
-                                </td>
-                            </tr>
-                            
-                         <%})%>
-                     </tbody>
-                </table>
-          </div>
+                    <% }) %>
+                </tbody>
+            </table>
+            <!-- Pagination Controls -->
+            <div class="addr-pagination-container">
+                <button class="addr-pagination-btn" onclick="navigatePage(<%= currentPage - 1 %>)" <%= currentPage === 1 ? 'disabled' : '' %>>Previous</button>
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <button class="addr-pagination-btn <%= currentPage === i ? 'active' : '' %>" onclick="navigatePage(<%= i %>)"><%= i %></button>
+                <% } %>
+                <button class="addr-pagination-btn" onclick="navigatePage(<%= currentPage + 1 %>)" <%= currentPage === totalPages ? 'disabled' : '' %>>Next</button>
+            </div>
+        </div>
     </div>
 </div>
 
-<%-include("../../views/partials/user/footer")%>
+<script>
+    function navigatePage(page) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        window.location.href = url.toString();
+    }
+</script>
+
+<%- include("../../views/partials/user/footer") %>

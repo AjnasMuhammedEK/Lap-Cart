@@ -51,6 +51,9 @@
             description: {
                 type: String,
                 default: "No description provided"
+            },
+            orderId:{
+                type: String,
             }
         }],
         lastUpdated: {

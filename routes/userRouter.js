@@ -94,6 +94,7 @@ router.post('/checkeditAddress',userAuth,cartController.checkoutEditAddress);
 
 router.post('/place-order',userAuth,orderController.placeOrder);
 router.get('/order-success',userAuth,orderController.loadOrderSuccess);
+router.post('/verify-razorpay-payment', orderController.verifyRazorpayPayment);
 router.get('/paymentfailedpage',userAuth,orderController.loadPaymentFailedPage)
 router.get('/listOrder',userAuth,orderController.listOrder);
 router.get('/ord-detailes',userAuth,orderController.loadOrdDetailes);
@@ -107,5 +108,8 @@ router.post('/returnProduct',userAuth,orderController.returnProduct);
 router.get('/wallet',userAuth,walletController.loadWallet)
 router.post('/applyCoupon',userAuth,cartController.applyCoupon)
 router.post('/removeCoupon',userAuth,cartController.removeCoupon)
+
+
+ 
 
 module.exports = router;

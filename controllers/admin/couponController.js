@@ -196,7 +196,7 @@ const unlistCoupon = async (req,res) => {
     try {
 
         const {couponId} = req.body
-        console.log(couponId);
+        // console.log(couponId);
         const unlistCoupon = await Coupon.findOneAndUpdate({_id:couponId},{$set:{isListed:false}})
 
         if(!unlistCoupon){

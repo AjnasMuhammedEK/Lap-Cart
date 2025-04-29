@@ -295,8 +295,7 @@ const verifyOtp = async (req, res) => {
         });
 
         await newUser.save();
-        // console.log('New user saved:', newUser._id.toString());
-
+ 
         let newWallet = await Wallet.findOne({ userId: newUser._id });
         if (!newWallet) {
             newWallet = new Wallet({
@@ -306,15 +305,13 @@ const verifyOtp = async (req, res) => {
                 transactions: [],
             });
             await newWallet.save();
-            // console.log('New wallet created for user:', newUser._id.toString());
-        } else {
+         } else {
             console.log('Existing wallet found for user:', newWallet);
         }
 
         let rewardMessage = 'OTP Verified Successfully';
         if (userData.referredBy) {
-            // console.log('Processing referral for referredBy:', userData.referredBy);
-            const referrer = await User.findById(userData.referredBy);
+             const referrer = await User.findById(userData.referredBy);
             if (!referrer) {
                 console.warn(`Referrer not found for ID: ${userData.referredBy}`);
             } else {

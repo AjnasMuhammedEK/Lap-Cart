@@ -2,13 +2,21 @@ const Order = require('../../models/orderSchema');
 const PDFDocument = require('pdfkit');
 const ExcelJS = require('exceljs');
 const moment = require('moment');
+const Wallet = require('../../models/walletSchema')
+const User = require('../../models/userSchema')
+const Category = require('../../models/categorySchema');
+const Product = require('../../models/productSchema');
+const Brand = require('../../models/brandSchema')
 
- const loadSaleReport = async (req, res) => {
+const loadSaleReport = async (req, res) => {
     try {
-        const { dateRange, startDate, endDate } = req.query;
+        const { dateRange, startDate, endDate, page = 1 } = req.query;
+        const limit = 6; // Number of orders per page
+        const skip = (page - 1) * limit;
+
         let query = {};
         
-         const now = moment();
+        const now = moment();
         if (dateRange === 'daily') {
             query.createdAt = {
                 $gte: now.startOf('day').toDate(),
@@ -36,22 +44,31 @@ const moment = require('moment');
             };
         }
 
-         const allOrders = await Order.find(query).populate('orderedItems.product userId');
+        // Fetch total count of orders for pagination
+        const totalOrders = await Order.countDocuments(query);
+        const totalPages = Math.ceil(totalOrders / limit);
+
+        // Fetch paginated orders
+        const allOrders = await Order.find(query)
+            .populate('orderedItems.product userId')
+            .skip(skip)
+            .limit(limit);
+
         const orders = allOrders.flatMap(order => order.orderedItems);
 
-         const totalProducts = orders.reduce((acc, val) => acc + val.orderQuantity, 0);
-        const totalSaleAmount = allOrders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
+        const totalProducts = orders.reduce((acc, val) => acc + val.orderQuantity, 0);
+        const totalSaleAmount = allOrders.reduce((acc, val) => acc + (val.totalPrice || 0), 0);
         const totalOrderCount = allOrders.length;
         const totalDiscount = allOrders.reduce((acc, val) => acc + (val.discount || 0), 0);
-        const totalCoupons = allOrders.reduce((acc, val) => acc + (val.couponApplied ? val.discount : 0), 0);
+        const totalCoupons = allOrders.reduce((acc, val) => acc + (val.couponApplied || 0), 0);
         const cancelledOrders = allOrders.filter(order => order.status === 'Cancelled').length;
-
+        const amountOfCancelledandReturned = allOrders.reduce((acc, val) => acc + (val.cancelledAmount + val.returnAmount), 0);
         const returnedOrders = allOrders.filter(order => 
-        order.orderedItems.some(item => item.returnStatus === 'Returned')
+            order.orderedItems.some(item => item.returnStatus === 'Returned')
         ).length;
-        const totalOfferApplied = allOrders.reduce((acc,val) =>acc+val.offerDiscount,0)
-        const totalCouponsApplied = allOrders.reduce((acc,val)=>acc+val.couponDiscount,0)
-        console.log(returnedOrders);
+        const totalOfferApplied = allOrders.reduce((acc, val) => acc + (val.offerDiscount || 0), 0);
+        const totalCouponsApplied = allOrders.reduce((acc, val) => acc + (val.couponDiscount || 0), 0);
+        const netSale = allOrders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
 
         res.render('saleReport', {
             totalSaleAmount,
@@ -67,7 +84,11 @@ const moment = require('moment');
             endDate,
             moment,
             totalOfferApplied,
-            totalCouponsApplied
+            totalCouponsApplied,
+            amountOfCancelledandReturned,
+            netSale,
+            currentPage: parseInt(page),
+            totalPages
         });
 
     } catch (error) {
@@ -76,12 +97,11 @@ const moment = require('moment');
     }
 };
 
- const downloadPDFReport = async (req, res) => {
+const downloadPDFReport = async (req, res) => {
     try {
         const { dateRange, startDate, endDate } = req.query;
         let query = {};
 
-        // Same date filtering logic
         const now = moment();
         if (dateRange === 'daily') {
             query.createdAt = {
@@ -111,36 +131,96 @@ const moment = require('moment');
         }
 
         const allOrders = await Order.find(query).populate('orderedItems.product userId');
-        
-        const doc = new PDFDocument();
+
+        const doc = new PDFDocument({ font: 'Helvetica' });
         let filename = `sales-report-${moment().format('YYYYMMDD')}.pdf`;
         res.setHeader('Content-disposition', `attachment; filename="${filename}"`);
         res.setHeader('Content-type', 'application/pdf');
 
         doc.pipe(res);
 
-         doc.fontSize(20).text('Sales Report', { align: 'center' });
+      
+        doc.fontSize(20).text('Sales Report', { align: 'center' });
         doc.moveDown();
-        
-         const totalSaleAmount = allOrders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
+
+        const totalSaleAmount = allOrders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
         const totalOrderCount = allOrders.length;
         const totalDiscount = allOrders.reduce((acc, val) => acc + (val.discount || 0), 0);
-        
-        doc.fontSize(12)
-            .text(`Total Sales: ₹${totalSaleAmount}`)
-            .text(`Total Orders: ${totalOrderCount}`)
-            .text(`Total Discounts: ₹${totalDiscount}`)
-            .moveDown();
+        const totalCancelledAmount = allOrders.reduce((acc, val) => acc + (val.cancelledAmount || 0), 0);
+        const totalReturnedAmount = allOrders.reduce((acc, val) => acc + (val.returnAmount || 0), 0);
 
-        // Orders Table
+        doc.fontSize(12)
+           .text(`Total Sales: ₹${totalSaleAmount.toFixed(2)}`, { align: 'left' })
+           .text(`Total Orders: ${totalOrderCount}`, { align: 'left' })
+           .text(`Total Discounts: ₹${totalDiscount.toFixed(2)}`, { align: 'left' })
+           .text(`Total Cancelled Amount: ₹${totalCancelledAmount.toFixed(2)}`, { align: 'left' })
+           .text(`Total Returned Amount: ₹${totalReturnedAmount.toFixed(2)}`, { align: 'left' })
+           .moveDown(2);
+
+        const tableTop = doc.y;
+        const colWidths = [80, 120, 80, 70, 70, 70, 70];
+        const colPositions = [50, 130, 250, 330, 400, 470, 540]; 
+        const rowHeight = 20;
+        const tableWidth = colWidths.reduce((a, b) => a + b, 0);
+
+        
+        doc.fontSize(10).font('Helvetica-Bold');
+        const headers = ['Order ID', 'User', 'Date', 'Amount', 'Discount', 'Cancelled', 'Returned'];
+        headers.forEach((header, i) => {
+            doc.text(header, colPositions[i], tableTop, {
+                width: colWidths[i],
+                align: 'center'
+            });
+        });
+
+        
+        doc.moveTo(50, tableTop + 15)
+           .lineTo(50 + tableWidth, tableTop + 15)
+           .stroke();
+
+
+        doc.font('Helvetica');
+        let currentY = tableTop + rowHeight;
         allOrders.forEach((order, index) => {
-            doc.text(`Order ${index + 1}:`)
-                .text(`Order ID: ${order.orderId}`)
-                .text(`User: ${order.userId.name}`)
-                .text(`Date: ${moment(order.createdAt).format('DD-MM-YYYY')}`)
-                .text(`Amount: ₹${order.finalAmount}`)
-                .text(`Discount: ₹${order.discount}`)
-                .moveDown();
+            if (currentY + rowHeight > doc.page.height - 50) {
+                doc.addPage();
+                currentY = 50;
+                doc.fontSize(10).font('Helvetica-Bold');
+                headers.forEach((header, i) => {
+                    doc.text(header, colPositions[i], currentY, {
+                        width: colWidths[i],
+                        align: 'center'
+                    });
+                });
+                doc.moveTo(50, currentY + 15)
+                   .lineTo(50 + tableWidth, currentY + 15)
+                   .stroke();
+                currentY += rowHeight;
+                doc.font('Helvetica');
+            }
+
+            const rowData = [
+                order.orderId || '',
+                order.userId?.name || 'Unknown',
+                moment(order.createdAt).format('DD-MM-YYYY'),
+                `${Number(order.finalAmount || 0).toFixed(2)}`,
+                `${Number(order.discount || 0).toFixed(2)}`,
+                `${Number(order.cancelledAmount || 0).toFixed(2)}`,
+                `₹${Number(order.returnAmount || 0).toFixed(2)}`
+            ];
+
+            rowData.forEach((data, i) => {
+                doc.text(data.toString(), colPositions[i], currentY, {
+                    width: colWidths[i],
+                    align: i < 3 ? 'left' : 'right' 
+                });
+            });
+
+            doc.moveTo(50, currentY + 15)
+               .lineTo(50 + tableWidth, currentY + 15)
+               .stroke();
+
+            currentY += rowHeight;
         });
 
         doc.end();
@@ -151,8 +231,7 @@ const moment = require('moment');
     }
 };
 
-// Download Excel Report
-const downloadExcelReport = async (req, res) => {
+ const downloadExcelReport = async (req, res) => {
     try {
         const { dateRange, startDate, endDate } = req.query;
         let query = {};
@@ -200,8 +279,7 @@ const downloadExcelReport = async (req, res) => {
             { header: 'Coupon Applied', key: 'coupon', width: 15 }
         ];
 
-        // Data
-        allOrders.forEach(order => {
+         allOrders.forEach(order => {
             worksheet.addRow({
                 orderId: order.orderId,
                 user: order.userId.name,
@@ -213,8 +291,7 @@ const downloadExcelReport = async (req, res) => {
             });
         });
 
-        // Summary
-        const totalSaleAmount = allOrders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
+         const totalSaleAmount = allOrders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
         worksheet.addRow({});
         worksheet.addRow({ orderId: 'Total Sales:', amount: totalSaleAmount });
         worksheet.addRow({ orderId: 'Total Orders:', amount: allOrders.length });
@@ -233,8 +310,302 @@ const downloadExcelReport = async (req, res) => {
     }
 };
 
+
+
+const loadUserWallet = async (req,res) => {
+    try {
+
+        const {userId} = req.query
+        const user = await User.findById(userId)
+        const userWallet = await Wallet.findOne({userId:userId})
+        console.log(userWallet);
+        res.render('userWallet',{
+            user,
+            userWallet
+        })
+        
+    } catch (error) {
+        console.log('error in loadUserWallet',error);
+        res.redirect('/admin/pageerror')
+    }
+}
+
+
+
+const getOrder = async (req,res) => {
+    try {
+
+        const {orderId} = req.body
+
+        const order = await Order.findOne({_id:orderId}).populate('orderedItems.product')
+        console.log(order);
+        res.json({suceess:true,order:order})
+         
+    } catch (error) {
+        
+    }
+}
+
+
+const loadDashboard = async (req, res) => {
+    try {
+        const { dateRange = 'weekly', startDate, endDate } = req.query;
+
+        // Initialize response data
+        const dashboardData = {
+            stats: {
+                allOverSales: 0,
+                totalRevenue: 0,
+                totalOrders: 0,
+                totalProducts: 0,
+                netSales: 0,
+            },
+            charts: {
+                netSales: { labels: [], data: [] },
+                bestProducts: {
+                    labels: [],
+                    data: [],
+                    backgroundColor: 'rgba(130, 87, 237, 0.6)',
+                    borderColor: 'rgba(130, 87, 237, 1)',
+                },
+                bestCategories: {
+                    labels: [],
+                    data: [],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FFCD56', '#4BC0C0', '#36A2EB', '#FF6384'],
+                },
+                bestBrands: {
+                    labels: [],
+                    data: [],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FFCD56', '#4BC0C0', '#36A2EB', '#FF6384'],
+                },
+            },
+        };
+
+        // Build date query for delivered orders
+        let query = { status: 'Delivered' };
+        const now = moment();
+        if (dateRange === 'daily') {
+            query.createdAt = {
+                $gte: now.startOf('day').toDate(),
+                $lte: now.endOf('day').toDate(),
+            };
+        } else if (dateRange === 'weekly') {
+            query.createdAt = {
+                $gte: now.startOf('week').toDate(),
+                $lte: now.endOf('week').toDate(),
+            };
+        } else if (dateRange === 'monthly') {
+            query.createdAt = {
+                $gte: now.startOf('month').toDate(),
+                $lte: now.endOf('month').toDate(),
+            };
+        } else if (dateRange === 'yearly') {
+            query.createdAt = {
+                $gte: now.startOf('year').toDate(),
+                $lte: now.endOf('year').toDate(),
+            };
+        } else if (dateRange === 'custom' && startDate && endDate) {
+            query.createdAt = {
+                $gte: moment(startDate).startOf('day').toDate(),
+                $lte: moment(endDate).endOf('day').toDate(),
+            };
+        }
+
+        // Fetch orders within the date range
+        const orders = await Order.find(query).populate('orderedItems.product');
+
+        // Calculate Stats
+        // All Over Sales (Total Units Sold)
+        dashboardData.stats.allOverSales = orders.reduce((acc, order) => {
+            if (!order.orderedItems || !Array.isArray(order.orderedItems)) {
+                console.warn(`Order ${order._id} has no valid orderedItems`);
+                return acc;
+            }
+            const units = order.orderedItems.reduce((sum, item) => {
+                return sum + (item.orderQuantity || 0);
+            }, 0);
+            return acc + units;
+        }, 0);
+
+        // Total Revenue (sum of finalAmount)
+        dashboardData.stats.totalRevenue = orders.reduce((acc, order) => {
+            return acc + (order.finalAmount || 0);
+        }, 0);
+
+        // Total Orders (count of delivered orders)
+        dashboardData.stats.totalOrders = orders.length;
+
+        // Total Products (count of listed and non-deleted products)
+        dashboardData.stats.totalProducts = await Product.countDocuments({ isListed: true, isDeleted: false });
+
+        // Net Sales (finalAmount minus all discounts)
+        dashboardData.stats.netSales = orders.reduce((acc, order) => {
+            const discounts = (order.discount || 0) + (order.offerDiscount || 0) + (order.couponDiscount || 0);
+            return acc + (order.finalAmount || 0) - discounts;
+        }, 0);
+
+        // Net Sales Chart
+        if (dateRange === 'yearly') {
+            const startDate = moment().subtract(2, 'years').startOf('year');
+            const yearlyOrders = orders.filter(order => moment(order.createdAt).isAfter(startDate));
+            const salesByYear = yearlyOrders.reduce((acc, order) => {
+                const year = moment(order.createdAt).year();
+                const netSale = (order.finalAmount || 0) - (order.discount || 0) - (order.offerDiscount || 0) - (order.couponDiscount || 0);
+                acc[year] = (acc[year] || 0) + netSale;
+                return acc;
+            }, {});
+            dashboardData.charts.netSales.labels = Object.keys(salesByYear).sort();
+            dashboardData.charts.netSales.data = dashboardData.charts.netSales.labels.map(year => salesByYear[year] || 0);
+        } else if (dateRange === 'monthly') {
+            const startDate = moment().subtract(12, 'months').startOf('month');
+            const monthlyOrders = orders.filter(order => moment(order.createdAt).isAfter(startDate));
+            const salesByMonth = monthlyOrders.reduce((acc, order) => {
+                const key = moment(order.createdAt).format('MMM YYYY');
+                const netSale = (order.finalAmount || 0) - (order.discount || 0) - (order.offerDiscount || 0) - (order.couponDiscount || 0);
+                acc[key] = (acc[key] || 0) + netSale;
+                return acc;
+            }, {});
+            dashboardData.charts.netSales.labels = Array(12)
+                .fill()
+                .map((_, i) => moment().subtract(i, 'months').format('MMM YYYY'))
+                .reverse();
+            dashboardData.charts.netSales.data = dashboardData.charts.netSales.labels.map(label => salesByMonth[label] || 0);
+        } else if (dateRange === 'weekly') {
+            const startDate = moment().subtract(8, 'weeks').startOf('week');
+            const weeklyOrders = orders.filter(order => moment(order.createdAt).isAfter(startDate));
+            const salesByWeek = weeklyOrders.reduce((acc, order) => {
+                const week = moment(order.createdAt).week();
+                const year = moment(order.createdAt).year();
+                const key = `Week ${week} ${year}`;
+                const netSale = (order.finalAmount || 0) - (order.discount || 0) - (order.offerDiscount || 0) - (order.couponDiscount || 0);
+                acc[key] = (acc[key] || 0) + netSale;
+                return acc;
+            }, {});
+            dashboardData.charts.netSales.labels = Array(8)
+                .fill()
+                .map((_, i) => {
+                    const week = moment().subtract(i, 'weeks');
+                    return `Week ${week.week()} ${week.year()}`;
+                })
+                .reverse();
+            dashboardData.charts.netSales.data = dashboardData.charts.netSales.labels.map(label => salesByWeek[label] || 0);
+        } else if (dateRange === 'daily') {
+            const startDate = moment().subtract(7, 'days').startOf('day');
+            const dailyOrders = orders.filter(order => moment(order.createdAt).isAfter(startDate));
+            const salesByDay = dailyOrders.reduce((acc, order) => {
+                const key = moment(order.createdAt).format('DD MMM YYYY');
+                const netSale = (order.finalAmount || 0) - (order.discount || 0) - (order.offerDiscount || 0) - (order.couponDiscount || 0);
+                acc[key] = (acc[key] || 0) + netSale;
+                return acc;
+            }, {});
+            dashboardData.charts.netSales.labels = Array(8)
+                .fill()
+                .map((_, i) => moment().subtract(i, 'days').format('DD MMM YYYY'))
+                .reverse();
+            dashboardData.charts.netSales.data = dashboardData.charts.netSales.labels.map(label => salesByDay[label] || 0);
+        } else if (dateRange === 'custom' && startDate && endDate) {
+            const daysDiff = moment(endDate).diff(moment(startDate), 'days') + 1;
+            const salesByDay = orders.reduce((acc, order) => {
+                const key = moment(order.createdAt).format('DD MMM YYYY');
+                const netSale = (order.finalAmount || 0) - (order.discount || 0) - (order.offerDiscount || 0) - (order.couponDiscount || 0);
+                acc[key] = (acc[key] || 0) + netSale;
+                return acc;
+            }, {});
+            dashboardData.charts.netSales.labels = Array(daysDiff)
+                .fill()
+                .map((_, i) => moment(startDate).add(i, 'days').format('DD MMM YYYY'));
+            dashboardData.charts.netSales.data = dashboardData.charts.netSales.labels.map(label => salesByDay[label] || 0);
+        }
+
+        // Top 10 Best Selling Products
+        const productSales = {};
+        orders.forEach(order => {
+            if (!order.orderedItems || !Array.isArray(order.orderedItems)) {
+                console.warn(`Skipping order ${order._id}: Invalid orderedItems`);
+                return;
+            }
+            order.orderedItems.forEach(item => {
+                if (item.product) {
+                    const productId = item.product._id.toString();
+                    productSales[productId] = {
+                        name: item.product.productName || 'Unknown',
+                        unitsSold: (productSales[productId]?.unitsSold || 0) + (item.orderQuantity || 0),
+                    };
+                }
+            });
+        });
+        const bestProducts = Object.values(productSales)
+            .sort((a, b) => b.unitsSold - a.unitsSold)
+            .slice(0, 10);
+        dashboardData.charts.bestProducts.labels = bestProducts.map(p => p.name);
+        dashboardData.charts.bestProducts.data = bestProducts.map(p => p.unitsSold);
+
+        // Top 10 Best Selling Categories
+        const categorySales = {};
+        for (const order of orders) {
+            if (!order.orderedItems || !Array.isArray(order.orderedItems)) continue;
+            for (const item of order.orderedItems) {
+                if (item.product && item.product.category) {
+                    const categoryId = item.product.category.toString();
+                    if (!categorySales[categoryId]) {
+                        const category = await Category.findById(categoryId);
+                        categorySales[categoryId] = {
+                            name: category?.name || 'Unknown',
+                            unitsSold: 0,
+                        };
+                    }
+                    categorySales[categoryId].unitsSold += item.orderQuantity || 0;
+                }
+            }
+        }
+        const bestCategories = Object.values(categorySales)
+            .sort((a, b) => b.unitsSold - a.unitsSold)
+            .slice(0, 10);
+        dashboardData.charts.bestCategories.labels = bestCategories.map(c => c.name);
+        dashboardData.charts.bestCategories.data = bestCategories.map(c => c.unitsSold);
+
+        // Top 10 Best Selling Brands
+        const brandSales = {};
+        for (const order of orders) {
+            if (!order.orderedItems || !Array.isArray(order.orderedItems)) continue;
+            for (const item of order.orderedItems) {
+                if (item.product && item.product.brand) {
+                    const brandId = item.product.brand.toString();
+                    if (!brandSales[brandId]) {
+                        const brand = await Brand.findById(brandId);
+                        brandSales[brandId] = {
+                            name: brand?.brandName || 'Unknown',
+                            unitsSold: 0,
+                        };
+                    }
+                    brandSales[brandId].unitsSold += item.orderQuantity || 0;
+                }
+            }
+        }
+        const bestBrands = Object.values(brandSales)
+            .sort((a, b) => b.unitsSold - a.unitsSold)
+            .slice(0, 10);
+        dashboardData.charts.bestBrands.labels = bestBrands.map(b => b.name);
+        dashboardData.charts.bestBrands.data = bestBrands.map(b => b.unitsSold);
+
+        console.log('Final dashboardData.stats:', dashboardData.stats);
+
+        res.render('dashboard', { dashboardData, dateRange, startDate, endDate });
+
+    } catch (error) {
+        console.error('Error in loadDashboard:', error);
+        res.status(500).send('Server Error');
+    }
+};
+
+ 
+ 
 module.exports = {
     loadSaleReport,
     downloadPDFReport,
-    downloadExcelReport
+    downloadExcelReport,
+    loadUserWallet,
+    getOrder,
+    loadDashboard,
+     
 };

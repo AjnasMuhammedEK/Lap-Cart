@@ -126,31 +126,44 @@ const loadCart = async (req, res) => {
   }
 };
 
-// function getBestOffer(applicableOffers, product) {
-//   if (!Array.isArray(applicableOffers) || applicableOffers.length === 0) return null;
+function getBestOffer(applicableOffers, product) {
+  if (!Array.isArray(applicableOffers) || applicableOffers.length === 0) return null;
 
-//   let bestOffer = null;
-//   let maxDiscount = 0;
-//   for (const offer of applicableOffers) {
-//     let discount = 0;
+  let bestOffer = null;
+  let maxDiscount = 0;
 
-//     if (offer.discountType === 'flat') {
-//       discount = offer.discountAmount;
-//     } else if (offer.discountType === 'percentage') {
-//       const salePrice = product.productId?.salePrice || product.salePrice || 0;
-//       discount = (salePrice * offer.discountAmount) / 100;
-//     }
+  for (const offer of applicableOffers) {
+    let discount = 0;
+    const salePrice = product.productId?.salePrice || product.salePrice || 0;
 
-//     if (discount > maxDiscount) {
-//       maxDiscount = discount;
-//       bestOffer = offer;
-//     }
-//   }
+    if (salePrice <= 0) {
+      console.log(`Invalid sale price for product: ${product.productId.productName}`);
+      continue;
+    }
 
-//   return bestOffer;
-// }
+    if (offer.discountType === 'flat') {
+      discount = offer.discountAmount;
+      if (discount >= salePrice) {
+        console.log(`Offer skipped for product ${product.productId.productName}: Flat discount (${discount}) exceeds or equals sale price (${salePrice})`);
+        continue;
+      }
+    } else if (offer.discountType === 'percentage') {
+      discount = (salePrice * offer.discountAmount) / 100;
+      if (discount >= salePrice) {
+        console.log(`Offer skipped for product ${product.productId.productName}: Percentage discount (${discount}) exceeds or equals sale price (${salePrice})`);
+        continue;
+      }
+    }
 
+    if (discount > maxDiscount) {
+      maxDiscount = discount;
+      bestOffer = offer;
+    }
+  }
 
+  return bestOffer;
+}
+  
 
 function getBestOffer(applicableOffers, product) {
   if (!Array.isArray(applicableOffers) || applicableOffers.length === 0) return null;
@@ -718,7 +731,7 @@ const loadCheckOut = async (req, res) => {
       })
       .lean();
     if (!cart || cart.items.length === 0) {
-      return res.redirect('/cart');
+      return res.redirect('/getCart');
     }
 
     const address = await Address.findOne({ userId }).lean();
@@ -825,7 +838,7 @@ const checkoutAddAddress = async (req, res) => {
 
 const checkoutEditAddress = async (req, res) => {
   try {
-    console.log('req.body=================================',req.body);
+    //console.log('req.body=================================',req.body);
     const userId = req.session.user;
     const { addressId, addressType, name, city, landMark, state, pincode, phone } = req.body;
 

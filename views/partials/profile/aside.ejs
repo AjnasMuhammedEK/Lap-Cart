@@ -77,41 +77,11 @@
             <ul class="aside-menu">
                 <li><a href="/userProfile"><i class="fas fa-user"></i> Personal Info</a></li>
                 <li><a href="/listOrder"><i class="fas fa-shopping-bag"></i> Orders</a></li>
-                <li class="aside-active"><a href="/address"><i class="fas fa-map-marker-alt"></i> Addresses</a></li>
+                <li ><a href="/address"><i class="fas fa-map-marker-alt"></i> Addresses</a></li>
                 <li><a href="/wallet"><i class="fas fa-wallet"></i> Wallet</a></li>
-                <li><a href="#"><i class="fas fa-heart"></i> Wishlist</a></li>
-                <li><a href="#"><i class="fas fa-shield-alt"></i> Security</a></li>
+                <!-- <li><a href="/whishlist"><i class="fas fa-heart"></i> Wishlist</a></li> -->
+                <!-- <li><a href="#"><i class="fas fa-shield-alt"></i> Security</a></li> -->
             </ul>
         </aside>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const menuItems = document.querySelectorAll('.aside-menu li a');
-                
-                // Handle click events on menu items
-                menuItems.forEach(item => {
-                    item.addEventListener('click', function(e) {
-                        // First remove the active class from all items
-                        document.querySelectorAll('.aside-menu li').forEach(li => {
-                            li.classList.remove('aside-active');
-                        });
-                        
-                        // Add active class to the parent li of the clicked link
-                        this.parentNode.classList.add('aside-active');
-                    });
-                });
-                
-                // Highlight the correct menu item based on current URL
-                const currentPath = window.location.pathname;
-                menuItems.forEach(item => {
-                    if (item.getAttribute('href') === currentPath) {
-                        // Remove active class from all items first
-                        document.querySelectorAll('.aside-menu li').forEach(li => {
-                            li.classList.remove('aside-active');
-                        });
-                        // Add active class to the matching item
-                        item.parentNode.classList.add('aside-active');
-                    }
-                });
-            });
-        </script>
+        

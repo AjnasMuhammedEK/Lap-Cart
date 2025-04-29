@@ -302,39 +302,39 @@
   }
 
   .coupon-section {
-    background: white;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid #ECEFF1;
     border-radius: 0.5rem;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    background: #F5F7FA;
   }
 
   .coupon-section h3 {
-    font-size: 1rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: #263238;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .coupon-list {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
+    gap: 0.75rem;
   }
 
   .coupon-item {
-    border: 1px solid #ECEFF1;
-    border-radius: 0.25rem;
-    padding: 0.5rem;
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #F5F7FA;
-    transition: all 0.2s;
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
   }
 
   .coupon-item:hover {
-    background: #E3F2FD;
+    transform: translateY(-2px);
   }
 
   .coupon-info {
@@ -342,31 +342,31 @@
   }
 
   .coupon-info h4 {
-    font-size: 0.75rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #263238;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.25rem;
   }
 
   .coupon-info p {
-    font-size: 0.65rem;
+    font-size: 0.875rem;
     color: #607D8B;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.25rem;
   }
 
   .coupon-info .discount {
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #26A69A;
   }
 
   .coupon-copy-btn {
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem 1rem;
     background: #1E88E5;
     border: none;
-    border-radius: 0.2rem;
+    border-radius: 0.375rem;
     color: white;
-    font-size: 0.65rem;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -387,23 +387,24 @@
 
   .coupon-input-container {
     display: flex;
-    gap: 0.3rem;
-    margin-bottom: 0.75rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .coupon-input {
     flex: 1;
-    padding: 0.3rem;
+    padding: 0.75rem;
     border: 1px solid #ECEFF1;
-    border-radius: 0.25rem;
+    border-radius: 0.375rem;
     font-size: 0.875rem;
+    background: white;
   }
 
   .coupon-apply-button {
-    padding: 0.3rem 0.75rem;
+    padding: 0.75rem 1.5rem;
     background: #1E88E5;
     border: none;
-    border-radius: 0.25rem;
+    border-radius: 0.375rem;
     color: white;
     font-size: 0.875rem;
     font-weight: 600;
@@ -474,6 +475,14 @@
       gap: 0.5rem;
       text-align: center;
     }
+
+    .coupon-input-container {
+      flex-direction: column;
+    }
+
+    .coupon-apply-button {
+      width: 100%;
+    }
   }
 </style>
 
@@ -483,39 +492,6 @@
 
 <section class="cart-content">
   <div class="cart-container">
-    <!-- Available Coupons Section -->
-    <% if (coupons && coupons.length > 0) { %>
-      <div class="coupon-section">
-        <h3>Available Coupons</h3>
-        <div class="coupon-input-container">
-          <input type="text" id="coupon-code-input" class="coupon-input" placeholder="Enter coupon code">
-          <button id="coupon-apply-button" class="coupon-apply-button" onclick="applyCoupon()">Apply</button>
-        </div>
-        
-        <div class="coupon-list">
-          <% coupons.forEach(coupon => { %>
-            <div class="coupon-item">
-              <div class="coupon-info">
-                <h4><%= coupon.couponName %></h4>
-                <p>Code: <strong><%= coupon.couponCode %></strong></p>
-                <p>Discount: ₹<%= coupon.offerPrice.toLocaleString('en-IN') %></p>
-                <p>Min Purchase: ₹<%= coupon.minimumPrice.toLocaleString('en-IN') %></p>
-              </div>
-              <% if (appliedCoupon && appliedCoupon.couponCode === coupon.couponCode) { %>
-                <button class="coupon-copy-btn remove-coupon-btn" data-coupon-id="<%= coupon._id %>" onclick="removeCoupon(this)">
-                  Remove
-                </button>
-              <% } else { %>
-                <button class="coupon-copy-btn" data-coupon-code="<%= coupon.couponCode %>" onclick="copyCoupon('<%= coupon.couponCode %>')">
-                  Copy
-                </button>
-              <% } %>
-            </div>
-          <% }) %>
-        </div>
-      </div>
-    <% } %>
-
     <% if (cartItems && cartItems.length > 0) { %>
       <div class="cart-grid">
         <div class="cart-products">
@@ -549,34 +525,34 @@
                   <% 
                     let singlePrice = data.product.productId.salePrice;
                     let discountAmount = 0;
-                    if (data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) {
+                    if (data.bestOffer && data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) {
                       discountAmount = data.bestOffer.discountAmount;
                       singlePrice -= discountAmount;
-                    } else if (data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) {
+                    } else if (data.bestOffer && data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) {
                       discountAmount = (data.product.productId.salePrice * data.bestOffer.discountAmount) / 100;
                       singlePrice -= discountAmount;
                     }
-                    let totalItemPrice = (singlePrice) * data.product.quantity;
+                    let totalItemPrice = singlePrice * data.product.quantity;
                     let totalOriginalPrice = data.product.productId.salePrice * data.product.quantity;
-                    let totalDiscount = (discountAmount * data.product.quantity);
+                    let totalDiscount = discountAmount * data.product.quantity;
                   %>
                   <span class="current-price">₹<%= totalItemPrice.toLocaleString('en-IN') %></span>
                   <% if (totalDiscount > 0) { %>
                     <span class="original-price">₹<%= totalOriginalPrice.toLocaleString('en-IN') %></span>
                   <% } %>
-                  <% if (data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) { %>
+                  <% if (data.bestOffer && data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) { %>
                     <span class="discount">₹<%= totalDiscount.toLocaleString('en-IN') %> Off</span>
-                  <% } else if (data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) { %>
+                  <% } else if (data.bestOffer && data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) { %>
                     <span class="discount"><%= data.bestOffer.discountAmount.toLocaleString('en-IN') %>% Off</span>
                   <% } %>
                 </div>
                 <div class="offer-details">
-                  <% if (data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) { %>
-                    <span class="offer-label">Offer: <%= data.bestOffer.offerName %></span>
-                    <span class="offer-description">Special Offer: ₹<%= data.bestOffer.discountAmount.toLocaleString('en-IN') %></span>
-                  <% } else if (data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) { %>
-                    <span class="offer-label">Offer: <%= data.bestOffer.offerName %></span>
-                    <span class="offer-description">Special Offer: <%= data.bestOffer.discountAmount.toLocaleString('en-IN') %> % Extra Discount</span>
+                  <% if (data.bestOffer && data.bestOffer.discountType === 'flat' && data.bestOffer.discountAmount > 0) { %>
+                    <span class="offer-label">Offer: <%= data.bestOffer.offerName || 'Discount Offer' %></span>
+                    <span class="offer-description">Special Offer: ₹<%= totalDiscount.toLocaleString('en-IN') %> for <%= data.product.quantity %> item<%= data.product.quantity > 1 ? 's' : '' %></span>
+                  <% } else if (data.bestOffer && data.bestOffer.discountType === 'percentage' && data.bestOffer.discountAmount > 0) { %>
+                    <span class="offer-label">Offer: <%= data.bestOffer.offerName || 'Discount Offer' %></span>
+                    <span class="offer-description">Special Offer: <%= data.bestOffer.discountAmount.toLocaleString('en-IN') %>% Off (₹<%= totalDiscount.toLocaleString('en-IN') %> for <%= data.product.quantity %> item<%= data.product.quantity > 1 ? 's' : '' %>)</span>
                   <% } %>
                 </div>
                 <div class="product-actions">
@@ -594,6 +570,39 @@
 
         <div class="cart-summary">
           <h3>Order Summary</h3>
+          <!-- Available Coupons Section -->
+          <% if (coupons && coupons.length > 0) { %>
+            <div class="coupon-section">
+              <h3>Apply Coupon</h3>
+              <div class="coupon-input-container">
+                <input type="text" id="coupon-code-input" class="coupon-input" placeholder="Enter coupon code">
+                <button id="coupon-apply-button" class="coupon-apply-button" onclick="applyCoupon()">Apply</button>
+              </div>
+              
+              <div class="coupon-list">
+                <% coupons.forEach(coupon => { %>
+                  <div class="coupon-item">
+                    <div class="coupon-info">
+                      <h4><%= coupon.couponName %></h4>
+                      <p>Code: <strong><%= coupon.couponCode %></strong></p>
+                      <p>Discount: ₹<%= coupon.offerPrice.toLocaleString('en-IN') %></p>
+                      <p>Min Purchase: ₹<%= coupon.minimumPrice.toLocaleString('en-IN') %></p>
+                    </div>
+                    <% if (appliedCoupon && appliedCoupon.couponCode === coupon.couponCode) { %>
+                      <button class="coupon-copy-btn remove-coupon-btn" data-coupon-id="<%= coupon._id %>" onclick="removeCoupon(this)">
+                        Remove
+                      </button>
+                    <% } else { %>
+                      <button class="coupon-copy-btn" data-coupon-code="<%= coupon.couponCode %>" onclick="copyCoupon('<%= coupon.couponCode %>')">
+                        Copy
+                      </button>
+                    <% } %>
+                  </div>
+                <% }) %>
+              </div>
+            </div>
+          <% } %>
+          
           <div class="summary-line">
             <span>Subtotal (<span id="item-count"><%= cartItems.length.toLocaleString('en-IN') %></span> items)</span>
             <span id="subtotal">₹<%= subtotal.toLocaleString('en-IN') %></span>
@@ -632,7 +641,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
-    // Quantity Update
     $('.quantity-box button').click(function(e) {
       e.preventDefault();
       const productId = $(this).data('product-id');
@@ -647,52 +655,115 @@
         method: 'POST',
         data: { productId, action },
         success: function(response) {
-          const newQuantity = response.cart.items.find(item => 
-            item.productId._id.toString() === productId
-          ).quantity;
+          console.log('Server response:', response); // Debug: Log the server response
+
+          // Find the updated item in the response
+          const item = response.cart.items.find(item => 
+            item.productId._id.toString() === productId.toString()
+          );
+          if (!item) {
+            console.error('Item not found in response for productId:', productId);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Product not found in cart',
+              confirmButtonColor: '#1E88E5'
+            });
+            $button.prop('disabled', false);
+            return;
+          }
+
+          const newQuantity = item.quantity;
           $quantityInput.val(newQuantity.toLocaleString('en-IN'));
 
-          // Update UI with backend-provided values
+          // Update cart summary
           $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
           $('#cart-total').text(`₹${response.total.toLocaleString('en-IN')}`);
           $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
-          $('#coupon-discount').text(response.couponDiscount.toLocaleString('en-IN') || 0);
+          $('#coupon-discount').text((response.couponDiscount || 0).toLocaleString('en-IN'));
+          $('#item-count').text(response.cart.items.length.toLocaleString('en-IN'));
 
-          // Update individual product price
+          // Update individual product price and offer details
           const $product = $(`div[data-product-id="${productId}"]`);
-          const item = response.cart.items.find(item => item.productId._id.toString() === productId);
-          let singlePrice = item.productId.salePrice;
-          let discountAmount = 0;
-          if (item.bestOffer && item.bestOffer.discountType === 'flat' && item.bestOffer.discountAmount > 0) {
-            discountAmount = item.bestOffer.discountAmount;
-            singlePrice -= discountAmount;
-          } else if (item.bestOffer && item.bestOffer.discountType === 'percentage' && item.bestOffer.discountAmount > 0) {
-            discountAmount = (item.productId.salePrice * item.bestOffer.discountAmount) / 100;
-            singlePrice -= discountAmount;
-          }
-          const totalItemPrice = (singlePrice) * newQuantity;
-          const totalOriginalPrice = item.productId.salePrice * newQuantity;
-          const totalDiscount = (discountAmount * newQuantity);
+          const $priceDetails = $product.find('.price-details');
+          const $offerDetails = $product.find('.offer-details');
 
-          $product.find('.current-price').text(`₹${totalItemPrice.toLocaleString('en-IN')}`);
-          if (totalDiscount > 0) {
-            $product.find('.original-price').text(`₹${totalOriginalPrice.toLocaleString('en-IN')}`);
-            $product.find('.discount').text(discountAmount > 0 ? 
-              (item.bestOffer.discountType === 'flat' ? `₹${totalDiscount.toLocaleString('en-IN')} Off` : `${item.bestOffer.discountAmount.toLocaleString('en-IN')}% Off`) : 
-              '');
-          } else {
-            $product.find('.original-price').remove();
-            $product.find('.discount').remove();
+          // Calculate prices and discounts
+          const salePrice = item.productId.salePrice;
+          let singlePrice = salePrice;
+          let discountAmount = 0;
+          let totalDiscount = 0;
+          let discountType = '';
+          let offerName = 'Discount Offer';
+
+          // Process bestOffer
+          if (item.bestOffer && item.bestOffer.discountAmount > 0 && ['flat', 'percentage'].includes(item.bestOffer.discountType)) {
+            discountType = item.bestOffer.discountType;
+            offerName = item.bestOffer.offerName || 'Discount Offer';
+            if (discountType === 'flat') {
+              discountAmount = item.bestOffer.discountAmount;
+              singlePrice = salePrice - discountAmount;
+              totalDiscount = discountAmount * newQuantity;
+            } else if (discountType === 'percentage') {
+              discountAmount = (salePrice * item.bestOffer.discountAmount) / 100;
+              singlePrice = salePrice - discountAmount;
+              totalDiscount = discountAmount * newQuantity;
+            }
           }
+
+          const totalItemPrice = Math.round(singlePrice * newQuantity);
+          const totalOriginalPrice = Math.round(salePrice * newQuantity);
+          totalDiscount = Math.round(totalDiscount);
+
+          // Update price-details
+          $priceDetails.empty();
+          $priceDetails.append(`<span class="current-price">₹${totalItemPrice.toLocaleString('en-IN')}</span>`);
+          if (totalDiscount > 0) {
+            $priceDetails.append(`<span class="original-price">₹${totalOriginalPrice.toLocaleString('en-IN')}</span>`);
+            if (discountType === 'flat') {
+              $priceDetails.append(`<span class="discount">₹${totalDiscount.toLocaleString('en-IN')} Off</span>`);
+            } else if (discountType === 'percentage') {
+              $priceDetails.append(`<span class="discount">${item.bestOffer.discountAmount.toLocaleString('en-IN')}% Off</span>`);
+            }
+          }
+
+          // Update offer-details
+          $offerDetails.empty();
+          if (discountType && totalDiscount > 0) {
+            $offerDetails.append(`<span class="offer-label">Offer: ${offerName}</span>`);
+            if (discountType === 'flat') {
+              $offerDetails.append(
+                `<span class="offer-description">Special Offer: ₹${totalDiscount.toLocaleString('en-IN')} for ${newQuantity} item${newQuantity > 1 ? 's' : ''}</span>`
+              );
+            } else if (discountType === 'percentage') {
+              $offerDetails.append(
+                `<span class="offer-description">Special Offer: ${item.bestOffer.discountAmount.toLocaleString('en-IN')}% Off (₹${totalDiscount.toLocaleString('en-IN')} for ${newQuantity} item${newQuantity > 1 ? 's' : ''})</span>`
+              );
+            }
+          }
+
+          console.log('Updated price-details HTML:', $priceDetails.html()); // Debug: Log updated price-details
+          console.log('Updated offer-details HTML:', $offerDetails.html()); // Debug: Log updated offer-details
+          console.log('Calculated values:', { 
+            salePrice, 
+            singlePrice, 
+            discountAmount, 
+            totalDiscount, 
+            totalItemPrice, 
+            totalOriginalPrice, 
+            discountType, 
+            offerName 
+          }); // Debug: Log calculations
 
           $button.prop('disabled', false);
         },
         error: function(err) {
+          console.error('AJAX error:', err); // Debug: Log AJAX error
           $button.prop('disabled', false);
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: err.responseJSON.message || 'Failed to update quantity',
+            text: err.responseJSON?.message || 'Failed to update quantity',
             confirmButtonColor: '#1E88E5'
           });
         }
@@ -712,13 +783,13 @@
         method: 'POST',
         data: { productId },
         success: function(response) {
-          $(`div[data-product-id="${productId}"]`).remove();
+          $(`div[data-product-id command="${productId}"]`).remove();
           
           $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
           $('#cart-total').text(`₹${response.total.toLocaleString('en-IN')}`);
           $('#item-count').text(response.cart.items.length.toLocaleString('en-IN'));
           $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
-          $('#coupon-discount').text(response.couponDiscount.toLocaleString('en-IN') || 0);
+          $('#coupon-discount').text((response.couponDiscount || 0).toLocaleString('en-IN'));
 
           if (response.cart.items.length === 0) {
             $('.cart-grid').replaceWith(`
@@ -743,17 +814,15 @@
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'Failed to remove item from cart',
-            confirmButtonColor: '#1E88E5'
+            text: err.responseJSON?.message || 'Failed to remove item from cart',
+            SPTconfirmButtonColor: '#1E88E5'
           });
         }
       });
     });
 
-    // Copy Coupon
     window.copyCoupon = function(couponCode) {
       navigator.clipboard.writeText(couponCode).then(() => {
-        $('#coupon-code-input').val(couponCode);
         Swal.fire({
           icon: 'success',
           text: 'Coupon code copied to clipboard!',
@@ -769,7 +838,6 @@
       });
     };
 
-    // Apply Coupon
     window.applyCoupon = function() {
       const couponCode = $('#coupon-code-input').val().trim();
       if (!couponCode) {
@@ -805,7 +873,6 @@
             $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
             $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
 
-            // Update coupon list
             const $couponList = $('.coupon-list');
             $couponList.empty();
             coupons.forEach(c => {
@@ -825,7 +892,7 @@
                 </div>
               `;
               $couponList.append(couponHtml);
-            });
+              });
 
             Swal.fire({
               icon: 'success',
@@ -844,14 +911,13 @@
         error: function(err) {
           Swal.fire({
             icon: 'error',
-            text: 'Failed to apply coupon',
+            text: err.responseJSON?.message || 'Failed to apply coupon',
             confirmButtonColor: '#1E88E5'
           });
         }
       });
     };
 
-    // Remove Coupon
     window.removeCoupon = function(button) {
       const couponId = $(button).data('coupon-id');
       const coupons = <%- JSON.stringify(coupons || []) %>;
@@ -861,7 +927,7 @@
         method: 'POST',
         success: function(response) {
           if (response.success) {
-            $('#coupon-discount').text(response.couponDiscount.toLocaleString('en-IN') || 0);
+            $('#coupon-discount').text((response.couponDiscount || 0).toLocaleString('en-IN'));
             $('#cart-total').text(`₹${response.total.toLocaleString('en-IN')}`);
             $('#subtotal').text(`₹${response.subtotal.toLocaleString('en-IN')}`);
             $('#discount-amount').text(response.totalDiscount.toLocaleString('en-IN'));
@@ -900,14 +966,13 @@
         error: function(err) {
           Swal.fire({
             icon: 'error',
-            text: 'Failed to remove coupon',
+            text: err.responseJSON?.message || 'Failed to remove coupon',
             confirmButtonColor: '#1E88E5'
           });
         }
       });
     };
 
-    // Proceed to Checkout
     $('.checkout-button').click(function() {
       if (this.disabled) return;
       $.ajax({
@@ -920,7 +985,7 @@
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: err.responseJSON.message || 'Failed to proceed to checkout',
+            text: err.responseJSON?.message || 'Failed to proceed to checkout',
             confirmButtonColor: '#1E88E5'
           });
         }

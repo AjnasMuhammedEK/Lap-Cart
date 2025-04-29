@@ -330,7 +330,7 @@
             letter-spacing: -0.025em;
         }
 
-        .checkout-close-btn {
+        .checkout-close Lee's-btn {
             opacity: 0.7;
             transition: opacity 0.2s;
             background: none;
@@ -406,7 +406,7 @@
             background: #f8fafc;
         }
 
-        .checkout Action-btn {
+        .checkout-submit-btn {
             background: #3b82f6;
             border: none;
             padding: 0.875rem 2rem;
@@ -632,7 +632,7 @@
                         </div>
                     <% } %>
                     <div class="checkout-total-row">
-                        <span>Delivery</span>
+                        <span>Delivery</列入
                         <span>Free</span>
                     </div>
                     <div class="checkout-total-row checkout-final-total">
@@ -794,20 +794,17 @@
     </div>
 
     <script>
-        // Show Add Address Modal
         function addAddress() {
             const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
             modal.show();
         }
 
-        // Show Edit Address Modal and Populate Fields
         function editAddress(addId) {
-        let editModalShow = new bootstrap.Modal(document.getElementById('editAddressModal'));
-        editModalShow.show();
-        document.getElementById('editAddressId').value = addId;
-    }
+            let editModalShow = new bootstrap.Modal(document.getElementById('editAddressModal'));
+            editModalShow.show();
+            document.getElementById('editAddressId').value = addId;
+        }
 
-        // Payment Method Selection
         document.querySelectorAll('.checkout-payment-option').forEach(option => {
             option.addEventListener('click', function() {
                 document.querySelectorAll('.checkout-payment-option').forEach(opt => {
@@ -818,7 +815,6 @@
             });
         });
 
-        // Address Selection
         document.querySelectorAll('.checkout-address-card').forEach(card => {
             card.addEventListener('click', function(e) {
                 if (e.target.classList.contains('checkout-addr-button-edit')) return;
@@ -830,18 +826,26 @@
             });
         });
 
-       
-
         async function placeOrder() {
-         try {
+    try {
         const selectedAddress = document.querySelector('input[name="address"]:checked');
         const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
 
         if (!selectedAddress) {
-            throw new Error('Please select a delivery address');
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select a delivery address',
+            });
+            return;
         }
         if (!selectedPayment) {
-            throw new Error('Please select a payment method');
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Please select a payment method',
+            });
+            return;
         }
 
         const response = await fetch('/place-order', {
@@ -856,12 +860,23 @@
         const data = await response.json();
 
         if (!response.ok) {
-            throw new Error(data.message || 'Failed to place order');
+            Swal.fire({
+                icon: 'error',
+                title: 'Order Failed',
+                text: data.message || 'Failed to place order',
+            });
+            return;
         }
 
         if (data.razorpayOrder) {
             if (typeof Razorpay === 'undefined') {
-                throw new Error('Razorpay SDK failed to load. Please check your network and try again.');
+                console.error('Razorpay SDK not loaded');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Error',
+                    text: 'Razorpay SDK failed to load. Please check your network and try again.',
+                });
+                return;
             }
 
             const options = {
@@ -887,12 +902,27 @@
                         const verifyData = await verifyResponse.json();
 
                         if (verifyResponse.ok && verifyData.redirect) {
-                            window.location.href = verifyData.redirect;
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Order Placed',
+                                text: 'Your order has been successfully placed!',
+                                timer: 1500,
+                                showConfirmButton: false,
+                            }).then(() => {
+                                window.location.href = verifyData.redirect;
+                            });
                         } else {
                             throw new Error(verifyData.message || 'Payment verification failed');
                         }
                     } catch (error) {
-                        window.location.href = '/paymentfailedpage'; // Redirect on verification failure
+                        console.error('Payment verification error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Failed',
+                            text: error.message || 'Payment verification failed',
+                        }).then(() => {
+                            window.location.href = '/paymentfailedpage';
+                        });
                     }
                 },
                 prefill: {
@@ -911,211 +941,236 @@
                 },
                 modal: {
                     ondismiss: function () {
-                        window.location.href = '/paymentfailedpage';  
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Cancelled',
+                            text: 'You cancelled the payment. Please try again.',
+                        }).then(() => {
+                            window.location.href = '/paymentfailedpage?error=' + encodeURIComponent('Payment was cancelled by the user');
+                        });
                     }
                 }
             };
 
+           
+
             const rzp = new Razorpay(options);
             rzp.on('payment.failed', function (response) {
-                window.location.href = '/paymentfailedpage';  
+                console.error('Razorpay payment failed:', response.error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: response.error.description || 'Payment failed. Please try again.',
+                }).then(() => {
+                    window.location.href = '/paymentfailedpage?error=' + encodeURIComponent(response.error.description);
+                });
             });
             rzp.open();
         } else if (data.redirect) {
-            window.location.href = data.redirect;
+            Swal.fire({
+                icon: 'success',
+                title: 'Order Placed',
+                text: 'Your order has been successfully placed!',
+                timer: 1500,
+                showConfirmButton: false,
+            }).then(() => {
+                window.location.href = data.redirect;
+            });
         } else {
-            throw new Error(data.message || 'Failed to place order');
+            Swal.fire({
+                icon: 'error',
+                title: 'Order Failed',
+                text: data.message || 'Failed to place order',
+            });
         }
     } catch (error) {
-        window.location.href = '/paymentfailedpage';  
+        console.error('Place order error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'An error occurred while placing the order',
+        }).then(() => {
+            window.location.href = '/paymentfailedpage';
+        });
     }
 }
+        function ValidChecking() {
+            let isValid = true;
 
-         // Validation for Add Address Form
-function ValidChecking() {
-    let isValid = true;
+            const addressType = document.getElementById("addressType");
+            const errorAddressType = document.getElementById("error-addressType");
+            if (!addressType.value) {
+                errorAddressType.style.display = "block";
+                errorAddressType.innerHTML = "Please select an address type.";
+                isValid = false;
+            } else {
+                errorAddressType.style.display = "none";
+            }
 
-    // Address Type
-    const addressType = document.getElementById("addressType");
-    const errorAddressType = document.getElementById("error-addressType");
-    if (!addressType.value) {
-        errorAddressType.style.display = "block";
-        errorAddressType.innerHTML = "Please select an address type.";
-        isValid = false;
-    } else {
-        errorAddressType.style.display = "none";
-    }
+            const name = document.getElementById("name");
+            const errorName = document.getElementById("error-name");
+            const nameVal = name.value.trim();
+            const namePattern = /^[A-Za-z\s]+$/;
+            if (!nameVal) {
+                errorName.style.display = "block";
+                errorName.innerHTML = "Please enter a valid name.";
+                isValid = false;
+            } else if (!namePattern.test(nameVal)) {
+                errorName.style.display = "block";
+                errorName.innerHTML = "Name can only contain alphabets and spaces.";
+                isValid = false;
+            } else {
+                errorName.style.display = "none";
+            }
 
-    // Name
-    const name = document.getElementById("name");
-    const errorName = document.getElementById("error-name");
-    const nameVal = name.value.trim();
-    const namePattern = /^[A-Za-z\s]+$/;
-    if (!nameVal) {
-        errorName.style.display = "block";
-        errorName.innerHTML = "Please enter a valid name.";
-        isValid = false;
-    } else if (!namePattern.test(nameVal)) {
-        errorName.style.display = "block";
-        errorName.innerHTML = "Name can only contain alphabets and spaces.";
-        isValid = false;
-    } else {
-        errorName.style.display = "none";
-    }
+             const city = document.getElementById("city");
+            const errorCity = document.getElementById("error-city");
+            const cityVal = city.value.trim();
+            if (!cityVal) {
+                errorCity.style.display = "block";
+                errorCity.innerHTML = "Please enter your city.";
+                isValid = false;
+            } else {
+                errorCity.style.display = "none";
+            }
 
-    // City
-    const city = document.getElementById("city");
-    const errorCity = document.getElementById("error-city");
-    const cityVal = city.value.trim();
-    if (!cityVal) {
-        errorCity.style.display = "block";
-        errorCity.innerHTML = "Please enter your city.";
-        isValid = false;
-    } else {
-        errorCity.style.display = "none";
-    }
+             const landMark = document.getElementById("landMark");
+            const errorLandMark = document.getElementById("error-landMark");
+            const landmarkVal = landMark.value.trim();
+            if (!landmarkVal) {
+                errorLandMark.style.display = "block";
+                errorLandMark.innerHTML = "Please enter your landmark.";
+                isValid = false;
+            } else {
+                errorLandMark.style.display = "none";
+            }
 
-    // Landmark
-    const landMark = document.getElementById("landMark");
-    const errorLandMark = document.getElementById("error-landMark");
-    const landmarkVal = landMark.value.trim();
-    if (!landmarkVal) {
-        errorLandMark.style.display = "block";
-        errorLandMark.innerHTML = "Please enter your landmark.";
-        isValid = false;
-    } else {
-        errorLandMark.style.display = "none";
-    }
+             const state = document.getElementById("state");
+            const errorState = document.getElementById("error-state");
+            const stateVal = state.value.trim();
+            if (!stateVal) {
+                errorState.style.display = "block";
+                errorState.innerHTML = "Please enter your state.";
+                isValid = false;
+            } else {
+                errorState.style.display = "none";
+            }
 
-    // State
-    const state = document.getElementById("state");
-    const errorState = document.getElementById("error-state");
-    const stateVal = state.value.trim();
-    if (!stateVal) {
-        errorState.style.display = "block";
-        errorState.innerHTML = "Please enter your state.";
-        isValid = false;
-    } else {
-        errorState.style.display = "none";
-    }
+            const pincode = document.getElementById("pincode");
+            const errorPincode = document.getElementById("error-pincode");
+            const pincodeVal = pincode.value.trim();
+            const pincodePattern = /^[1-9][0-9]{5}$/;
+            if (!pincodeVal || !pincodePattern.test(pincodeVal)) {
+                errorPincode.style.display = "block";
+                errorPincode.innerHTML = "Please enter a valid 6-digit pincode.";
+                isValid = false;
+            } else {
+                errorPincode.style.display = "none";
+            }
 
-    // Pincode
-    const pincode = document.getElementById("pincode");
-    const errorPincode = document.getElementById("error-pincode");
-    const pincodeVal = pincode.value.trim();
-    const pincodePattern = /^[1-9][0-9]{5}$/;
-    if (!pincodeVal || !pincodePattern.test(pincodeVal)) {
-        errorPincode.style.display = "block";
-        errorPincode.innerHTML = "Please enter a valid 6-digit pincode.";
-        isValid = false;
-    } else {
-        errorPincode.style.display = "none";
-    }
+            const phone = document.getElementById("phone");
+            const errorPhone = document.getElementById("error-phone");
+            const phoneVal = phone.value.trim();
+            const phonePattern = /^[6-9][0-9]{9}$/;
+            if (!phoneVal || !phonePattern.test(phoneVal)) {
+                errorPhone.style.display = "block";
+                errorPhone.innerHTML = "Please enter a valid 10-digit phone number.";
+                isValid = false;
+            } else {
+                errorPhone.style.display = "none";
+            }
 
-    // Phone
-    const phone = document.getElementById("phone");
-    const errorPhone = document.getElementById("error-phone");
-    const phoneVal = phone.value.trim();
-    const phonePattern = /^[6-9][0-9]{9}$/;
-    if (!phoneVal || !phonePattern.test(phoneVal)) {
-        errorPhone.style.display = "block";
-        errorPhone.innerHTML = "Please enter a valid 10-digit phone number.";
-        isValid = false;
-    } else {
-        errorPhone.style.display = "none";
-    }
+            return isValid;
+        }
 
-    return isValid;
-}
+        function ValidEditChecking() {
+            let isValid = true;
 
-function ValidEditChecking() {
-    let isValid = true;
+            const addressType = document.getElementById("editAddressType");
+            const errorAddressType = document.getElementById("error-editAddressType");
+            if (!addressType.value) {
+                errorAddressType.style.display = "block";
+                errorAddressType.innerHTML = "Please select an address type.";
+                isValid = false;
+            } else {
+                errorAddressType.style.display = "none";
+            }
 
-    const addressType = document.getElementById("editAddressType");
-    const errorAddressType = document.getElementById("error-editAddressType");
-    if (!addressType.value) {
-        errorAddressType.style.display = "block";
-        errorAddressType.innerHTML = "Please select an address type.";
-        isValid = false;
-    } else {
-        errorAddressType.style.display = "none";
-    }
+            const name = document.getElementById("editName");
+            const errorName = document.getElementById("error-editName");
+            const nameVal = name.value.trim();
+            const namePattern = /^[A-Za-z\s]+$/;
+            if (!nameVal) {
+                errorName.style.display = "block";
+                errorName.innerHTML = "Please enter a valid name.";
+                isValid = false;
+            } else if (!namePattern.test(nameVal)) {
+                errorName.style.display = "block";
+                errorName.innerHTML = "Name can only contain alphabets and spaces.";
+                isValid = false;
+            } else {
+                errorName.style.display = "none";
+            }
 
-    const name = document.getElementById("editName");
-    const errorName = document.getElementById("error-editName");
-    const nameVal = name.value.trim();
-    const namePattern = /^[A-Za-z\s]+$/;
-    if (!nameVal) {
-        errorName.style.display = "block";
-        errorName.innerHTML = "Please enter a valid name.";
-        isValid = false;
-    } else if (!namePattern.test(nameVal)) {
-        errorName.style.display = "block";
-        errorName.innerHTML = "Name can only contain alphabets and spaces.";
-        isValid = false;
-    } else {
-        errorName.style.display = "none";
-    }
+            const city = document.getElementById("editCity");
+            const errorCity = document.getElementById("error-editCity");
+            const cityVal = city.value.trim();
+            if (!cityVal) {
+                errorCity.style.display = "block";
+                errorCity.innerHTML = "Please enter your city.";
+                isValid = false;
+            } else {
+                errorCity.style.display = "none";
+            }
 
-    const city = document.getElementById("editCity");
-    const errorCity = document.getElementById("error-editCity");
-    const cityVal = city.value.trim();
-    if (!cityVal) {
-        errorCity.style.display = "block";
-        errorCity.innerHTML = "Please enter your city.";
-        isValid = false;
-    } else {
-        errorCity.style.display = "none";
-    }
+            const landMark = document.getElementById("editLandMark");
+            const errorLandMark = document.getElementById("error-editLandMark");
+            const landmarkVal = landMark.value.trim();
+            if (!landmarkVal) {
+                errorLandMark.style.display = "block";
+                errorLandMark.innerHTML = "Please enter your landmark.";
+                isValid = false;
+            } else {
+                errorLandMark.style.display = "none";
+            }
 
-     const landMark = document.getElementById("editLandMark");
-    const errorLandMark = document.getElementById("error-editLandMark");
-    const landmarkVal = landMark.value.trim();
-    if (!landmarkVal) {
-        errorLandMark.style.display = "block";
-        errorLandMark.innerHTML = "Please enter your landmark.";
-        isValid = false;
-    } else {
-        errorLandMark.style.display = "none";
-    }
+            const state = document.getElementById("editState");
+            const errorState = document.getElementById("error-editState");
+            const stateVal = state.value.trim();
+            if (!stateVal) {
+                errorState.style.display = "block";
+                errorState.innerHTML = "Please enter your state.";
+                isValid = false;
+            } else {
+                errorState.style.display = "none";
+            }
 
-     const state = document.getElementById("editState");
-    const errorState = document.getElementById("error-editState");
-    const stateVal = state.value.trim();
-    if (!stateVal) {
-        errorState.style.display = "block";
-        errorState.innerHTML = "Please enter your state.";
-        isValid = false;
-    } else {
-        errorState.style.display = "none";
-    }
+            const pincode = document.getElementById("editPincode");
+            const errorPincode = document.getElementById("error-editPincode");
+            const pincodeVal = pincode.value.trim();
+            const pincodePattern = /^[1-9][0-9]{5}$/;
+            if (!pincodeVal || !pincodePattern.test(pincodeVal)) {
+                errorPincode.style.display = "block";
+                errorPincode.innerHTML = "Please enter a valid 6-digit pincode.";
+                isValid = false;
+            } else {
+                errorPincode.style.display = "none";
+            }
 
-     const pincode = document.getElementById("editPincode");
-    const errorPincode = document.getElementById("error-editPincode");
-    const pincodeVal = pincode.value.trim();
-    const pincodePattern = /^[1-9][0-9]{5}$/;
-    if (!pincodeVal || !pincodePattern.test(pincodeVal)) {
-        errorPincode.style.display = "block";
-        errorPincode.innerHTML = "Please enter a valid 6-digit pincode.";
-        isValid = false;
-    } else {
-        errorPincode.style.display = "none";
-    }
+            const phone = document.getElementById("editPhone");
+            const errorPhone = document.getElementById("error-editPhone");
+            const phoneVal = phone.value.trim();
+            const phonePattern = /^[6-9][0-9]{9}$/;
+            if (!phoneVal || !phonePattern.test(phoneVal)) {
+                errorPhone.style.display = "block";
+                errorPhone.innerHTML = "Please enter a valid 10-digit phone number.";
+                isValid = false;
+            } else {
+                errorPhone.style.display = "none";
+            }
 
-     const phone = document.getElementById("editPhone");
-    const errorPhone = document.getElementById("error-editPhone");
-    const phoneVal = phone.value.trim();
-    const phonePattern = /^[6-9][0-9]{9}$/;
-    if (!phoneVal || !phonePattern.test(phoneVal)) {
-        errorPhone.style.display = "block";
-        errorPhone.innerHTML = "Please enter a valid 10-digit phone number.";
-        isValid = false;
-    } else {
-        errorPhone.style.display = "none";
-    }
-
-    return isValid;
-}
+            return isValid;
+        }
     </script>
     <%- include("../partials/user/footer.ejs") %>
 </body>

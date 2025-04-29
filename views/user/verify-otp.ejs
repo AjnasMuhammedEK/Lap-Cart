@@ -113,6 +113,7 @@
                     url: '/verify-otp',
                     method: 'POST',
                     data: { otp: otp },
+                    
                     success: function(response) {
                         if (response.success) {
                             Swal.fire({
@@ -148,6 +149,7 @@
                 $.ajax({
                     url: '/resend-otp',
                     method: 'POST',
+                    
                     success: function(response) {
                         if (response.success) {
                             Swal.fire({

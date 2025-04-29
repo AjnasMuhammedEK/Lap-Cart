@@ -1,6 +1,6 @@
-<%-include("../../views/partials/user/header")%>
+<%- include("../../views/partials/user/header") %>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
     /* Main Layout Adjustments */
     .container {
@@ -227,7 +227,7 @@
         <div class="shop-row">
             <div class="sidebar-column">
                 <div class="form-container">
-                    <form action="/shop" method="GET">
+                    <form action="/shop" method="GET" id="filterForm">
                         <!-- Search -->
                         <div class="filter-section">
                             <div class="filter-title">Search</div>
@@ -236,10 +236,10 @@
                             </div>
                             <div class="button-container">
                                 <button type="submit" id="searchBtn" class="filter-button">Search</button>
-                                <button type="reset" onclick="clearSearch()" class="clear-button">Clear</button>
+                                <button type="button" onclick="clearSearch()" class="clear-button">Clear</button>
                             </div>
                         </div>
-
+            
                         <!-- Brand -->
                         <div class="filter-section">
                             <div class="filter-title">Brand</div>
@@ -254,7 +254,7 @@
                                 </select>
                             </div>
                         </div>
-
+            
                         <!-- Category -->
                         <div class="filter-section">
                             <div class="filter-title">Category</div>
@@ -262,14 +262,14 @@
                                 <select id="category" name="category">
                                     <option value="">All Categories</option>
                                     <% for(let i = 0; i < category.length; i++) { %>
-                                        <option value="<%= category[i].name %>" <%= selectedCategory === category[i].name ? 'selected' : '' %>>
+                                        <option value="<%= category[i]._id %>" <%= selectedCategory === category[i]._id.toString() ? 'selected' : '' %>>
                                             <%= category[i].name %>
                                         </option>
                                     <% } %>
                                 </select>
                             </div>
                         </div>
-
+            
                         <!-- Sort By -->
                         <div class="filter-section">
                             <div class="filter-title">Sort By</div>
@@ -283,7 +283,7 @@
                                 </select>
                             </div>
                         </div>
-
+            
                         <!-- Price Range -->
                         <div class="filter-section">
                             <div class="filter-title">Price Range</div>
@@ -294,31 +294,13 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Hidden Inputs to Preserve Other Filters -->
+            
+                        <!-- Hidden Input for Page -->
                         <input type="hidden" name="page" value="1">
-                        <% if (search) { %>
-                            <input type="hidden" name="search" value="<%= search %>">
-                        <% } %>
-                        <% if (selectedCategory) { %>
-                            <input type="hidden" name="category" value="<%= selectedCategory %>">
-                        <% } %>
-                        <% if (selectedBrand) { %>
-                            <input type="hidden" name="brand" value="<%= selectedBrand %>">
-                        <% } %>
-                        <% if (selectedSort) { %>
-                            <input type="hidden" name="sort" value="<%= selectedSort %>">
-                        <% } %>
-                        <% if (minPrice) { %>
-                            <input type="hidden" name="minPrice" value="<%= minPrice %>">
-                        <% } %>
-                        <% if (maxPrice) { %>
-                            <input type="hidden" name="maxPrice" value="<%= maxPrice %>">
-                        <% } %>
-
+            
                         <div class="button-container">
                             <button type="submit" class="filter-button">Apply Filters</button>
-                            <button type="button" onclick="window.location.href='/shop'" class="clear-button">Clear All</button>
+                            <button type="button" onclick="clearAllFilters()" class="clear-button">Clear All</button>
                         </div>
                     </form>
                 </div>
@@ -353,7 +335,7 @@
                                     <p class="price"><span class="mr-2 price-dc">₹<%=product[i].regularPrice%></span><span>₹<%=product[i].salePrice%></span></p>
                                 </div>
                                 <p class="bottom-area d-flex px-3">
-                                    <a onclick="addToWhishlist('<%=product[i]._id%>')" class="add-to-cart text-center py-2 mr-1>"><span>Add to wishlist  <i class="ion-ios-add ml-1"></i></span> </a> 
+                                    <a onclick="addToWhishlist('<%=product[i]._id%>')" class="add-to-cart text-center py-2 mr-1"><span>Add to wishlist <i class="ion-ios-add ml-1"></i></span></a>
                                     <a href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
                                 </p>
                             </div>
@@ -438,33 +420,45 @@
 </section>
 
 <script>
-function clearSearch() {
-    document.getElementById("search").value = "";
-    document.querySelector('form').submit();
-}
+    function clearSearch() {
+        const form = document.getElementById('filterForm');
+        const searchInput = document.getElementById('search');
+        searchInput.value = '';
+        form.submit();
+    }
 
-function addToWhishlist(proId){
-    console.log(proId);
-    $.ajax({
-        url:'/addWhishlist',
-        method:'get',
-        data:{productId:proId},
-        success:function(response){
-            if(response.success){
-                Swal.fire({
-                    icon:'success',
-                    text:response.message
-                })
-            }else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: response.message || 'An unexpected error occurred'
-                });
+    function clearAllFilters() {
+        const form = document.getElementById('filterForm');
+        document.getElementById('search').value = '';
+        document.getElementById('brand').value = '';
+        document.getElementById('category').value = '';
+        document.getElementById('sort').value = '';
+        document.getElementById('min-price').value = '';
+        document.getElementById('max-price').value = '';
+        form.submit();
+    }
+
+    function addToWhishlist(proId) {
+        $.ajax({
+            url: '/addWhishlist',
+            method: 'get',
+            data: { productId: proId },
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        text: response.message
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'An unexpected error occurred'
+                    });
+                }
             }
-        }
-    })
-}
+        });
+    }
 </script>
 
-<%-include("../../views/partials/user/footer")%>
+<%- include("../../views/partials/user/footer") %>
