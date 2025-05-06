@@ -11,7 +11,7 @@ const loadWallet = async (req, res) => {
     try {
         const userId = req.session.user;
         const { page = 1 } = req.query;
-        const limit = 5; // Number of transactions per page
+        const limit = 5;
         const skip = (page - 1) * limit;
 
         const userData = await User.findOne({ _id: userId });
@@ -26,7 +26,6 @@ const loadWallet = async (req, res) => {
             });
         }
 
-        // Calculate total transactions and paginated transactions
         const totalTransactions = wallet.transactions.length;
         const totalPages = Math.ceil(totalTransactions / limit);
         const paginatedTransactions = wallet.transactions.slice(skip, skip + limit);

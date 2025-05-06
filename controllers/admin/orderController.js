@@ -10,6 +10,8 @@ const Offer = require('../../models/offerSchema')
 
 
 
+
+
 const orderList = async (req, res) => { 
     try {
         const search = req.query.search || ""; 
@@ -73,9 +75,17 @@ const changeStatus = async (req,res)=>{
     try {
 
         const {status,orderId} = req.body
-        console.log(status,orderId);
+        // console.log(status,orderId);
 
         const order = await Order.findOne({_id:orderId}).populate('orderedItems.product')
+
+        if(order.status === 'Delivered'){
+            return res.json({success:false,message :'This Order is delevered Does not Change the Status'})
+        }
+
+        if(order.paymentStatus != 'Completed'){
+            return res.json({success:false,message:'Payment is not completed. Status change is not allowed.`'})
+        }
 
         const updateOrder = await Order.findOneAndUpdate({_id:orderId},{$set:{status:status}},{new:true})
 
@@ -127,13 +137,13 @@ const handleReturn = async (req, res) => {
         if (action === 'accept') {
             const itemTotalPrice = item.orderQuantity * item.price;
             const itemOfferAmount = item.offerAmount || 0;
-
+        
             let refundAmount = itemTotalPrice - itemOfferAmount;
             if (refundAmount < 0) {
                 console.warn(`Refund amount negative for item ${itemId}. Setting to 0.`);
                 refundAmount = 0;
             }
-
+        
             let couponInvalidated = false;
             if (order.couponApplied && order.couponDiscount > 0 && order.cancelledCouponAmount === 0) {
                 const coupon = await Coupon.findById(item.couponId);
@@ -148,7 +158,7 @@ const handleReturn = async (req, res) => {
                         }
                         return sum;
                     }, 0);
-
+        
                     if (remainingPrice < coupon.minimumPrice) {
                         couponInvalidated = true;
                         order.cancelledCouponAmount = order.couponDiscount;
@@ -160,11 +170,21 @@ const handleReturn = async (req, res) => {
                     }
                 }
             }
-
+        
+            // Update the current item's return status to 'Returned'
             order.orderedItems[itemIndex].returnStatus = 'Returned';
             order.returnAmount = (order.returnAmount || 0) + refundAmount;
-
-             const remainingItemsPrice = order.orderedItems.reduce((sum, currItem) => {
+        
+            // Check if all items are now returned
+            const allItemsReturned = order.orderedItems.every(item => item.returnStatus === 'Returned');
+        
+            // Update order status to 'Returned' if all items are returned
+            if (allItemsReturned) {
+                order.status = 'Returned';
+            }
+        
+            // Calculate remaining items' price for finalAmount
+            const remainingItemsPrice = order.orderedItems.reduce((sum, currItem) => {
                 if (
                     currItem.returnStatus === 'Not Returned' ||
                     currItem.returnStatus === 'Return Requested'
@@ -173,18 +193,18 @@ const handleReturn = async (req, res) => {
                 }
                 return sum;
             }, 0);
-
-             order.finalAmount = remainingItemsPrice;
-             if (order.cancelledCouponAmount === 0 && order.couponDiscount > 0) {
+        
+            order.finalAmount = remainingItemsPrice;
+            if (order.cancelledCouponAmount === 0 && order.couponDiscount > 0) {
                 order.finalAmount -= order.couponDiscount;
             }
             if (order.finalAmount < 0) {
                 console.warn(`Order finalAmount negative after return. Setting to 0.`);
                 order.finalAmount = 0;
             }
-
-             await order.save();
-
+        
+            await order.save();
+        
             const userId = order.userId;
             if (refundAmount > 0 && order.paymentMethod !== 'COD') {
                 const wallet = await Wallet.findOneAndUpdate(
@@ -198,7 +218,7 @@ const handleReturn = async (req, res) => {
                                 method: 'Refund',
                                 status: 'Completed',
                                 description: `Refund for returned product ${item.product.productName}`,
-                                orderId:order._id,
+                                orderId: order._id,
                                 date: new Date(),
                             },
                         },
@@ -207,14 +227,15 @@ const handleReturn = async (req, res) => {
                 );
                 await wallet.save();
             }
-
-             await Product.findByIdAndUpdate(
+        
+            await Product.findByIdAndUpdate(
                 item.product._id,
                 { $inc: { quantity: item.orderQuantity } },
                 { new: true }
             );
-
+        
             return res.json({ success: true, message: 'Order Return Accepted' });
+        
         } else if (action === 'reject') {
             order.orderedItems[itemIndex].returnStatus = 'Return Rejected';
             await order.save();

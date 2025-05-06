@@ -288,6 +288,8 @@ const loadAddress = async (req, res) => {
             const userId = req.session.user;
             const userData = await User.findById(userId);
 
+            let items = 0
+
             if (userId) {
                 const cart = await Cart.findOne({ userId: userId });
                 if (cart) {
@@ -353,7 +355,7 @@ const editAddress = async (req,res) =>{
     try {
 
         const addressId = req.query.addressId;
-        console.log(addressId);
+        
         const user = req.session.user;
         
         const currentAddress = await Address.findOne({
@@ -389,8 +391,7 @@ const postEditAddress = async (req, res) => {
 
         const { addressId , addressType, name, city, landMark, state, pincode, phone } = req.body;
 
-        console.log(addressId);
-        const findAddress =  await Address.findOne({
+         const findAddress =  await Address.findOne({
             'address._id': addressId
         });
         if(!findAddress){

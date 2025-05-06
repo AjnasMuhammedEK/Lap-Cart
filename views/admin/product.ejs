@@ -16,48 +16,46 @@
         }
 
         :root {
-            --sidebar-width: 240px;
-            --primary-color: #8257ED;
-            --dark-bg: #1a1a2e;
-            --darker-bg: #101022;
-            --lighter-bg: #2a2a3e;
-            --text-color: #ffffff;
-            --border-color: #3a3a4e;
-            --success-color: #00bf8e;
-            --warning-color: #f7c94b;
-            --danger-color: #f75842;
+            --product-mgmt-sidebar-width: 240px;
+            --product-mgmt-primary-color: #8257ED;
+            --product-mgmt-dark-bg: #1a1a2e;
+            --product-mgmt-darker-bg: #101022;
+            --product-mgmt-lighter-bg: #2a2a3e;
+            --product-mgmt-text-color: #ffffff;
+            --product-mgmt-border-color: #3a3a4e;
+            --product-mgmt-success-color: #00bf8e;
+            --product-mgmt-warning-color: #f7c94b;
+            --product-mgmt-danger-color: #f75842;
         }
 
         body {
-            /* display: flex;
-            min-height: 100vh; */
-            background-color: var(--dark-bg);
-            color: var(--text-color);
+            background-color: var(--product-mgmt-dark-bg);
+            color: var(--product-mgmt-text-color);
         }
 
         /* Sidebar Styles */
-        .logo {
+        .product-mgmt-logo {
             padding: 20px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--product-mgmt-border-color);
         }
 
-        .logo span {
+        .product-mgmt-logo span {
             font-size: 24px;
             font-weight: bold;
         }
 
-        .logo span:first-child {
-            color: var(--primary-color);
+        .product-mgmt-logo span:first-child {
+            color: var(--product-mgmt-primary-color);
         }
 
-        .menu {
+        .product-mgmt-menu {
             list-style: none;
             padding: 10px 0;
         }
 
-        .menu-item {
+        .product-mgmt-menu-item {
             padding: 15px 20px;
             display: flex;
             align-items: center;
@@ -65,99 +63,99 @@
             cursor: pointer;
         }
 
-        .menu-item:hover, .menu-item.active {
+        .product-mgmt-menu-item:hover, .product-mgmt-menu-item.product-mgmt-active {
             background-color: rgba(130, 87, 237, 0.1);
         }
 
-        .menu-item.active {
-            border-left: 4px solid var(--primary-color);
+        .product-mgmt-menu-item.product-mgmt-active {
+            border-left: 4px solid var(--product-mgmt-primary-color);
         }
 
-        .menu-item i {
+        .product-mgmt-menu-item i {
             margin-right: 10px;
             width: 20px;
             text-align: center;
         }
 
-        .submenu {
+        .product-mgmt-submenu {
             padding-left: 20px;
         }
 
         /* Main Content Styles */
-        .main-content {
+        .product-mgmt-main-content {
             flex: 1;
-            margin-left: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
+            margin-left: var(--product-mgmt-sidebar-width);
+            width: calc(100% - var(--product-mgmt-sidebar-width));
             overflow-x: hidden;
         }
 
-        .header {
+        .product-mgmt-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 30px;
-            background-color: var(--darker-bg);
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--product-mgmt-darker-bg);
+            border-bottom: 1px solid var(--product-mgmt-border-color);
         }
 
-        .search-container {
+        .product-mgmt-search-container {
             position: relative;
             width: 300px;
         }
 
-        .search-container input {
+        .product-mgmt-search-container input {
             width: 100%;
             padding: 10px 40px 10px 15px;
             border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
+            border: 1px solid var(--product-mgmt-border-color);
+            background-color: var(--product-mgmt-lighter-bg);
+            color: var(--product-mgmt-text-color);
         }
 
-        .search-container button {
+        .product-mgmt-search-container button {
             position: absolute;
             right: 5px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--text-color);
+            color: var(--product-mgmt-text-color);
             cursor: pointer;
         }
 
-        .user-profile {
+        .product-mgmt-user-profile {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .user-profile .status {
+        .product-mgmt-user-profile .product-mgmt-status {
             width: 10px;
             height: 10px;
-            background-color: var(--success-color);
+            background-color: var(--product-mgmt-success-color);
             border-radius: 50%;
         }
 
         /* Content Area */
-        .content {
+        .product-mgmt-content {
             padding: 30px;
         }
 
-        .page-header {
+        .product-mgmt-page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .page-title {
+        .product-mgmt-page-title {
             font-size: 24px;
             font-weight: bold;
         }
 
-        .add-button {
+        .product-mgmt-add-button {
             padding: 10px 20px;
-            background-color: var(--primary-color);
+            background-color: var(--product-mgmt-primary-color);
             color: white;
             border: none;
             border-radius: 5px;
@@ -169,28 +167,28 @@
             transition: all 0.3s ease;
         }
 
-        .add-button:hover {
+        .product-mgmt-add-button:hover {
             background-color: #6f46c9;
         }
 
         /* Search Component */
-        .search-component {
+        .product-mgmt-search-component {
             display: flex;
             margin-bottom: 20px;
             gap: 10px;
             align-items: center;
         }
 
-        .search-component input {
+        .product-mgmt-search-component input {
             flex: 1;
             padding: 12px 15px;
             border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
+            border: 1px solid var(--product-mgmt-border-color);
+            background-color: var(--product-mgmt-lighter-bg);
+            color: var(--product-mgmt-text-color);
         }
 
-        .search-component button {
+        .product-mgmt-search-component button {
             padding: 12px 20px;
             border-radius: 5px;
             border: none;
@@ -198,28 +196,28 @@
             font-weight: 500;
         }
 
-        .search-btn {
-            background-color: var(--primary-color);
+        .product-mgmt-search-btn {
+            background-color: var(--product-mgmt-primary-color);
             color: white;
         }
 
-        .search-btn:hover {
+        .product-mgmt-search-btn:hover {
             background-color: #6f46c9;
         }
 
-        .clear-btn {
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
+        .product-mgmt-clear-btn {
+            background-color: var(--product-mgmt-lighter-bg);
+            color: var(--product-mgmt-text-color);
+            border: 1px solid var(--product-mgmt-border-color);
         }
 
-        .clear-btn:hover {
+        .product-mgmt-clear-btn:hover {
             background-color: #3a3a4e;
         }
 
         /* Table Styles */
-        .table-container {
-            background-color: var(--lighter-bg);
+        .product-mgmt-table-container {
+            background-color: var(--product-mgmt-lighter-bg);
             border-radius: 10px;
             overflow: hidden;
         }
@@ -232,11 +230,11 @@
         th, td {
             padding: 15px 20px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--product-mgmt-border-color);
         }
 
         th {
-            background-color: var(--darker-bg);
+            background-color: var(--product-mgmt-darker-bg);
             font-weight: 600;
         }
 
@@ -244,12 +242,12 @@
             background-color: rgba(130, 87, 237, 0.05);
         }
 
-        .action-cell {
+        .product-mgmt-action-cell {
             display: flex;
             gap: 10px;
         }
 
-        .edit-btn, .delete-btn {
+        .product-mgmt-edit-btn, .product-mgmt-delete-btn {
             width: 32px;
             height: 32px;
             display: flex;
@@ -261,171 +259,177 @@
             color: white;
         }
 
-        .edit-btn {
-            background-color: var(--warning-color);
+        .product-mgmt-edit-btn {
+            background-color: var(--product-mgmt-warning-color);
         }
 
-        .delete-btn {
-            background-color: var(--danger-color);
+        .product-mgmt-delete-btn {
+            background-color: var(--product-mgmt-danger-color);
         }
 
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Updated Pagination Styles */
+        .product-mgmt-pagination {
             margin-top: 20px;
-        }
-
-        .pagination-info {
-            color: #aaa;
-        }
-
-        .pagination-controls {
             display: flex;
-            gap: 5px;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .pagination-controls button {
-            width: 36px;
-            height: 36px;
+        .product-mgmt-pagination .product-mgmt-page-item {
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
-            cursor: pointer;
         }
 
-        .pagination-controls button:hover {
-            background-color: #3a3a4e;
+        .product-mgmt-pagination .product-mgmt-page-link {
+            background-color: var(--product-mgmt-lighter-bg);
+            color: var(--product-mgmt-text-color);
+            border: 1px solid var(--product-mgmt-border-color);
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .pagination-controls button.active {
-            background-color: var(--primary-color);
+        .product-mgmt-pagination .product-mgmt-page-link:hover {
+            background-color: var(--product-mgmt-primary-color);
+            border-color: var(--product-mgmt-primary-color);
             color: white;
-            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-       
+        .product-mgmt-pagination .product-mgmt-page-item.product-mgmt-active .product-mgmt-page-link {
+            background-color: var(--product-mgmt-primary-color);
+            border-color: var(--product-mgmt-primary-color);
+            color: white;
+            cursor: default;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-mgmt-pagination .product-mgmt-page-item.product-mgmt-disabled .product-mgmt-page-link {
+            background-color: var(--product-mgmt-lighter-bg);
+            color: #666;
+            border-color: var(--product-mgmt-border-color);
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         /* Responsive styles */
         @media (max-width: 992px) {
-            .sidebar {
+            .product-mgmt-sidebar {
                 width: 70px;
             }
 
-            .sidebar .logo span, .sidebar .menu-item span {
+            .product-mgmt-sidebar .product-mgmt-logo span, .product-mgmt-sidebar .product-mgmt-menu-item span {
                 display: none;
             }
 
-            .sidebar .menu-item {
+            .product-mgmt-sidebar .product-mgmt-menu-item {
                 justify-content: center;
                 padding: 15px 0;
             }
 
-            .sidebar .menu-item i {
+            .product-mgmt-sidebar .product-mgmt-menu-item i {
                 margin-right: 0;
             }
 
-            .main-content {
+            .product-mgmt-main-content {
                 margin-left: 70px;
                 width: calc(100% - 70px);
             }
         }
 
         @media (max-width: 768px) {
-            .header {
+            .product-mgmt-header {
                 flex-direction: column;
                 gap: 15px;
                 align-items: flex-start;
             }
 
-            .search-container {
+            .product-mgmt-search-container {
                 width: 100%;
             }
 
-            .user-profile {
+            .product-mgmt-user-profile {
                 align-self: flex-end;
             }
 
-            .search-component {
+            .product-mgmt-search-component {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .action-cell {
+            .product-mgmt-action-cell {
                 flex-direction: column;
                 gap: 5px;
             }
 
-            .table-container {
+            .product-mgmt-table-container {
                 overflow-x: auto;
             }
 
-            .pagination {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
+            .product-mgmt-pagination {
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
             }
         }
 
-        /* For mobile devices */
         @media (max-width: 576px) {
-            .content {
+            .product-mgmt-content {
                 padding: 15px;
             }
+
+            .product-mgmt-pagination .product-mgmt-page-link {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
         }
 
-        /* // Add this to your modal content styling */
-.modal-content {
-    color: #000; /* Force black text in modal */
-    background-color: #fff; /* Ensure white background */
-}
+        .product-mgmt-modal-content {
+            color: #000;
+            background-color: #fff;
+        }
 
-.modal-body label, .modal-title {
-    color: #000; /* Ensure labels are visible */
-}
+        .product-mgmt-modal-body label, .product-mgmt-modal-title {
+            color: #000;
+        }
     </style>
 </head>
 <body>
     
     <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-             
-             
+    <div class="product-mgmt-main-content">
+        <div class="product-mgmt-header">
         </div>
 
-        <div class="content">
-            <div class="page-header">
-                <h1 class="page-title">Products</h1>
+        <div class="product-mgmt-content">
+            <div class="product-mgmt-page-header">
+                <h1 class="product-mgmt-page-title">Products</h1>
                 <form action="/admin/addProduct">
-                <button  class="add-button" id="addCategoryBtn">
-                    <span>Add Product</span>
-                    <span>+</span>
-                </button>
-            </form>
+                    <button class="product-mgmt-add-button" id="product-mgmt-addCategoryBtn">
+                        <span>Add Product</span>
+                        <span>+</span>
+                    </button>
+                </form>
             </div>
 
-            <div class="search-component">
+            <div class="product-mgmt-search-component">
                 <form action="/admin/product">
-                <input type="text" name="search" id="searchInput" placeholder="Search by Name or Brand">
-                <button class="search-btn">Search</button>
-                <button class="clear-btn" onclick="clearSearch()">Clear</button>
-            </form>
+                    <input type="text" name="search" id="product-mgmt-searchInput" placeholder="Search by Name or Brand">
+                    <button class="product-mgmt-search-btn">Search</button>
+                    <button class="product-mgmt-clear-btn" onclick="clearSearch()">Clear</button>
+                </form>
             </div>
 
-
-            
-    
-
-
-
-
-            <div class="table-container">
-                <table class="users-table">
+            <div class="product-mgmt-table-container">
+                <table class="product-mgmt-users-table">
                     <thead>
                         <tr>
                             <th>Product Name</th>
@@ -435,114 +439,92 @@
                             <th>Price</th>
                             <th>Sale Price</th>
                             <th>Stock</th>
-                             <th>
-                                Listed/UnListed
-                            </th>
+                            <th>Listed/UnListed</th>
                             <th>Edit</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <%for(let i = 0 ; i < data.length  ; i++){%>
-                        <tr>
-                            <td><%=data[i].productName%></td>
-                             
-                            <td>
-                                <img src="/uploads/product-images/<%=data[i].productImage[0]%>" alt="img-loading" style="inline-size: 50px;" class="product-image">
-                            </td>
-                            <td><%=data[i].brand.brandName%></td>
-                            <td><%=data[i].category.name%></td>
-                            <td><%=data[i].regularPrice%></td>
-                            <td><%=data[i].salePrice%></td>
-                            <td><%=data[i].quantity%></td>
-                           
-                            <td>
-                                <% if (data[i].isListed) { %>
-                                    <button class="btn btn-danger" style="width: 70px;">
-                                        <a href="/admin/listProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">Unlist</a>
-                                    </button>
-                                <% } else { %>
-                                    <button class="btn btn-success" style="width: 70px;">
-                                        <a href="/admin/unlistProduct?id=<%= data[i]._id %>" class="text-white" style="text-decoration: none;">List</a>
-                                    </button>
-                                <% } %>
-                            </td>
-                            <td>     
-                                <!-- <button class="btn btn-info" style="width: 100px;">
-                                    <a href="">Edit</a>
-                                </button> -->
-                                <button accesskey="" class="edit-btn" ><a href="/admin/editProduct?id=<%=data[i]._id%>" class="text-white" style="text-decoration: none;">✏️</a></button>
-                                <button class="delete-btn" onclick="deleteProduct('<%=data[i]._id%>')">🗑️</button>
-        
-                            </td>
-                        </tr>
-                    <%}%>
-                </tbody>
+                        <% data.forEach(pro => { %>
+                            <tr>
+                                <td><%= pro.productName %></td>
+                                <td>
+                                    <img src="/Uploads/product-images/<%= pro.productImage[0] %>" alt="img-loading" style="inline-size: 50px;" class="product-mgmt-product-image">
+                                </td>
+                                <td><%= pro.brand.brandName %></td>
+                                <td><%= pro.category.name %></td>
+                                <td><%= pro.regularPrice %></td>
+                                <td><%= pro.salePrice %></td>
+                                <td><%= pro.quantity %></td>
+                                <td>
+                                    <% if (pro.isListed) { %>
+                                        <button class="btn btn-danger" style="width: 70px;">
+                                            <a href="/admin/listProduct?id=<%= pro._id %>" class="text-white" style="text-decoration: none;">Unlist</a>
+                                        </button>
+                                    <% } else { %>
+                                        <button class="btn btn-success" style="width: 70px;">
+                                            <a href="/admin/unlistProduct?id=<%= pro._id %>" class="text-white" style="text-decoration: none;">List</a>
+                                        </button>
+                                    <% } %>
+                                </td>
+                                <td class="product-mgmt-action-cell">
+                                    <button class="product-mgmt-edit-btn"><a href="/admin/editProduct?id=<%= pro._id %>" class="text-white" style="text-decoration: none;">✏️</a></button>
+                                    <button class="product-mgmt-delete-btn" onclick="deleteProduct('<%= pro._id %>')">🗑️</button>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
                 </table>
-        
-        
-                <!-- delete modal -->
-                <div class="modal" tabindex="-1" id="deleteProductModal">
+
+                <!-- Delete Modal -->
+                <div class="modal" tabindex="-1" id="product-mgmt-deleteProductModal">
                     <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title text-danger" >DELETE PRODUCT</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="product-mgmt-modal-content">
+                            <div class="modal-header">
+                                <h5 class="product-mgmt-modal-title text-danger">DELETE PRODUCT</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="product-mgmt-modal-body">
+                                <form action="/admin/deleteProduct" method="post">
+                                    <input type="text" id="product-mgmt-deleteProduct" name="productId" hidden>
+                                    <p class="text-danger">Are You Sure For Delete This Product</p>
+                                    <button class="btn btn-primary">Delete Product</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
                         </div>
-                        <div class="modal-body">
-                            <form action="/admin/deleteProduct" method="post">
-                                <input type="text" id="deleteProduct" name="productId" hidden>
-                                <p class="text-danger">Are You Sure For Delete This Product</p>
-                                <button class="btn btn-primary">Delete Product</button>
-                            </form>
-                         
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                         
-                        </div>
-                      </div>
                     </div>
-                  </div>
-        
+                </div>
+            </div>
 
-            <!-- pagination -->
-
+            <!-- Pagination -->
             <div class="container mt-3">
                 <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <%for(let i=1 ; i<=totalPages;i++){%>
-                            <li class="page-item <%=(i===currentPage) ? 'active' : '' %>">
-                                <a class="page-link" href="?page=<%=i%>"><%= i %></a>
+                    <ul class="product-mgmt-pagination">
+                        <% for(let i = 1; i <= totalPages; i++) { %>
+                            <li class="product-mgmt-page-item <%= (i === currentPage) ? 'product-mgmt-active' : '' %>">
+                                <a class="product-mgmt-page-link" href="?page=<%= i %>"><%= i %></a>
                             </li>
-                        <%}%>
+                        <% } %>
                     </ul>
                 </nav>
             </div>
         </div>
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
+        function deleteProduct(productId) {
+            document.getElementById('product-mgmt-deleteProduct').value = productId;
+            let deleteModalShow = new bootstrap.Modal(document.getElementById('product-mgmt-deleteProductModal'));
+            deleteModalShow.show();
+        }
 
-        // Swal.fire({
-        //     icon:'success'
-        // })
-
-function deleteProduct(productId){
-    document.getElementById('deleteProduct').value=productId
-    let deleteModalShow =  new bootstrap.Modal(document.getElementById('deleteProductModal'))
-    deleteModalShow.show()
-}
-
-        
-function clearSearch() {
-    document.getElementById("searchInput").value = "";
-    document.getElementById('searchBtn').click();
-}
-
-
-        
+        function clearSearch() {
+            document.getElementById("product-mgmt-searchInput").value = "";
+            document.getElementById('product-mgmt-search-btn').click();
+        }
     </script>
 </body>
 </html>

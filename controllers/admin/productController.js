@@ -29,8 +29,9 @@ const loadProduct = async (req,res)=>{
             .limit(limit)
             .skip((page - 1) * limit)
             .populate(['category', 'brand'])
+            .sort({ createdAt: -1 })
             .exec();
-          console.log('m,m,m,m,m,');
+        //   console.log('m,m,m,m,m,');
       
            const count = await Product.find(query).countDocuments();
         //   console.log('2'); 
@@ -38,7 +39,7 @@ const loadProduct = async (req,res)=>{
           const category = await Category.find({isListed:true,isDeleted:false});
           const brand = await Brand.find({isListed:true,isDeleted:false})
         //   console.log('brands===============',brand);
-
+      
 
           if(category && brand){
             res.render('product',{
@@ -143,7 +144,7 @@ const addProduct = async (req, res) => {
         const productExists = await Product.findOne({ productName: product.productName });
         
         if (productExists) {
-            return res.status(400).json({ error: 'Product already exists' });
+            return res.json({ error: 'Product already exists' });
         }
         
         const images = [];
@@ -176,7 +177,7 @@ const addProduct = async (req, res) => {
         
         const categoryId = await Category.findOne({ name: product.category });
         if (!categoryId) {
-            return res.status(400).json({ error: 'Invalid category name' });
+            return res.json({ error: 'Invalid category name' });
         }
 
         const bradId = await Brand.findOne({brandName:product.brand})

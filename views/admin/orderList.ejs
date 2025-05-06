@@ -18,123 +18,151 @@
         }
 
         :root {
-            --sidebar-width: 240px;
-            --primary-color: #8257ED;
-            --dark-bg: #1a1a2e;
-            --darker-bg: #101022;
-            --lighter-bg: #2a2a3e;
-            --text-color: #ffffff;
-            --border-color: #3a3a4e;
-            --success-color: #00bf8e;
-            --warning-color: #f7c94b;
-            --danger-color: #f75842;
+            --order-mgmt-sidebar-width: 240px;
+            --order-mgmt-primary-color: #8257ED;
+            --order-mgmt-dark-bg: #1a1a2e;
+            --order-mgmt-darker-bg: #101022;
+            --order-mgmt-lighter-bg: #2a2a3e;
+            --order-mgmt-text-color: #ffffff;
+            --order-mgmt-border-color: #3a3a4e;
+            --order-mgmt-success-color: #00bf8e;
+            --order-mgmt-warning-color: #f7c94b;
+            --order-mgmt-danger-color: #f75842;
         }
 
         body {
-            background-color: var(--dark-bg);
-            color: var(--text-color);
+            background-color: var(--order-mgmt-dark-bg);
+            color: var(--order-mgmt-text-color);
         }
 
         /* Sidebar Styles */
-        .logo { padding: 20px; display: flex; align-items: center; border-bottom: 1px solid var(--border-color); }
-        .logo span { font-size: 24px; font-weight: bold; }
-        .logo span:first-child { color: var(--primary-color); }
-        .menu { list-style: none; padding: 10px 0; }
-        .menu-item { padding: 15px 20px; display: flex; align-items: center; transition: all 0.3s ease; cursor: pointer; }
-        .menu-item:hover, .menu-item.active { background-color: rgba(130, 87, 237, 0.1); }
-        .menu-item.active { border-left: 4px solid var(--primary-color); }
-        .menu-item i { margin-right: 10px; width: 20px; text-align: center; }
-        .submenu { padding-left: 20px; }
+        .order-mgmt-logo { padding: 20px; display: flex; align-items: center; border-bottom: 1px solid var(--order-mgmt-border-color); }
+        .order-mgmt-logo span { font-size: 24px; font-weight: bold; }
+        .order-mgmt-logo span:first-child { color: var(--order-mgmt-primary-color); }
+        .order-mgmt-menu { list-style: none; padding: 10px 0; }
+        .order-mgmt-menu-item { padding: 15px 20px; display: flex; align-items: center; transition: all 0.3s ease; cursor: pointer; }
+        .order-mgmt-menu-item:hover, .order-mgmt-menu-item.order-mgmt-active { background-color: rgba(130, 87, 237, 0.1); }
+        .order-mgmt-menu-item.order-mgmt-active { border-left: 4px solid var(--order-mgmt-primary-color); }
+        .order-mgmt-menu-item i { margin-right: 10px; width: 20px; text-align: center; }
+        .order-mgmt-submenu { padding-left: 20px; }
 
         /* Main Content Styles */
-        .main-content { flex: 1; margin-left: var(--sidebar-width); width: calc(100% - var(--sidebar-width)); overflow-x: hidden; }
-        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--darker-bg); border-bottom: 1px solid var(--border-color); }
-        .search-container { position: relative; width: 300px; }
-        .search-container input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--lighter-bg); color: var(--text-color); }
-        .search-container button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-color); cursor: pointer; }
-        .user-profile { display: flex; align-items: center; gap: 10px; }
-        .user-profile .status { width: 10px; height: 10px; background-color: var(--success-color); border-radius: 50%; }
+        .order-mgmt-main-content { flex: 1; margin-left: var(--order-mgmt-sidebar-width); width: calc(100% - var(--order-mgmt-sidebar-width)); overflow-x: hidden; }
+        .order-mgmt-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background-color: var(--order-mgmt-darker-bg); border-bottom: 1px solid var(--order-mgmt-border-color); }
+        .order-mgmt-search-container { position: relative; width: 300px; }
+        .order-mgmt-search-container input { width: 100%; padding: 10px 40px 10px 15px; border-radius: 5px; border: 1px solid var(--order-mgmt-border-color); background-color: var(--order-mgmt-lighter-bg); color: var(--order-mgmt-text-color); }
+        .order-mgmt-search-container button { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--order-mgmt-text-color); cursor: pointer; }
+        .order-mgmt-user-profile { display: flex; align-items: center; gap: 10px; }
+        .order-mgmt-user-profile .order-mgmt-status { width: 10px; height: 10px; background-color: var(--order-mgmt-success-color); border-radius: 50%; }
 
         /* Content Area */
-        .content { padding: 30px; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-title { font-size: 24px; font-weight: bold; }
-        .add-button { padding: 10px 20px; background-color: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 500; transition: all 0.3s ease; }
-        .add-button:hover { background-color: #6f46c9; }
+        .order-mgmt-content { padding: 30px; }
+        .order-mgmt-page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .order-mgmt-page-title { font: 24px bold; }
+        .order-mgmt-add-button { padding: 10px 20px; background-color: var(--order-mgmt-primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: 500; transition: all 0.3s ease; }
+        .order-mgmt-add-button:hover { background-color: #6f46c9; }
 
         /* Search Component */
-        .search-component { display: flex; margin-bottom: 20px; gap: 10px; align-items: center; }
-        .search-component input { flex: 1; padding: 12px 15px; border-radius: 5px; border: 1px solid var(--border-color); background-color: var(--lighter-bg); color: var(--text-color); }
-        .search-component button { padding: 12px 20px; border-radius: 5px; border: none; cursor: pointer; font-weight: 500; }
-        .search-btn { background-color: var(--primary-color); color: white; }
-        .search-btn:hover { background-color: #6f46c9; }
-        .clear-btn { background-color: var(--lighter-bg); color: var(--text-color); border: 1px solid var(--border-color); }
-        .clear-btn:hover { background-color: #3a3a4e; }
+        .order-mgmt-search-component { display: flex; margin-bottom: 20px; gap: 10px; align-items: center; }
+        .order-mgmt-search-component input { flex: 1; padding: 12px 15px; border-radius: 5px; border: 1px solid var(--order-mgmt-border-color); background-color: var(--order-mgmt-lighter-bg); color: var(--order-mgmt-text-color); }
+        .order-mgmt-search-component button { padding: 12px 20px; border-radius: 5px; border: none; cursor: pointer; font-weight: 500; }
+        .order-mgmt-search-btn { background-color: var(--order-mgmt-primary-color); color: white; }
+        .order-mgmt-search-btn:hover { background-color: #6f46c9; }
+        .order-mgmt-clear-btn { background-color: var(--order-mgmt-lighter-bg); color: var(--order-mgmt-text-color); border: 1px solid var(--order-mgmt-border-color); }
+        .order-mgmt-clear-btn:hover { background-color: #3a3a4e; }
 
         /* Table Styles */
-        .table-container { background-color: var(--lighter-bg); border-radius: 10px; overflow: hidden; }
+        .order-mgmt-table-container { background-color: var(--order-mgmt-lighter-bg); border-radius: 10px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { background-color: var(--darker-bg); font-weight: 600; }
+        th, td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--order-mgmt-border-color); }
+        th { background-color: var(--order-mgmt-darker-bg); font-weight: 600; }
         tbody tr:hover { background-color: rgba(130, 87, 237, 0.05); }
-        .action-cell { display: flex; gap: 10px; }
-        .edit-btn, .delete-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: none; cursor: pointer; color: white; }
-        .edit-btn { background-color: var(--warning-color); }
-        .delete-btn { background-color: var(--danger-color); }
+        .order-mgmt-action-cell { display: flex; gap: 10px; }
+        .order-mgmt-edit-btn, .order-mgmt-delete-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: none; cursor: pointer; color: white; }
+        .order-mgmt-edit-btn { background-color: var(--order-mgmt-warning-color); }
+        .order-mgmt-delete-btn { background-color: var(--order-mgmt-danger-color); }
 
-        /* Pagination */
-        .pagination { margin-top: 20px; }
-        .pagination .page-link { background-color: var(--lighter-bg); color: var(--text-color); border: 1px solid var(--border-color); }
-        .pagination .page-link:hover { background-color: #3a3a4e; }
-        .pagination .page-item.active .page-link { background-color: var(--primary-color); border-color: var(--primary-color); color: white; }
-        .pagination .page-item.disabled .page-link { background-color: var(--lighter-bg); color: #aaa; opacity: 0.5; cursor: not-allowed; }
+        /* Pagination Styles (Updated to match User Management) */
+        .order-mgmt-pagination { 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .order-mgmt-pagination-info {
+            color: #aaa;
+        }
+        .order-mgmt-pagination-controls {
+            display: flex;
+            gap: 5px;
+        }
+        .order-mgmt-pagination-controls button {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            border: 1px solid var(--order-mgmt-border-color);
+            background-color: var(--order-mgmt-lighter-bg);
+            color: var(--order-mgmt-text-color);
+            cursor: pointer;
+        }
+        .order-mgmt-pagination-controls button:hover {
+            background-color: #3a3a4e;
+        }
+        .order-mgmt-pagination-controls button.order-mgmt-active {
+            background-color: var(--order-mgmt-primary-color);
+            color: white;
+            border-color: var(--order-mgmt-primary-color);
+        }
 
         /* Responsive styles */
         @media (max-width: 992px) {
-            .sidebar { width: 70px; }
-            .sidebar .logo span, .sidebar .menu-item span { display: none; }
-            .sidebar .menu-item { justify-content: center; padding: 15px 0; }
-            .sidebar .menu-item i { margin-right: 0; }
-            .main-content { margin-left: 70px; width: calc(100% - 70px); }
+            .order-mgmt-sidebar { width: 70px; }
+            .order-mgmt-sidebar .order-mgmt-logo span, .order-mgmt-sidebar .order-mgmt-menu-item span { display: none; }
+            .order-mgmt-sidebar .order-mgmt-menu-item { justify-content: center; padding: 15px 0; }
+            .order-mgmt-sidebar .order-mgmt-menu-item i { margin-right: 0; }
+            .order-mgmt-main-content { margin-left: 70px; width: calc(100% - 70px); }
         }
 
         @media (max-width: 768px) {
-            .header { flex-direction: column; gap: 15px; align-items: flex-start; }
-            .search-container { width: 100%; }
-            .user-profile { align-self: flex-end; }
-            .search-component { flex-direction: column; align-items: stretch; }
-            .action-cell { flex-direction: column; gap: 5px; }
-            .table-container { overflow-x: auto; }
-            .pagination { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .order-mgmt-header { flex-direction: column; gap: 15px; align-items: flex-start; }
+            .order-mgmt-search-container { width: 100%; }
+            .order-mgmt-user-profile { align-self: flex-end; }
+            .order-mgmt-search-component { flex-direction: column; align-items: stretch; }
+            .order-mgmt-action-cell { flex-direction: column; gap: 5px; }
+            .order-mgmt-table-container { overflow-x: auto; }
+            .order-mgmt-pagination { flex-direction: column; gap: 15px; align-items: center; }
         }
 
         @media (max-width: 576px) {
-            .content { padding: 15px; }
+            .order-mgmt-content { padding: 15px; }
         }
 
-        .modal-content { color: #000; background-color: #fff; }
-        .modal-body label, .modal-title { color: #000; }
+        .order-mgmt-modal-content { color: #000; background-color: #fff; }
+        .order-mgmt-modal-body label, .order-mgmt-modal-title { color: #000; }
     </style>
 </head>
 <body>
-    <div class="main-content">
+    <div class="order-mgmt-main-content">
          
-        <div class="content">
-            <div class="page-header">
-                <h1 class="page-title">Order Management</h1>
+        <div class="order-mgmt-content">
+            <div class="order-mgmt-page-header">
+                <h1 class="order-mgmt-page-title">Order Management</h1>
             </div>
 
-            <div class="search-component">
-                <form action="/admin/orderList" method="GET" id="searchForm">
-                    <input type="text" name="search" id="searchInput" 
+            <div class="order-mgmt-search-component">
+                <form action="/admin/orderList" method="GET" id="order-mgmt-searchForm">
+                    <input type="text" name="search" id="order-mgmt-searchInput" 
                            value="<%= searchQuery || '' %>" 
                            placeholder="Search by order ID or user name">
-                    <button type="submit" class="search-btn">Search</button>
-                    <button type="button" class="clear-btn" onclick="clearSearch()">Clear</button>
+                    <button type="submit" class="order-mgmt-search-btn">Search</button>
+                    <button type="button" class="order-mgmt-clear-btn" onclick="clearSearch()">Clear</button>
                 </form>
             </div>
 
-            <div class="table-container">
+            <div class="order-mgmt-table-container">
                 <table>
                     <thead>
                         <tr>
@@ -142,8 +170,7 @@
                             <th>OrderId</th>
                             <th>Status</th>
                             <th>Date</th>
-                             <th>Actions</th>
-                            
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -153,9 +180,9 @@
                                 <td><%= data.orderId %></td>
                                 <td><%= data.status %></td>
                                 <td><%= data.createdAt.toDateString()%></td>
-                                <td class="action-cell">
+                                <td class="order-mgmt-action-cell">
                                     <a href="/admin/detail-ord?orderId=<%= data._id %>" style="text-decoration: none;">
-                                        <button class="edit-btn">👁️</button>
+                                        <button class="order-mgmt-edit-btn">👁️</button>
                                     </a>
                                     <%data.orderedItems.forEach(product => {%>
                                         <%if(product.returnStatus==='Return Requested'){%>
@@ -163,28 +190,20 @@
                                         <%}%>  
                                     <%})%>
                                 </td>         
-                          </tr>
+                            </tr>
                         <% }) %>
                     </tbody>
                 </table>
             </div>
 
-             <div class="container mt-3">
+            <div class="container mt-3 um_pagination">
                 <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center mb-20">
-                         <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                            <a class="page-link" href="?page=<%= currentPage - 1 %>&search=<%= searchQuery || '' %>">Previous</a>
-                        </li>
-
-                         <% for (let i = 1; i <= totalPages; i++) { %>
-                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                <a class="page-link" href="?page=<%= i %>&search=<%= searchQuery || '' %>"><%= i %></a>
+                    <ul class="pagination justify-content-center">
+                        <%for(let i=1 ; i<=totalPages;i++){%>
+                            <li class="page-item <%=(i===currentPage) ? 'um_active' : '' %>">
+                                <a class="page-link" href="?page=<%=i%>"><%= i %></a>
                             </li>
-                        <% } %>
-
-                         <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                            <a class="page-link" href="?page=<%= currentPage + 1 %>&search=<%= searchQuery || '' %>">Next</a>
-                        </li>
+                        <%}%>
                     </ul>
                 </nav>
             </div>
@@ -193,7 +212,7 @@
 
     <script>
         function clearSearch() {
-            document.getElementById("searchInput").value = "";
+            document.getElementById("order-mgmt-searchInput").value = "";
             window.location.href = '/admin/orderList?page=1';
         }
     </script>

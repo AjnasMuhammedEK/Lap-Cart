@@ -33,7 +33,7 @@ const loadHomepage = async (req, res) => {
                 return;  
             }
         }
-        console.log('1');
+        // console.log('1');
 
          const categories = await Category.find({ isListed: true, isDeleted: false });
         let productData = await Product.find({
@@ -52,7 +52,7 @@ const loadHomepage = async (req, res) => {
                 items = carts.length
             }
         }
-        console.log('2');
+        // console.log('2');
 
         
 
@@ -104,6 +104,10 @@ const loadSignup = (req, res) => {
     try {
         const referralCode = req.query.ref || null;
         // console.log('Referral code in loadSignup:', referralCode);
+        const user = req.session.user
+        if(user){
+            return res.redirect('/')
+        }
         return res.render('signup', { referralCode, message: null });
     } catch (err) {
         console.error('loadSignup error:', err);

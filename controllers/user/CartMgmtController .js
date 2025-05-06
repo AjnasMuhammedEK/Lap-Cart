@@ -126,6 +126,7 @@ const loadCart = async (req, res) => {
   }
 };
 
+
 function getBestOffer(applicableOffers, product) {
   if (!Array.isArray(applicableOffers) || applicableOffers.length === 0) return null;
 
@@ -163,45 +164,10 @@ function getBestOffer(applicableOffers, product) {
 
   return bestOffer;
 }
-  
+   
 
-function getBestOffer(applicableOffers, product) {
-  if (!Array.isArray(applicableOffers) || applicableOffers.length === 0) return null;
 
-  let bestOffer = null;
-  let maxDiscount = 0;
 
-  for (const offer of applicableOffers) {
-      let discount = 0;
-      const salePrice = product.productId?.salePrice || product.salePrice || 0;
-
-      if (salePrice <= 0) {
-          console.log(`Invalid sale price for product: ${product.productId.productName}`);
-          continue;
-      }
-
-      if (offer.discountType === 'flat') {
-          discount = offer.discountAmount;
-          if (discount >= salePrice) {
-              console.log(`Offer skipped for product ${product.productId.productName}: Flat discount (${discount}) exceeds or equals sale price (${salePrice})`);
-              continue;
-          }
-      } else if (offer.discountType === 'percentage') {
-          discount = (salePrice * offer.discountAmount) / 100;
-          if (discount >= salePrice) {
-              console.log(`Offer skipped for product ${product.productId.productName}: Percentage discount (${discount}) exceeds or equals sale price (${salePrice})`);
-              continue;
-          }
-      }
-
-      if (discount > maxDiscount) {
-          maxDiscount = discount;
-          bestOffer = offer;
-      }
-  }
-
-  return bestOffer;
-}
 
 
 const addToCart = async (req, res) => {
@@ -275,10 +241,14 @@ const addToCart = async (req, res) => {
   }
 };
 
+
 const manageCartQuantity = async (req, res) => {
   try {
     const userId = req.session.user;
     const { productId, action } = req.body;
+
+    // console.log('req.body==========---------=========',req.body);
+    
 
     const cart = await Cart.findOne({ userId });
     if (!cart) {
@@ -406,13 +376,16 @@ const manageCartQuantity = async (req, res) => {
       subtotal,
       total,
       couponDiscount,
-      appliedCoupon
+      appliedCoupon,
+      result 
     });
   } catch (error) {
     console.log('Error in manageCartQuantity', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
 
 const deleteCart = async (req, res) => {
   try {
@@ -574,7 +547,7 @@ const loadWhishList = async (req, res) => {
 const addWhishList = async (req, res) => {
   try {
 
-    console.log('addWhishList',req.query);
+    // console.log('addWhishList',req.query);
     const userId = req.session.user;
     const {productId} = req.query
 
@@ -606,10 +579,10 @@ const addWhishList = async (req, res) => {
       (item) => item.productId.toString() === productId
     );
 
-    console.log('existProduct',existProduct);
+    // console.log('existProduct',existProduct);
 
     if (existProduct) {
-      console.log('existProductexistProductexistProduct');
+      // console.log('existProductexistProductexistProduct');
       return res.json({ 
         success:false,
         message: 'This product is already in your wishlist',
@@ -888,7 +861,7 @@ const applyCoupon = async (req, res) => {
 
     const coupon = await Coupon.findById(couponId);
     if (!coupon || !coupon.isListed || coupon.isDeleted) {
-      return res.json({ success: false, message: 'Invalid or expired coupon' });
+      return res.json({ success: false, message: 'Invalid  coupon' });
     }
 
     const currentDate = new Date();

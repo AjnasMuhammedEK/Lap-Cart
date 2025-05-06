@@ -8,19 +8,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-color: #7759f3;
+            --primary-color: #8257ED;
             --secondary-color: #6245e0;
-            --text-color: #eaeaea;
+            --text-color: #ffffff;
             --text-color-light: #aaa;
-            --bg-color: #151521;
-            --white: #2a2a3c;
+            --bg-color: #1a1a2e;
+            --white: #2a2a3e;
             --gray: #000000;
-            --dark-bg: #1e1e2d;
-            --dark-card-bg: #2a2a3c;
-            --dark-text: #eaeaea;
+            --dark-bg: #101022;
+            --dark-card-bg: #2a2a3e;
+            --dark-text: #ffffff;
             --dark-text-secondary: #aaa;
-            --dark-border: #3f3f5a;
-            --sidebar-width: 250px;
+            --dark-border: #3a3a4e;
+            --sidebar-width: 240px;
         }
 
         * {
@@ -95,6 +95,14 @@
             transition: all 0.3s ease;
         }
 
+        .moving-indicator {
+            position: absolute;
+            left: 0;
+            width: 4px;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
         .menu-item:hover {
             background-color: rgba(255, 255, 255, 0.1);
             color: var(--text-color);
@@ -102,7 +110,7 @@
         }
 
         .menu-item.active {
-            background-color: rgba(119, 89, 243, 0.2);
+            background-color: rgba(130, 87, 237, 0.2);
             color: var(--primary-color);
             border-left: 4px solid var(--primary-color);
             font-weight: 600;
@@ -171,7 +179,7 @@
                     <span>Users</span>
                     <i class="fas fa-chevron-right indicator"></i>
                 </a>
-                <a href="/admin/category" class="menu-item active" data-section="category">
+                <a href="/admin/category" class="menu-item" data-section="category">
                     <i class="fas fa-image"></i>
                     <span>Category</span>
                     <i class="fas fa-chevron-right indicator"></i>
@@ -186,16 +194,6 @@
                     <span>Offers</span>
                     <i class="fas fa-chevron-right indicator"></i>
                 </a>
-                <a href="#" class="menu-item" data-section="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                    <i class="fas fa-chevron-right indicator"></i>
-                </a>
-                <a href="#" class="menu-item" data-section="banner">
-                    <i class="fas fa-image"></i>
-                    <span>Banner</span>
-                    <i class="fas fa-chevron-right indicator"></i>
-                </a>
                 <a href="/admin/loadCoupon" class="menu-item" data-section="coupons">
                     <i class="fas fa-ticket-alt"></i>
                     <span>Coupons</span>
@@ -208,3 +206,6 @@
                 </a>
             </nav>
         </aside>
+    
+
+   

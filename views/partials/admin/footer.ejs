@@ -5,7 +5,10 @@
         document.querySelector('.sidebar-menu').appendChild(indicator);
 
         function positionIndicator(menuItem) {
-            if (!menuItem) return;
+            if (!menuItem || !document.querySelector('.sidebar').offsetWidth) {
+                indicator.style.opacity = '0';
+                return;
+            }
             
             const rect = menuItem.getBoundingClientRect();
             const parentRect = document.querySelector('.sidebar-menu').getBoundingClientRect();
@@ -21,11 +24,6 @@
             });
         }
 
-        const activeMenuItem = document.querySelector('.menu-item.active');
-        if (activeMenuItem) {
-            positionIndicator(activeMenuItem);
-        }
-
         const menuItems = document.querySelectorAll('.menu-item');
         menuItems.forEach(item => {
             item.addEventListener('click', function(e) {
@@ -39,15 +37,29 @@
             });
         });
 
-        const currentPath = window.location.pathname;
+        // Set active item based on current URL
+        const currentPath = window.location.pathname.replace(/\/+$/, '');
+        let matchedItem = null;
+        let maxMatchLength = 0;
+
         menuItems.forEach(item => {
             const href = item.getAttribute('href');
-            if (href && currentPath.includes(href) && href !== '#') {
-                removeActiveClass();
-                item.classList.add('active');
-                positionIndicator(item);
+            const normalizedHref = href && href !== '#' ? href.replace(/\/+$/, '') : '';
+            
+            // Find the longest matching href that is either an exact match or a parent path
+            if (normalizedHref && (currentPath === normalizedHref || currentPath.startsWith(normalizedHref + '/'))) {
+                if (normalizedHref.length > maxMatchLength) {
+                    maxMatchLength = normalizedHref.length;
+                    matchedItem = item;
+                }
             }
         });
+
+        if (matchedItem) {
+            removeActiveClass();
+            matchedItem.classList.add('active');
+            positionIndicator(matchedItem);
+        }
 
         window.addEventListener('resize', function() {
             const activeMenuItem = document.querySelector('.menu-item.active');
@@ -56,6 +68,6 @@
             }
         });
     });
-    </script>
+</script>
 </body>
 </html>

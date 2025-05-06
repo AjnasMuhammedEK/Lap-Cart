@@ -174,13 +174,18 @@
         border-color: #15803d;
     }
 
+    .btn-warning {
+        background: #f59e0b;
+        border-color: #f59e0b;
+        color: #fff;
+    }
+
     hr {
         border: 0;
         border-top: 1px solid #e5e7eb;
         margin: 16px 0;
     }
 
-    /* Tracking System Styles */
     .tracking-wrapper {
         margin-bottom: 20px;
         padding: 16px;
@@ -339,7 +344,7 @@
                 </p>
             </div>
 
-             <div class="tracking-wrapper">
+            <div class="tracking-wrapper">
                 <h3>Track Your Order</h3>
                 <div class="tracking-steps">
                     <div class="tracking-progress">
@@ -357,7 +362,6 @@
                         <div class="step-icon">3</div>
                         <div class="step-label">Shipped</div>
                     </div>
-                    
                     <div class="tracking-step" data-status="Delivered">
                         <div class="step-icon">4</div>
                         <div class="step-label">Delivered</div>
@@ -391,7 +395,7 @@
                                 <% if (orderData.status === "Delivered" && data.returnStatus === "Not Returned") { %>
                                     <button type="button" class="btn btn-danger" onclick="reasonModal('<%= data.product._id %>', '<%= orderData._id %>')">Return This Product</button>
                                 <% } %>
-                                <% if (data.returnStatus !== 'Cancelled' && orderData.status !== 'Delivered' && orderData.status !== 'Cancelled') { %>
+                                <% if (data.returnStatus !== 'Cancelled' && orderData.status !== 'Delivered' && orderData.status !== 'Cancelled' && orderData.status !== 'Returned') { %>
                                     <button class="btn btn-danger" onclick="cancelSigle('<%= data.product._id %>', '<%= orderData._id %>')">Cancel This Product</button>
                                 <% } %>
                             </div>
@@ -404,9 +408,10 @@
                 <h3>Price Details</h3>
                 <div class="price-card">
                     <p>Total Amount: ₹<%= orderData.totalPrice %></p>
-                    <p>Discount : ₹<%= orderData.discount %></p>
-                    <p>Final Amount  : ₹<%= orderData.finalAmount %></p>
-                    <p>Payment Method : ₹<%= orderData.paymentMethod %></p>
+                    <p>Discount: ₹<%= orderData.discount %></p>
+                    <p>Final Amount: ₹<%= orderData.finalAmount %></p>
+                    <p>Payment Method: <%= orderData.paymentMethod %></p>
+                    <p>Payment Status: <%= orderData.paymentStatus %></p>
                 </div>
             </div>
 
@@ -423,10 +428,13 @@
             </div>
 
             <div class="order-actions">
-                <a href="/listOrder"><button type="button" class="btn btn-dark">Order History</button></a>
+                <a href="/listOrder"><button type="button" class="btn btn-dark">My Orders</button></a>
                 <a href="/downloadInvoice?orderId=<%= orderData._id %>"><button class="btn btn-success">Download Invoice</button></a>
                 <% if (orderData.status === "Pending" || orderData.status === "Processing" || orderData.status === "Shipped" || orderData.status === "Out for Delivery") { %>
                     <button class="btn btn-danger" onclick="cancelOrder('<%= orderData._id %>')">Cancel Order</button>
+                <% } %>
+                <% if (orderData.paymentMethod === 'Razorpay' && orderData.paymentStatus === 'Pending') { %>
+                    <button class="btn btn-warning" onclick="retryPayment('<%= orderData._id %>')">Retry Payment</button>
                 <% } %>
             </div>
 
@@ -469,8 +477,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-     function cancelOrder(orderId) {
+    function cancelOrder(orderId) {
         $.ajax({
             url: '/cancelOrder',
             method: 'get',
@@ -580,7 +589,136 @@
         });
     }
 
-     document.addEventListener('DOMContentLoaded', () => {
+    function retryPayment(orderId) {
+        fetch('/retry-razorpay-payment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Retry Failed',
+                    text: data.message || 'Failed to initiate retry payment',
+                }).then(() => {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    }
+                });
+                return;
+            }
+
+            if (typeof Razorpay === 'undefined') {
+                console.error('Razorpay SDK not loaded');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Error',
+                    text: 'Razorpay SDK failed to load. Please check your network and try again.',
+                });
+                return;
+            }
+
+            const options = {
+                key: data.razorpayOrder.key,
+                amount: data.razorpayOrder.amount,
+                currency: data.razorpayOrder.currency,
+                order_id: data.razorpayOrder.id,
+                name: 'LapCart',
+                description: 'Order Payment Retry',
+                handler: async function (response) {
+                    try {
+                        const verifyResponse = await fetch('/verify-razorpay-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                orderDetails: data.orderDetails,
+                            }),
+                        });
+
+                        const verifyData = await verifyResponse.json();
+
+                        if (verifyResponse.ok && verifyData.redirect) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Payment Successful',
+                                text: 'Your payment was successful!',
+                                timer: 1500,
+                                showConfirmButton: false,
+                            }).then(() => {
+                                window.location.href = verifyData.redirect;
+                            });
+                        } else {
+                            throw new Error(verifyData.message || 'Payment verification failed');
+                        }
+                    } catch (error) {
+                        console.error('Payment verification error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Failed',
+                            text: error.message || 'Payment verification failed',
+                        }).then(() => {
+                            window.location.href = '/paymentfailedpage';
+                        });
+                    }
+                },
+                prefill: {
+                    name: '<%= user.name || "" %>',
+                    email: '<%= user.email || "" %>',
+                    contact: '<%= user.phone || "" %>',
+                },
+                theme: {
+                    color: '#3b82f6',
+                },
+                method: {
+                    card: true,
+                    upi: true,
+                    netbanking: true,
+                    wallet: true,
+                },
+                modal: {
+                    ondismiss: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Cancelled',
+                            text: 'You cancelled the payment. Please try again.',
+                        }).then(() => {
+                            window.location.href = '/paymentfailedpage?error=' + encodeURIComponent('Payment was cancelled by the user');
+                        });
+                    }
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', function (response) {
+                console.error('Razorpay payment failed:', response.error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: response.error.description || 'Payment failed. Please try again.',
+                }).then(() => {
+                    window.location.href = '/paymentfailedpage?error=' + encodeURIComponent(response.error.description);
+                });
+            });
+            rzp.open();
+        })
+        .catch(error => {
+            console.error('Retry payment error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while initiating retry payment',
+            });
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
         const currentStatus = '<%= orderData.status %>';
         const steps = document.querySelectorAll('.tracking-step');
         const progressBar = document.getElementById('progress-bar');

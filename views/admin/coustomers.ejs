@@ -1,4 +1,4 @@
- <%- include("../../views/partials/admin/header") %>
+<%- include("../../views/partials/admin/header") %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,48 +20,46 @@
         }
 
         :root {
-            --sidebar-width: 240px;
-            --primary-color: #8257ED;
-            --dark-bg: #1a1a2e;
-            --darker-bg: #101022;
-            --lighter-bg: #2a2a3e;
-            --text-color: #ffffff;
-            --border-color: #3a3a4e;
-            --success-color: #00bf8e;
-            --warning-color: #f7c94b;
-            --danger-color: #f75842;
+            --um_sidebar-width: 240px;
+            --um_primary-color: #8257ED;
+            --um_dark-bg: #1a1a2e;
+            --um_darker-bg: #101022;
+            --um_lighter-bg: #2a2a3e;
+            --um_text-color: #ffffff;
+            --um_border-color: #3a3a4e;
+            --um_success-color: #00bf8e;
+            --um_warning-color: #f7c94b;
+            --um_danger-color: #f75842;
         }
 
         body {
-            /* display: flex;
-            min-height: 100vh; */
-            background-color: var(--dark-bg);
-            color: var(--text-color);
+            background-color: var(--um_dark-bg);
+            color: var(--um_text-color);
         }
 
         /* Sidebar Styles */
-        .logo {
+        .um_logo {
             padding: 20px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--um_border-color);
         }
 
-        .logo span {
+        .um_logo span {
             font-size: 24px;
             font-weight: bold;
         }
 
-        .logo span:first-child {
-            color: var(--primary-color);
+        .um_logo span:first-child {
+            color: var(--um_primary-color);
         }
 
-        .menu {
+        .um_menu {
             list-style: none;
             padding: 10px 0;
         }
 
-        .menu-item {
+        .um_menu-item {
             padding: 15px 20px;
             display: flex;
             align-items: center;
@@ -69,99 +67,99 @@
             cursor: pointer;
         }
 
-        .menu-item:hover, .menu-item.active {
+        .um_menu-item:hover, .um_menu-item.um_active {
             background-color: rgba(130, 87, 237, 0.1);
         }
 
-        .menu-item.active {
-            border-left: 4px solid var(--primary-color);
+        .um_menu-item.um_active {
+            border-left: 4px solid var(--um_primary-color);
         }
 
-        .menu-item i {
+        .um_menu-item i {
             margin-right: 10px;
             width: 20px;
             text-align: center;
         }
 
-        .submenu {
+        .um_submenu {
             padding-left: 20px;
         }
 
         /* Main Content Styles */
-        .main-content {
+        .um_main-content {
             flex: 1;
-            margin-left: var(--sidebar-width);
-            width: calc(100% - var(--sidebar-width));
+            margin-left: var(--um_sidebar-width);
+            width: calc(100% - var(--um_sidebar-width));
             overflow-x: hidden;
         }
 
-        .header {
+        .um_header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 30px;
-            background-color: var(--darker-bg);
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--um_darker-bg);
+            border-bottom: 1px solid var(--um_border-color);
         }
 
-        .search-container {
+        .um_search-container {
             position: relative;
             width: 300px;
         }
 
-        .search-container input {
+        .um_search-container input {
             width: 100%;
             padding: 10px 40px 10px 15px;
             border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
+            border: 1px solid var(--um_border-color);
+            background-color: var(--um_lighter-bg);
+            color: var(--um_text-color);
         }
 
-        .search-container button {
+        .um_search-container button {
             position: absolute;
             right: 5px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--text-color);
+            color: var(--um_text-color);
             cursor: pointer;
         }
 
-        .user-profile {
+        .um_user-profile {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .user-profile .status {
+        .um_user-profile .um_status {
             width: 10px;
             height: 10px;
-            background-color: var(--success-color);
+            background-color: var(--um_success-color);
             border-radius: 50%;
         }
 
         /* Content Area */
-        .content {
+        .um_content {
             padding: 30px;
         }
 
-        .page-header {
+        .um_page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .page-title {
+        .um_page-title {
             font-size: 24px;
             font-weight: bold;
         }
 
-        .add-button {
+        .um_add-button {
             padding: 10px 20px;
-            background-color: var(--primary-color);
+            background-color: var(--um_primary-color);
             color: white;
             border: none;
             border-radius: 5px;
@@ -173,28 +171,28 @@
             transition: all 0.3s ease;
         }
 
-        .add-button:hover {
+        .um_add-button:hover {
             background-color: #6f46c9;
         }
 
         /* Search Component */
-        .search-component {
+        .um_search-component {
             display: flex;
             margin-bottom: 20px;
             gap: 10px;
             align-items: center;
         }
 
-        .search-component input {
+        .um_search-component input {
             flex: 1;
             padding: 12px 15px;
             border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
+            border: 1px solid var(--um_border-color);
+            background-color: var(--um_lighter-bg);
+            color: var(--um_text-color);
         }
 
-        .search-component button {
+        .um_search-component button {
             padding: 12px 20px;
             border-radius: 5px;
             border: none;
@@ -202,28 +200,28 @@
             font-weight: 500;
         }
 
-        .search-btn {
-            background-color: var(--primary-color);
+        .um_search-btn {
+            background-color: var(--um_primary-color);
             color: white;
         }
 
-        .search-btn:hover {
+        .um_search-btn:hover {
             background-color: #6f46c9;
         }
 
-        .clear-btn {
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
+        .um_clear-btn {
+            background-color: var(--um_lighter-bg);
+            color: var(--um_text-color);
+            border: 1px solid var(--um_border-color);
         }
 
-        .clear-btn:hover {
+        .um_clear-btn:hover {
             background-color: #3a3a4e;
         }
 
         /* Table Styles */
-        .table-container {
-            background-color: var(--lighter-bg);
+        .um_table-container {
+            background-color: var(--um_lighter-bg);
             border-radius: 10px;
             overflow: hidden;
         }
@@ -236,11 +234,11 @@
         th, td {
             padding: 15px 20px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--um_border-color);
         }
 
         th {
-            background-color: var(--darker-bg);
+            background-color: var(--um_darker-bg);
             font-weight: 600;
         }
 
@@ -248,12 +246,12 @@
             background-color: rgba(130, 87, 237, 0.05);
         }
 
-        .action-cell {
+        .um_action-cell {
             display: flex;
             gap: 10px;
         }
 
-        .edit-btn, .delete-btn {
+        .um_edit-btn, .um_delete-btn {
             width: 32px;
             height: 32px;
             display: flex;
@@ -265,169 +263,156 @@
             color: white;
         }
 
-        .edit-btn {
-            background-color: var(--warning-color);
+        .um_edit-btn {
+            background-color: var(--um_warning-color);
         }
 
-        .delete-btn {
-            background-color: var(--danger-color);
+        .um_delete-btn {
+            background-color: var(--um_danger-color);
         }
 
         /* Pagination */
-        .pagination {
+        .um_pagination {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             margin-top: 20px;
         }
 
-        .pagination-info {
+        .um_pagination-info {
             color: #aaa;
         }
 
-        .pagination-controls {
+        .um_pagination-controls {
             display: flex;
             gap: 5px;
         }
 
-        .pagination-controls button {
+        .um_pagination-controls button {
             width: 36px;
             height: 36px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 5px;
-            border: 1px solid var(--border-color);
-            background-color: var(--lighter-bg);
-            color: var(--text-color);
+            border: 1px solid var(--um_border-color);
+            background-color: var(--um_lighter-bg);
+            color: var(--um_text-color);
             cursor: pointer;
         }
 
-        .pagination-controls button:hover {
+        .um_pagination-controls button:hover {
             background-color: #3a3a4e;
         }
 
-        .pagination-controls button.active {
-            background-color: var(--primary-color);
+        .um_pagination-controls button.um_active {
+            background-color: var(--um_primary-color);
             color: white;
-            border-color: var(--primary-color);
+            border-color: var(--um_primary-color);
         }
 
-       
         /* Responsive styles */
         @media (max-width: 992px) {
-            .sidebar {
+            .um_sidebar {
                 width: 70px;
             }
 
-            .sidebar .logo span, .sidebar .menu-item span {
+            .um_sidebar .um_logo span, .um_sidebar .um_menu-item span {
                 display: none;
             }
 
-            .sidebar .menu-item {
+            .um_sidebar .um_menu-item {
                 justify-content: center;
                 padding: 15px 0;
             }
 
-            .sidebar .menu-item i {
+            .um_sidebar .um_menu-item i {
                 margin-right: 0;
             }
 
-            .main-content {
+            .um_main-content {
                 margin-left: 70px;
                 width: calc(100% - 70px);
             }
         }
 
         @media (max-width: 768px) {
-            .header {
+            .um_header {
                 flex-direction: column;
                 gap: 15px;
                 align-items: flex-start;
             }
 
-            .search-container {
+            .um_search-container {
                 width: 100%;
             }
 
-            .user-profile {
+            .um_user-profile {
                 align-self: flex-end;
             }
 
-            .search-component {
+            .um_search-component {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .action-cell {
+            .um_action-cell {
                 flex-direction: column;
                 gap: 5px;
             }
 
-            .table-container {
+            .um_table-container {
                 overflow-x: auto;
             }
 
-            .pagination {
+            .um_pagination {
                 flex-direction: column;
                 gap: 15px;
-                align-items: flex-start;
+                align-items: center;
             }
         }
 
         /* For mobile devices */
         @media (max-width: 576px) {
-            .content {
+            .um_content {
                 padding: 15px;
             }
         }
 
-        /* // Add this to your modal content styling */
-.modal-content {
-    color: #000; /* Force black text in modal */
-    background-color: #fff; /* Ensure white background */
-}
+        /* Modal content styling */
+        .modal-content {
+            color: #000;
+            background-color: #fff;
+        }
 
-.modal-body label, .modal-title {
-    color: #000; /* Ensure labels are visible */
-}
+        .modal-body label, .modal-title {
+            color: #000;
+        }
     </style>
 </head>
 <body>
-    
     <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-             
-             
+    <div class="um_main-content">
+        <div class="um_header">
         </div>
 
-        <div class="content">
-            <div class="page-header">
-                <h1 class="page-title">Users</h1>
-               
+        <div class="um_content">
+            <div class="um_page-header">
+                <h1 class="um_page-title">Users</h1>
             </div>
 
-            <div class="search-component">
+            <div class="um_search-component">
                 <form action="/admin/users" method="GET">
-                    <input class="search-input" type="text" name="search" id="searchInput" placeholder="Search for Users">
-                    <button type="submit" id="searchBtn" class="btn btn-success">Search</button>
-                    <button type="button" class="btn btn-secondary" onclick="clearSearch()">Clear</button>
+                    <input class="um_search-input" type="text" name="search" id="searchInput" placeholder="Search for Users">
+                    <button type="submit" id="searchBtn" class="btn btn-success um_search-btn">Search</button>
+                    <button type="button" class="btn btn-secondary um_clear-btn" onclick="clearSearch()">Clear</button>
                 </form>
             </div>
 
-
-            
-    
-
-
-
-
-            <div class="table-container">
-                <table >
+            <div class="um_table-container">
+                <table>
                     <thead>
                         <tr>
-                            <!-- <th>USER IMAGE</th> -->
                             <th>USER NAME</th>
                             <th>EMAIL</th>
                             <th>PHONE</th>
@@ -439,9 +424,6 @@
                     <tbody>
                         <%for(let i = 0 ; i < data.length ;i++){%>
                             <tr>
-                                <!-- <td>
-                                   <img src="/uploads/products/<%=data[i].userImage%>" alt="User-Profile" style="border-radius: 100%; inline-size: 80px">
-                                </td> -->
                                 <td><%=data[i].name%></td>
                                 <td><%=data[i].email%></td>
                                 <td><%=data[i].phone%></td>
@@ -463,16 +445,14 @@
                         <%}%>
                     </tbody>
                 </table>
-
             </div>
 
             <!-- pagination -->
-
-            <div class="container mt-3">
+            <div class="container mt-3 um_pagination">
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
                         <%for(let i=1 ; i<=totalPages;i++){%>
-                            <li class="page-item <%=(i===currentPage) ? 'active' : '' %>">
+                            <li class="page-item <%=(i===currentPage) ? 'um_active' : '' %>">
                                 <a class="page-link" href="?page=<%=i%>"><%= i %></a>
                             </li>
                         <%}%>
@@ -480,74 +460,52 @@
                 </nav>
             </div>
         </div>
-    </div>
 
-
-
-
-    
-   
-
-                <!-- Block User modal-->
-                <div class="modal" tabindex="-1" id="userAction">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title">BLOCK USER</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <p>ARE YOU SURE ABOUT BLOCKING THIS USER ?</p>
-                          <form action="/admin/coustomerBlocked" method="post">
-                            <input type="text" id="user_actionID" name="user_id" hidden>
-                            
-                            <button class="btn btn-primary">BLOCK</button>
-
-                          </form>
-                          
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                      </div>
+        <!-- Block User modal-->
+        <div class="modal" tabindex="-1" id="userAction">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">BLOCK USER</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                  </div>
-
-              
+                    <div class="modal-body">
+                        <p>ARE YOU SURE ABOUT BLOCKING THIS USER ?</p>
+                        <form action="/admin/coustomerBlocked" method="post">
+                            <input type="text" id="user_actionID" name="user_id" hidden>
+                            <button class="btn btn-primary">BLOCK</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
     <script>
-
-
         function actionValidate(userID){
-
             document.getElementById('user_actionID').value=userID
-
-            let modalShow =  new bootstrap.Modal(document.getElementById('userAction'))
+            let modalShow = new bootstrap.Modal(document.getElementById('userAction'))
             modalShow.show()
         }
 
-         function clearSearch() {
-                document.getElementById("searchInput").value = "";
-                document.getElementById('searchBtn').click();
-
-            }
+        function clearSearch() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById('searchBtn').click();
+        }
 
         function userWallet(userId){
             $.ajax({
                 url:'/admin/userWallet',
                 data:{userId:userId},
-
-           })
+            })
         }
-
-
     </script>
 </body>
 </html>

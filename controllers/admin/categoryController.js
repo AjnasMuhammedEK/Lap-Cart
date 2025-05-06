@@ -102,6 +102,8 @@ const deleteCategory = async (req,res) =>{
             req.session.admMsg = 'Have some products with this categories';
             return res.redirect('/admin/category');
         }
+
+
       
 
         req.session.admMsg ='Category Deleted successfully'
@@ -124,6 +126,14 @@ const editCategory = async (req,res)=>{
         res.redirect('/admin/category');
         return;
     }
+
+    
+    
+    
+
+    
+
+    
 
     const editCategory= await Category.findOneAndUpdate({_id:categoryId},{$set:{name:editname,description:editdescription}}, { new: true, runValidators: true } );
    

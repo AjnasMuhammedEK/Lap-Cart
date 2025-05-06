@@ -1,6 +1,5 @@
 const Brand = require('../../models/brandSchema')
 
-let a = 10;
 
 const brandInfo = async (req,res) => {
     try {
@@ -48,7 +47,7 @@ const brandInfo = async (req,res) => {
         });
         
     } catch (error) {
-        console.error('Error From Category Info',error)
+        console.error('Error From Brand Info',error)
         res.redirect('/pageerror')
     }
 };
@@ -76,7 +75,7 @@ const addBrand = async(req, res) => {
          
         await newBrand.save();
  
-        req.session.admMsg = 'Category added successfully'
+        req.session.admMsg = 'Brand added successfully'
         res.redirect('/admin/brand')
         
     } catch (error) {

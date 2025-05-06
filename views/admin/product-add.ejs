@@ -301,24 +301,33 @@
                         <div class="mb-3">
                             <label for="brand" class="form-label">Brand:</label>
                             <select class="form-control" id="brand" name="brand">
+                                <option value="">
+                                    Select Brand
+                                </option>
                                 <%for(let i = 0; i < brand.length; i++){%>
                                     <option value="<%=brand[i].brandName%>">
                                         <%=brand[i].brandName%>
                                     </option>
                                 <%}%>
                             </select>
+                            <div id="brand-error" class="error-message"></div>
                         </div>
 
 
                         <div class="mb-3">
                             <label for="category" class="form-label">Category:</label>
+                            
                             <select class="form-control" id="category" name="category">
+                                <option value="">
+                                    Select Category
+                                </option>
                                 <%for(let i = 0; i < cat.length; i++){%>
                                 <option value="<%=cat[i].name%>">
                                     <%=cat[i].name%>
                                 </option>
                                 <%}%>
                             </select>
+                            <div id="category-error" class="error-message"></div>
                         </div>
                         
                         <div class="mb-3">
@@ -520,6 +529,8 @@
             const storage = document.getElementById('storage').value
             const ram = document.getElementById('ram').value
             const graphicsCard = document.getElementById('graphicsCard').value
+            const category = document.getElementById('category').value
+            const brand = document.getElementById('brand').value
 
             
             let isValid = true;
@@ -579,6 +590,15 @@
             
             if (graphicsCard.trim() === "") {
                 displayErrorMessage('graphicsCard-error', "Please enter product's Graphics Card detailes.");
+                isValid = false;
+            }
+            if (brand.trim() === "") {
+                displayErrorMessage('brand-error', "Please select a brand.");
+                isValid = false;
+            }
+
+            if (category.trim() === "") {
+                displayErrorMessage('category-error', "Please select a category.");
                 isValid = false;
             }
             return isValid;

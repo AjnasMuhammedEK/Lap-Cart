@@ -410,23 +410,30 @@ button:disabled {
                         </div>
                         <div class="info-item">
                             <span class="info-label">Status</span>
-                            <input type="hidden" value="<%=orderData._id%>" name="orderId" id="orderId">
-                            <select name="status" id="statusSelect" <%=(orderData.status === "Return Requested" ||
-                            orderData.status==="Returned" || orderData.status === "Return Rejected" ||orderData.status === "Delivered" || orderData.status === "Cancelled" ) ? "disabled" : "" %>>
-                                    <% ["Pending", "Processing" , "Shipped" , "Delivered" , "Cancelled" , "Return Requested" , 
-                                   "Returned" , "Return Rejected"].forEach(option=> { %>
-                                        <option value="<%= option %>" <%=orderData.status===option ? "selected" : "" %>><%=
-                                                option %>
-                                        </option>
-                                        <% }) %>
-                                </select>
+                            <input type="hidden" value="<%= orderData._id %>" name="orderId" id="orderId">
+                            
+                            <!-- Disable select if order is in a final state -->
+                            <select name="status" id="statusSelect" 
+                                <%= ["Return Requested", "Returned", "Return Rejected", "Delivered", "Cancelled"].includes(orderData.status) ? "disabled" : "" %>>
+                                
+                                <% 
+                                const statuses = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Requested", "Returned", "Return Rejected"];
+                                statuses.forEach(option => {
+                                    const isSelected = orderData.status === option ? "selected" : "";
+                                    const isDisabled = ["Return Requested","Returned", "Return Rejected", "Cancelled"].includes(option) ? "disabled" : "";
+                                %>
+                                    <option value="<%= option %>" <%= isSelected %> <%= isDisabled %>><%= option %></option>
+                                <% }) %>
+                            </select>
+                        
                             <br>
-                                <button onclick="changeStatus()">Change Status</button>
-<br>
+                            <button onclick="changeStatus()">Change Status</button>
+                            <br>
                             <span class="info-value">
-                                <span class="status-badge status-pending"><%=orderData.status%></span>
+                                <span class="status-badge status-pending"><%= orderData.status %></span>
                             </span>
                         </div>
+                        
                         <div class="info-item">
                             <span class="info-label">Total Amount</span>
                             <span class="info-value"><%=orderData.finalAmount%></span>

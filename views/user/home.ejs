@@ -78,7 +78,7 @@
 	</div>
 	<div class="container-fluid px-md-5">
 		<div class="row">
-	  <% for(let i = products.length-1; i >=0 ; i--) { %>
+	  <% for(let i = 0; i < products.length ; i++) { %>
 		<div class="col-sm-6 col-md-4 col-lg-3 ftco-animate d-flex">
 		  <div class="product d-flex flex-column w-100">
 			<a href="/productDetaile?id=<%= products[i]._id %>" class="img-prod">

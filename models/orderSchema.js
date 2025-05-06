@@ -1,11 +1,9 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-// const { v4: uuidv4 } = require('uuid');
 
 const orderSchema = new Schema({
   orderId: {
     type: String,
-    default: () => Math.random().toString(36).substring(2, 10).toUpperCase(),
     unique: true,
   },
   userId: {
@@ -28,17 +26,17 @@ const orderSchema = new Schema({
         type: Number,
         default: 0,
       },
-      offferId : {
-        type : Schema.Types.ObjectId,
-        ref:'Offer'
+      offferId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Offer',
       },
-      offerAmount:{
-        type:Number,
-        default:0
+      offerAmount: {
+        type: Number,
+        default: 0,
       },
-      couponId:{
-        type : Schema.Types.ObjectId,
-        ref : 'Coupon'
+      couponId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Coupon',
       },
       returnStatus: {
         type: String,
@@ -63,27 +61,26 @@ const orderSchema = new Schema({
   offerDiscount: {
     type: Number,
     default: 0,
-    min: 0
-},
-couponDiscount: {
+    min: 0,
+  },
+  couponDiscount: {
     type: Number,
     default: 0,
-    min: 0
-},
-cancelledCouponAmount:{
-  type:Number,
-  default:0,
-  min:0
-},
-cancelledAmount:{
- type:Number,
- default:0
-},
-returnAmount:{
-  type:Number,
-  default:0
-},
-  
+    min: 0,
+  },
+  cancelledCouponAmount: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  cancelledAmount: {
+    type: Number,
+    default: 0,
+  },
+  returnAmount: {
+    type: Number,
+    default: 0,
+  },
   shipping: {
     type: Number,
     default: 0,
@@ -109,6 +106,11 @@ returnAmount:{
     enum: ['COD', 'Wallet', 'Razorpay'],
     required: true,
     default: 'COD',
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['Pending', 'Completed', 'Failed'],
+    default: 'Pending',
   },
   invoiceDate: {
     type: Date,
@@ -141,6 +143,31 @@ returnAmount:{
     type: String,
     required: false,
   },
+});
+
+orderSchema.pre('save', async function (next) {
+  if (this.isNew) {
+    try {
+      const prefix = 'ORD2025405-'; // Static prefix as per your example
+      const lastOrder = await mongoose.model('Order').findOne({
+        orderId: { $regex: `^${prefix}` },
+      }).sort({ orderId: -1 });
+
+      let counter = 1;
+      if (lastOrder && lastOrder.orderId) {
+        const lastCounter = parseInt(lastOrder.orderId.split('-')[1], 10);
+        counter = lastCounter + 1;
+      }
+
+      const counterStr = counter.toString().padStart(3, '0'); // Ensures at least 3 digits (e.g., 001)
+      this.orderId = `${prefix}${counterStr}`;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    next();
+  }
 });
 
 const Order = mongoose.model('Order', orderSchema);

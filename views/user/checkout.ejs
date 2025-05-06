@@ -276,26 +276,6 @@
             color: #713f12;
         }
 
-        .checkout-coupon-section {
-            background: #e6f0ff;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            border: 1px solid #bfdbfe;
-        }
-
-        .checkout-coupon-section span:first-child {
-            font-weight: 500;
-            color: #1e40af;
-        }
-
-        .checkout-coupon-section span:last-child {
-            font-weight: 600;
-            color: #1e3a8a;
-        }
-
         .checkout-final-total {
             font-weight: 700;
             font-size: 1.25rem;
@@ -330,7 +310,7 @@
             letter-spacing: -0.025em;
         }
 
-        .checkout-close Lee's-btn {
+        .checkout-close-btn {
             opacity: 0.7;
             transition: opacity 0.2s;
             background: none;
@@ -625,14 +605,8 @@
                         <span>Offer Discount</span>
                         <span>-₹<%= Math.round(totalDiscount).toLocaleString('en-IN') %></span>
                     </div>
-                    <% if (appliedCoupon) { %>
-                        <div class="checkout-coupon-section">
-                            <span>Coupon Discount (<%= appliedCoupon.couponName %>)</span>
-                            <span>-₹<%= Math.round(couponDiscount).toLocaleString('en-IN') %></span>
-                        </div>
-                    <% } %>
                     <div class="checkout-total-row">
-                        <span>Delivery</列入
+                        <span>Delivery</span>
                         <span>Free</span>
                     </div>
                     <div class="checkout-total-row checkout-final-total">
@@ -827,173 +801,168 @@
         });
 
         async function placeOrder() {
-    try {
-        const selectedAddress = document.querySelector('input[name="address"]:checked');
-        const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+            try {
+                const selectedAddress = document.querySelector('input[name="address"]:checked');
+                const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
 
-        if (!selectedAddress) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a delivery address',
-            });
-            return;
-        }
-        if (!selectedPayment) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Please select a payment method',
-            });
-            return;
-        }
+                if (!selectedAddress) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a delivery address',
+                    });
+                    return;
+                }
+                if (!selectedPayment) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a payment method',
+                    });
+                    return;
+                }
 
-        const response = await fetch('/place-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                selectedAddressId: selectedAddress.parentElement.dataset.id,
-                paymentMethod: selectedPayment.value,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Failed',
-                text: data.message || 'Failed to place order',
-            });
-            return;
-        }
-
-        if (data.razorpayOrder) {
-            if (typeof Razorpay === 'undefined') {
-                console.error('Razorpay SDK not loaded');
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Error',
-                    text: 'Razorpay SDK failed to load. Please check your network and try again.',
+                const response = await fetch('/place-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        selectedAddressId: selectedAddress.parentElement.dataset.id,
+                        paymentMethod: selectedPayment.value,
+                    }),
                 });
-                return;
-            }
 
-            const options = {
-                key: data.razorpayOrder.key,
-                amount: data.razorpayOrder.amount,
-                currency: data.razorpayOrder.currency,
-                order_id: data.razorpayOrder.id,
-                name: 'LapCart',
-                description: 'Order Payment',
-                handler: async function (response) {
-                    try {
-                        const verifyResponse = await fetch('/verify-razorpay-payment', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_signature: response.razorpay_signature,
-                                orderDetails: data.orderDetails,
-                            }),
-                        });
+                const data = await response.json();
 
-                        const verifyData = await verifyResponse.json();
-
-                        if (verifyResponse.ok && verifyData.redirect) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Order Placed',
-                                text: 'Your order has been successfully placed!',
-                                timer: 1500,
-                                showConfirmButton: false,
-                            }).then(() => {
-                                window.location.href = verifyData.redirect;
-                            });
-                        } else {
-                            throw new Error(verifyData.message || 'Payment verification failed');
+                if (!response.ok || !data.message) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Order Failed',
+                        text: data.message || 'Failed to place order',
+                    }).then(() => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
                         }
-                    } catch (error) {
-                        console.error('Payment verification error:', error);
+                    });
+                    return;
+                }
+
+                if (selectedPayment.value === 'Razorpay' && data.razorpayOrder) {
+                    if (typeof Razorpay === 'undefined') {
+                        console.error('Razorpay SDK not loaded');
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Error',
+                            text: 'Razorpay SDK failed to load. Please check your network and try again.',
+                        });
+                        return;
+                    }
+
+                    const options = {
+                        key: data.razorpayOrder.key,
+                        amount: data.razorpayOrder.amount,
+                        currency: data.razorpayOrder.currency,
+                        order_id: data.razorpayOrder.id,
+                        name: 'LapCart',
+                        description: 'Order Payment',
+                        handler: async function (response) {
+                            try {
+                                const verifyResponse = await fetch('/verify-razorpay-payment', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        razorpay_order_id: response.razorpay_order_id,
+                                        razorpay_payment_id: response.razorpay_payment_id,
+                                        razorpay_signature: response.razorpay_signature,
+                                        orderDetails: data.orderDetails,
+                                    }),
+                                });
+
+                                const verifyData = await verifyResponse.json();
+
+                                if (verifyResponse.ok && verifyData.redirect) {
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Payment Successful',
+                                        text: 'Your order has been placed successfully!',
+                                        timer: 1500,
+                                        showConfirmButton: false,
+                                    }).then(() => {
+                                        window.location.href = verifyData.redirect;
+                                    });
+                                } else {
+                                    throw new Error(verifyData.message || 'Payment verification failed');
+                                }
+                            } catch (error) {
+                                console.error('Payment verification error:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Payment Failed',
+                                    text: 'Payment verification failed. Your order has been saved, and you can retry payment from the order details page.',
+                                }).then(() => {
+                                    window.location.href = '/paymentfailedpage?error=' + encodeURIComponent(error.message || 'Payment verification failed');
+                                });
+                            }
+                        },
+                        prefill: {
+                            name: '<%= user.name || "" %>',
+                            email: '<%= user.email || "" %>',
+                            contact: '<%= user.phone || "" %>',
+                        },
+                        theme: {
+                            color: '#3b82f6',
+                        },
+                        method: {
+                            card: true,
+                            upi: true,
+                            netbanking: true,
+                            wallet: true,
+                        },
+                        modal: {
+                            ondismiss: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Payment Cancelled',
+                                    text: 'You cancelled the payment. Your order has been saved, and you can retry payment from the order details page.',
+                                }).then(() => {
+                                    window.location.href = '/paymentfailedpage?error=' + encodeURIComponent('Payment was cancelled by the user');
+                                });
+                            }
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function (response) {
+                        console.error('Razorpay payment failed:', response.error);
                         Swal.fire({
                             icon: 'error',
                             title: 'Payment Failed',
-                            text: error.message || 'Payment verification failed',
+                            text: response.error.description || 'Payment failed. Your order has been saved, and you can retry payment from the order details page.',
                         }).then(() => {
-                            window.location.href = '/paymentfailedpage';
+                            window.location.href = '/paymentfailedpage?error=' + encodeURIComponent(response.error.description);
                         });
-                    }
-                },
-                prefill: {
-                    name: '<%= user.name || "" %>',
-                    email: '<%= user.email || "" %>',
-                    contact: '<%= user.phone || "" %>',
-                },
-                theme: {
-                    color: '#3b82f6',
-                },
-                method: {
-                    card: true,
-                    upi: true,
-                    netbanking: true,
-                    wallet: true,
-                },
-                modal: {
-                    ondismiss: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Payment Cancelled',
-                            text: 'You cancelled the payment. Please try again.',
-                        }).then(() => {
-                            window.location.href = '/paymentfailedpage?error=' + encodeURIComponent('Payment was cancelled by the user');
-                        });
-                    }
+                    });
+                    rzp.open();
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Order Placed',
+                        text: data.message,
+                        timer: 1500,
+                        showConfirmButton: false,
+                    }).then(() => {
+                        window.location.href = data.redirect || '/order-success';
+                    });
                 }
-            };
-
-           
-
-            const rzp = new Razorpay(options);
-            rzp.on('payment.failed', function (response) {
-                console.error('Razorpay payment failed:', response.error);
+            } catch (error) {
+                console.error('Place order error:', error);
                 Swal.fire({
                     icon: 'error',
-                    title: 'Payment Failed',
-                    text: response.error.description || 'Payment failed. Please try again.',
-                }).then(() => {
-                    window.location.href = '/paymentfailedpage?error=' + encodeURIComponent(response.error.description);
+                    title: 'Order Failed',
+                    text: 'An error occurred while placing the order.',
                 });
-            });
-            rzp.open();
-        } else if (data.redirect) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Order Placed',
-                text: 'Your order has been successfully placed!',
-                timer: 1500,
-                showConfirmButton: false,
-            }).then(() => {
-                window.location.href = data.redirect;
-            });
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Failed',
-                text: data.message || 'Failed to place order',
-            });
+            }
         }
-    } catch (error) {
-        console.error('Place order error:', error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message || 'An error occurred while placing the order',
-        }).then(() => {
-            window.location.href = '/paymentfailedpage';
-        });
-    }
-}
+
         function ValidChecking() {
             let isValid = true;
 
@@ -1023,7 +992,7 @@
                 errorName.style.display = "none";
             }
 
-             const city = document.getElementById("city");
+            const city = document.getElementById("city");
             const errorCity = document.getElementById("error-city");
             const cityVal = city.value.trim();
             if (!cityVal) {
@@ -1034,7 +1003,7 @@
                 errorCity.style.display = "none";
             }
 
-             const landMark = document.getElementById("landMark");
+            const landMark = document.getElementById("landMark");
             const errorLandMark = document.getElementById("error-landMark");
             const landmarkVal = landMark.value.trim();
             if (!landmarkVal) {
@@ -1045,7 +1014,7 @@
                 errorLandMark.style.display = "none";
             }
 
-             const state = document.getElementById("state");
+            const state = document.getElementById("state");
             const errorState = document.getElementById("error-state");
             const stateVal = state.value.trim();
             if (!stateVal) {

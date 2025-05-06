@@ -58,7 +58,7 @@
         }
 
         .menu-item {
-            padding: 15px 20px;
+            
             display: flex;
             align-items: center;
             transition: all 0.3s ease;
@@ -464,12 +464,12 @@
                     <form onsubmit="return addOffer(event)">
                         <div class="mb-3">
                             <label for="offerName" class="form-label">Offer Name</label>
-                            <input type="text" class="form-control" id="offerName" name="offerName" required placeholder="e.g., Summer Sale">
+                            <input type="text" class="form-control" id="offerName" name="offerName"  placeholder="e.g., Summer Sale">
                         </div>
 
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" rows="3" required placeholder="Offer details..."></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="3"  placeholder="Offer details..."></textarea>
                         </div>
 
                         <div class="mb-3 row">
@@ -482,7 +482,7 @@
                             <div class="col-6">
                                 <label for="discountAmount" class="form-label">Discount Amount</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="discountAmount" name="discountAmount" min="0" max="100" step="0.01" required>
+                                    <input type="number" class="form-control" id="discountAmount" name="discountAmount" min="0" max="100" step="0.01" >
                                     <span class="input-group-text">%</span>
                                 </div>
                             </div>
@@ -491,11 +491,11 @@
                         <div class="mb-3 row">
                             <div class="col-6">
                                 <label for="validFrom" class="form-label">Valid From</label>
-                                <input type="date" class="form-control" id="validFrom" name="validFrom" required>
+                                <input type="date" class="form-control" id="validFrom" name="validFrom" >
                             </div>
                             <div class="col-6">
                                 <label for="validUpto" class="form-label">Valid Until</label>
-                                <input type="date" class="form-control" id="validUpto" name="validUpto" required>
+                                <input type="date" class="form-control" id="validUpto" name="validUpto" >
                             </div>
                         </div>
 
@@ -510,7 +510,7 @@
 
                         <div class="mb-3">
                             <label for="applicableTo" class="form-label">Applicable To</label>
-                            <select class="form-select" id="applicableTo" name="applicableTo" required>
+                            <select class="form-select" id="applicableTo" name="applicableTo" >
                                 <option value="">Select an option</option>
                             </select>
                         </div>
@@ -538,12 +538,12 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="editOfferName" class="form-label">Offer Name</label>
-                                <input type="text" class="form-control" id="editOfferName" name="offerName" required placeholder="e.g., Summer Sale">
+                                <input type="text" class="form-control" id="editOfferName" name="offerName"  placeholder="e.g., Summer Sale">
                             </div>
 
                             <div class="col-12">
                                 <label for="editDescription" class="form-label">Description</label>
-                                <textarea class="form-control" id="editDescription" name="description" rows="2" required placeholder="Offer details..."></textarea>
+                                <textarea class="form-control" id="editDescription" name="description" rows="2"  placeholder="Offer details..."></textarea>
                             </div>
 
                             <div class="col-md-6">
@@ -556,19 +556,19 @@
                             <div class="col-md-6">
                                 <label for="editDiscountAmount" class="form-label">Discount Amount</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control" id="editDiscountAmount" name="discountAmount" min="0" max="100" step="0.01" required>
+                                    <input type="number" class="form-control" id="editDiscountAmount" name="discountAmount" min="0" max="100" step="0.01" >
                                     <span class="input-group-text">%</span>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <label for="editValidFrom" class="form-label">Valid From</label>
-                                <input type="date" class="form-control" id="editValidFrom" name="validFrom" required>
+                                <input type="date" class="form-control" id="editValidFrom" name="validFrom" >
                             </div>
 
                             <div class="col-md-6">
                                 <label for="editValidUpto" class="form-label">Valid Until</label>
-                                <input type="date" class="form-control" id="editValidUpto" name="validUpto" required>
+                                <input type="date" class="form-control" id="editValidUpto" name="validUpto" >
                             </div>
 
                             <div class="col-md-6">
@@ -583,7 +583,7 @@
 
                             <div class="col-12">
                                 <label for="editApplicableTo" class="form-label">Applicable To</label>
-                                <select class="form-select" id="editApplicableTo" name="applicableTo" required>
+                                <select class="form-select" id="editApplicableTo" name="applicableTo" >
                                     <option value="">Select an option</option>
                                 </select>
                             </div>
@@ -675,7 +675,7 @@
         // Validate offer data
         function validateOfferData(data) {
             if (!data.offerName || !data.description || !data.discountAmount || !data.validFrom || !data.validUpto || !data.offerType || !data.applicableTo) {
-                Swal.fire('Error', 'All fields are required', 'error');
+                Swal.fire('Error', 'All fields are ', 'error');
                 return false;
             }
 

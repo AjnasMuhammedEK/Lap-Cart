@@ -43,7 +43,7 @@
             flex-direction: column;
         }
 
-        .lapcart-dashboard-main {
+        .lc-dashboard-main {
             flex: 1;
             margin-left: var(--sidebar-width);
             width: calc(100% - var(--sidebar-width));
@@ -52,7 +52,7 @@
             position: relative;
         }
 
-        .lapcart-dashboard-header {
+        .lc-dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -64,25 +64,25 @@
             z-index: 10;
         }
 
-        .lapcart-dashboard-content {
+        .lc-dashboard-content {
             padding: 30px;
             overflow-y: auto;
         }
 
-        .lapcart-dashboard-title {
+        .lc-dashboard-title {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 30px;
         }
 
-        .lapcart-stats-container {
+        .lc-stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
 
-        .lapcart-stat-card {
+        .lc-stat-card {
             background-color: var(--lighter-bg);
             padding: 20px;
             border-radius: 10px;
@@ -90,25 +90,25 @@
             border: 1px solid var(--border-color);
         }
 
-        .lapcart-stat-title {
+        .lc-stat-title {
             font-size: 18px;
             font-weight: 600;
             color: #aaa;
             margin-bottom: 10px;
         }
 
-        .lapcart-stat-value {
+        .lc-stat-value {
             font-size: 24px;
             font-weight: bold;
         }
 
-        .lapcart-charts-container {
+        .lc-charts-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
         }
 
-        .lapcart-chart-card {
+        .lc-chart-card {
             background-color: var(--lighter-bg);
             padding: 20px;
             border-radius: 10px;
@@ -116,73 +116,87 @@
             margin-bottom: 20px;
         }
 
-        .lapcart-chart-title {
+        .lc-chart-title {
             font-size: 18px;
             font-weight: 600;
             color: #aaa;
             margin-bottom: 15px;
         }
 
-        .lapcart-chart-canvas {
+        .lc-chart-canvas {
             position: relative;
             height: 300px;
             width: 100%;
         }
 
-        .lapcart-chart-card.full-width {
+        .lc-chart-card.lc-full-width {
             grid-column: 1 / -1;
         }
 
-        .lapcart-dashboard-footer {
+        .lc-dashboard-footer {
             background-color: var(--darker-bg);
             padding: 15px;
             text-align: center;
             border-top: 1px solid var(--border-color);
         }
 
-        .chart-fallback {
+        .lc-chart-fallback {
             text-align: center;
             color: #aaa;
             font-size: 16px;
             padding: 20px;
         }
 
-        .lapcart-filter-form {
+        .lc-filter-form {
             display: flex;
             gap: 10px;
             align-items: center;
             flex-wrap: wrap;
         }
 
+        .lc-date-input {
+            width: 150px;
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .lc-date-input:disabled {
+            background-color: var(--darker-bg);
+            opacity: 0.5;
+        }
+
         @media (max-width: 1200px) {
-            .lapcart-charts-container {
+            .lc-charts-container {
                 grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 992px) {
-            .lapcart-dashboard-main {
+            .lc-dashboard-main {
                 margin-left: 0;
                 width: 100%;
             }
 
-            .lapcart-stats-container {
+            .lc-stats-container {
                 grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             }
         }
 
         @media (max-width: 768px) {
-            .lapcart-dashboard-header {
+            .lc-dashboard-header {
                 flex-direction: column;
                 gap: 15px;
                 align-items: flex-start;
             }
 
-            .lapcart-dashboard-content {
+            .lc-dashboard-content {
                 padding: 15px;
             }
 
-            .lapcart-filter-form {
+            .lc-filter-form {
                 flex-direction: column;
                 align-items: flex-start;
             }
@@ -194,100 +208,78 @@
     <%- include("../../views/partials/admin/header") %>
 
     <!-- Main Content -->
-    <div class="lapcart-dashboard-main">
-        <div class="lapcart-dashboard-header">
+    <div class="lc-dashboard-main">
+        <div class="lc-dashboard-header">
             <h2 class="text-xl font-semibold">Dashboard Overview</h2>
-            <form class="lapcart-filter-form" action="/admin/dashboard" method="GET">
+            <form class="lc-filter-form" action="/admin/dashboard" method="GET">
                 <select name="dateRange" class="form-select form-select-sm" style="width: 150px;" id="dateRangeFilter">
                     <option value="daily" <%= dateRange === 'daily' ? 'selected' : '' %>>Daily</option>
                     <option value="weekly" <%= dateRange === 'weekly' ? 'selected' : '' %>>Weekly</option>
                     <option value="monthly" <%= dateRange === 'monthly' ? 'selected' : '' %>>Monthly</option>
                     <option value="yearly" <%= dateRange === 'yearly' ? 'selected' : '' %>>Yearly</option>
-                 </select>
-               
+                    <option value="custom" <%= dateRange === 'custom' ? 'selected' : '' %>>Custom</option>
+                </select>
+                <input type="date" name="startDate" class="lc-date-input" value="<%= startDate || '' %>" <%= dateRange !== 'custom' ? 'disabled' : '' %>>
+                <input type="date" name="endDate" class="lc-date-input" value="<%= endDate || '' %>" <%= dateRange !== 'custom' ? 'disabled' : '' %>>
                 <button type="submit" class="btn btn-primary btn-sm">Filter</button>
             </form>
         </div>
 
-        <div class="lapcart-dashboard-content">
-            <h1 class="lapcart-dashboard-title">Dashboard</h1>
+        <div class="lc-dashboard-content">
+            <h1 class="lc-dashboard-title">Dashboard</h1>
 
             <!-- Stats Cards -->
-            <div class="lapcart-stats-container">
-                <div class="lapcart-stat-card">
-                    <h2 class="lapcart-stat-title">All Over Sales</h2>
-                    <p class="lapcart-stat-value text-danger">
-                        <%= typeof dashboardData.stats.allOverSales !== 'undefined' ? dashboardData.stats.allOverSales.toLocaleString() : '0' %> Units
-                    </p>
-                </div>
-                <div class="lapcart-stat-card">
-                    <h2 class="lapcart-stat-title">Total Revenue</h2>
-                    <p class="lapcart-stat-value text-success">
-                        ₹<%= typeof dashboardData.stats.totalRevenue !== 'undefined' ? dashboardData.stats.totalRevenue.toLocaleString('en-IN') : '0' %>
-                    </p>
-                </div>
-                <div class="lapcart-stat-card">
-                    <h2 class="lapcart-stat-title">Total Orders</h2>
-                    <p class="lapcart-stat-value text-primary">
-                        <%= typeof dashboardData.stats.totalOrders !== 'undefined' ? dashboardData.stats.totalOrders.toLocaleString() : '0' %>
-                    </p>
-                </div>
-                <div class="lapcart-stat-card">
-                    <h2 class="lapcart-stat-title">Total Products</h2>
-                    <p class="lapcart-stat-value text-purple-400">
-                        <%= typeof dashboardData.stats.totalProducts !== 'undefined' ? dashboardData.stats.totalProducts.toLocaleString() : '0' %>
-                    </p>
-                </div>
-                <div class="lapcart-stat-card">
-                    <h2 class="lapcart-stat-title">Net Sales</h2>
-                    <p class="lapcart-stat-value text-warning">
-                        ₹<%= typeof dashboardData.stats.netSales !== 'undefined' ? dashboardData.stats.netSales.toLocaleString('en-IN') : '0' %>
+            <div class="lc-stats-container">
+                <div class="lc-stat-card">
+                    <h2 class="lc-stat-title">Net Sale</h2>
+                    <p class="lc-stat-value text-success">
+                        ₹<%= dashboardData.stats.netSale.toLocaleString('en-IN') %>
                     </p>
                 </div>
             </div>
 
             <!-- Charts Section -->
             <!-- Net Sales Chart (Full Width) -->
-            <div class="lapcart-chart-card full-width">
-                <h2 class="lapcart-chart-title">Net Sales (<%= dateRange.charAt(0).toUpperCase() + dateRange.slice(1) %>)</h2>
-                <div class="lapcart-chart-canvas">
+            <div class="lc-chart-card lc-full-width">
+                <h2 class="lc-chart-title">Net Sales (<%= dateRange.charAt(0).toUpperCase() + dateRange.slice(1) %>)</h2>
+                <div class="lc-chart-canvas">
                     <% if (!dashboardData.charts.netSales.data || dashboardData.charts.netSales.data.length === 0 || dashboardData.charts.netSales.data.every(val => val === 0)) { %>
-                        <p class="chart-fallback">No Net Sales data available for <%= dateRange %></p>
+                        <p class="lc-chart-fallback">No Net Sales data available for <%= dateRange %></p>
                     <% } else { %>
                         <canvas id="netSalesChart"></canvas>
                     <% } %>
                 </div>
             </div>
 
-            <div class="lapcart-charts-container">
+            <div class="lc-charts-container">
                 <!-- Best Selling Products -->
-                <div class="lapcart-chart-card">
-                    <h2 class="lapcart-chart-title">Top 10 Best Selling Products</h2>
-                    <div class="lapcart-chart-canvas">
+                <div class="lc-chart-card">
+                    <h2 class="lc-chart-title">Top 10 Best Selling Products</h2>
+                    <div class="lc-chart-canvas">
                         <% if (!dashboardData.charts.bestProducts.data || dashboardData.charts.bestProducts.data.length === 0) { %>
-                            <p class="chart-fallback">No product sales data available</p>
+                            <p class="lc-chart-fallback">No product sales data available</p>
                         <% } else { %>
                             <canvas id="bestProductsChart"></canvas>
                         <% } %>
                     </div>
                 </div>
                 <!-- Best Selling Categories -->
-                <div class="lapcart-chart-card">
-                    <h2 class="lapcart-chart-title">Top 10 Best Selling Categories</h2>
-                    <div class="lapcart-chart-canvas">
+                <div class="lc-chart-card">
+                    <h2 class="lc-chart-title">Top 10 Best Selling Categories</h2>
+                    <div class="lc-chart-canvas">
                         <% if (!dashboardData.charts.bestCategories.data || dashboardData.charts.bestCategories.data.length === 0) { %>
-                            <p class="chart-fallback">No category sales data available</p>
+                            <p class="lc-chart-fallback">No category sales data available</p>
                         <% } else { %>
                             <canvas id="bestCategoriesChart"></canvas>
                         <% } %>
                     </div>
                 </div>
                 <!-- Best Selling Brands -->
-                <div class="lapcart-chart-card">
-                    <h2 class="lapcart-chart-title">Top 10 Best Selling Brands</h2>
-                    <div class="lapcart-chart-canvas">
+                <div class="lc-chart-card">
+                    <h2 class="lc-chart-title">Top 10 Best Selling Brands</h2>
+                    <div class="lc-chart-canvas">
                         <% if (!dashboardData.charts.bestBrands.data || dashboardData.charts.bestBrands.data.length === 0) { %>
-                            <p class="chart-fallback">No brand sales data available</p>
+                            <p class="lc-chart-fallback">No brand sales data available</p>
                         <% } else { %>
                             <canvas id="bestBrandsChart"></canvas>
                         <% } %>
@@ -296,7 +288,7 @@
             </div>
         </div>
 
-        <div class="lapcart-dashboard-footer">
+        <div class="lc-dashboard-footer">
             <p>© 2025 LapCart. All rights reserved.</p>
         </div>
     </div>
@@ -304,7 +296,7 @@
     <!-- Chart.js Initialization with Dynamic Data -->
     <script>
         // Net Sales Chart (Line Chart)
-        <% if (dashboardData.charts.netSales.data && dashboardData.charts.netSales.data.some(val => val !== 0)) { %>
+        <% if (dashboardData.charts.netSales.data && dashboardData.charts.netSales.data.length > 0 && dashboardData.charts.netSales.data.some(val => val !== 0)) { %>
         new Chart(document.getElementById('netSalesChart'), {
             type: 'line',
             data: {
@@ -342,9 +334,7 @@
                         callbacks: {
                             label: function(context) {
                                 let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
+                                if (label) label += ': ';
                                 if (context.parsed.y !== null) {
                                     label += new Intl.NumberFormat('en-IN', {
                                         style: 'currency',
@@ -439,8 +429,93 @@
         // Filter Change Handler
         document.getElementById('dateRangeFilter').addEventListener('change', function() {
             const isCustom = this.value === 'custom';
-            document.querySelector('input[name="startDate"]').disabled = !isCustom;
-            document.querySelector('input[name="endDate"]').disabled = !isCustom;
+            const startDateInput = document.querySelector('input[name="startDate"]');
+            const endDateInput = document.querySelector('input[name="endDate"]');
+            if (startDateInput && endDateInput) {
+                startDateInput.disabled = !isCustom;
+                endDateInput.disabled = !isCustom;
+                if (!isCustom) {
+                    startDateInput.value = '';
+                    endDateInput.value = '';
+                }
+            }
+        });
+
+        // Sidebar Active State and Moving Indicator
+        document.addEventListener('DOMContentLoaded', function() {
+            const waitForSidebar = () => {
+                const sidebarMenu = document.querySelector('.sidebar-menu');
+                if (sidebarMenu) {
+                    initializeSidebar();
+                } else {
+                    setTimeout(waitForSidebar, 100);
+                }
+            };
+
+            function initializeSidebar() {
+                const sidebarMenu = document.querySelector('.sidebar-menu');
+                const indicator = document.createElement('div');
+                indicator.className = 'moving-indicator';
+                sidebarMenu.appendChild(indicator);
+
+                function positionIndicator(menuItem) {
+                    if (!menuItem) return;
+                    const rect = menuItem.getBoundingClientRect();
+                    const parentRect = sidebarMenu.getBoundingClientRect();
+                    indicator.style.top = (rect.top - parentRect.top) + 'px';
+                    indicator.style.height = rect.height + 'px';
+                    indicator.style.opacity = '1';
+                }
+
+                function removeActiveClass() {
+                    document.querySelectorAll('.menu-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                }
+
+                const currentPath = window.location.pathname;
+                const menuItems = document.querySelectorAll('.menu-item');
+                let activeMenuItem = null;
+                menuItems.forEach(item => {
+                    const href = item.getAttribute('href');
+                    if (href && (currentPath === href || currentPath.includes(href)) && href !== '#') {
+                        removeActiveClass();
+                        item.classList.add('active');
+                        activeMenuItem = item;
+                    }
+                });
+
+                if (activeMenuItem) {
+                    positionIndicator(activeMenuItem);
+                } else {
+                    const dashboardItem = document.querySelector('.menu-item[href="/admin/dashboard"]');
+                    if (dashboardItem) {
+                        removeActiveClass();
+                        dashboardItem.classList.add('active');
+                        positionIndicator(dashboardItem);
+                    }
+                }
+
+                menuItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        if (this.getAttribute('href') === '#') {
+                            e.preventDefault();
+                        }
+                        removeActiveClass();
+                        this.classList.add('active');
+                        positionIndicator(this);
+                    });
+                });
+
+                window.addEventListener('resize', function() {
+                    const activeMenuItem = document.querySelector('.menu-item.active');
+                    if (activeMenuItem) {
+                        positionIndicator(activeMenuItem);
+                    }
+                });
+            }
+
+            waitForSidebar();
         });
     </script>
 </body>

@@ -95,6 +95,7 @@ router.post('/checkeditAddress',userAuth,cartController.checkoutEditAddress);
 router.post('/place-order',userAuth,orderController.placeOrder);
 router.get('/order-success',userAuth,orderController.loadOrderSuccess);
 router.post('/verify-razorpay-payment', orderController.verifyRazorpayPayment);
+router.post('/retry-razorpay-payment', userAuth, orderController.retryRazorpayPayment);
 router.get('/paymentfailedpage',userAuth,orderController.loadPaymentFailedPage)
 router.get('/listOrder',userAuth,orderController.listOrder);
 router.get('/ord-detailes',userAuth,orderController.loadOrdDetailes);
