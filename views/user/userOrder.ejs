@@ -292,7 +292,11 @@
                         <tr class="addr-tr">
                             <td class="addr-td"><%= data.orderId %></td>
                             <td class="addr-td"><%= data.createdAt.toISOString().split('T')[0] %></td>
-                            <td class="addr-td"><%= data.status %></td>
+                            <td class="addr-td"><%= data.status %>
+                            <%if(data.paymentStatus!='Completed'){%>
+                                | <span style="color: red;">  Payment is pending</span>
+                            <%}%>
+                            </td>
                             <td>
                                 <a href="/ord-detailes?orderId=<%= data._id %>"><button class="addr-button addr-button-edit">View Details</button></a>
                             </td>

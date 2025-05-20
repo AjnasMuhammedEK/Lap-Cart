@@ -12,7 +12,7 @@ const brandInfo = async (req,res) => {
         }
 
 
-        const page = parseInt(req.query.page) || 1;
+        const page = parseInt(req.query.page) || 1
         const limit = 4;
         const skip = (page - 1) * limit;
 
@@ -59,8 +59,7 @@ const addBrand = async(req, res) => {
     const {brandName} = req.body
     // console.log(brandName)
     try {
-       
-        const existingBrand = await Brand.findOne({brandName:brandName})
+        const existingBrand = await Brand.findOne({brandName:{ $regex: new RegExp('^' + brandName + '$', 'i') }})
         if(existingBrand) {
            
            req.session.admMsg = 'Brand already exists'
@@ -70,7 +69,6 @@ const addBrand = async(req, res) => {
        
         const newBrand = new Brand({
             brandName
-            
         });
          
         await newBrand.save();

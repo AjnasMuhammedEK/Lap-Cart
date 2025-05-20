@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* Existing styles remain unchanged */
         * {
             margin: 0;
             padding: 0;
@@ -37,10 +38,9 @@
             background-color: var(--dark-bg);
             color: var(--text-color);
             min-height: 100vh;
-            overflow-y: auto; /* Ensure body is scrollable */
+            overflow-y: auto;
         }
 
-        /* Sidebar Styles */
         .sidebar {
             width: var(--sidebar-width);
             background-color: var(--darker-bg);
@@ -90,13 +90,12 @@
             text-align: center;
         }
 
-        /* Main Content Styles */
         .main-content {
             margin-left: var(--sidebar-width);
             padding: 20px;
             width: calc(100% - var(--sidebar-width));
-            min-height: 100vh; /* Ensure content area spans full height */
-            overflow-y: auto; /* Enable scrolling */
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
         .header {
@@ -147,7 +146,6 @@
             border-radius: 50%;
         }
 
-        /* Page Header */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -180,7 +178,6 @@
             transform: translateY(-2px);
         }
 
-        /* Wallet Balance Card */
         .wallet-balance-card {
             background: linear-gradient(135deg, var(--lighter-bg), var(--darker-bg));
             border-radius: 12px;
@@ -214,7 +211,6 @@
             color: var(--success-color);
         }
 
-        /* Table Styles */
         .table-container {
             background-color: var(--lighter-bg);
             border-radius: 12px;
@@ -252,7 +248,6 @@
             padding: 6px 12px;
         }
 
-        /* Modal Styles */
         .modal-content {
             border-radius: 12px;
             font-family: 'Poppins', sans-serif;
@@ -265,7 +260,7 @@
         }
 
         .card {
-            background.ConcurrentHashMapcolor: var(--card-bg);
+            background-color: var(--card-bg);
             border: none;
         }
 
@@ -306,7 +301,6 @@
             inline-size: 50px;
         }
 
-        /* Responsive Styles */
         @media (max-width: 992px) {
             .sidebar {
                 width: 70px;
@@ -380,13 +374,136 @@
                 padding: 10px;
             }
         }
+
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .pagination-btn:hover {
+            background-color: #6f46c9;
+            transform: translateY(-2px);
+        }
+
+        .pagination-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .pagination-btn.active {
+            background-color: #6f46c9;
+            font-weight: bold;
+        }
+
+        /* Filter Section Styles */
+        .filter-container {
+            background: var(--darker-bg);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .filter-select {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--lighter-bg);
+            color: var(--text-color);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 14px;
+        }
+
+        .filter-select:focus {
+            border-color: var(--primary-color);
+        }
+
+        .filter-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .filter-button:hover {
+            background-color: #6f46c9;
+            transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                width: 100%;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+
+            .filter-button {
+                width: 100%;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-           
             <div class="user-profile">
                 <div class="status"></div>
                 <span>Admin</span>
@@ -394,7 +511,7 @@
         </div>
 
         <div class="page-header">
-            <h1 class="page-title">Wallet Details - <%=user.name%></h1>
+            <h1 class="page-title">Wallet Details - <%= user.name %></h1>
             <a href="/admin/users" class="back-button">
                 <i class="fas fa-arrow-left"></i> Back to Users
             </a>
@@ -404,15 +521,30 @@
         <div class="wallet-balance-card">
             <div>
                 <h3>Current Wallet Balance</h3>
-                <p>User: <%=user.name%></p>
+                <p>User: <%= user.name %></p>
             </div>
             <div class="balance">
-                ₹<%=userWallet.balance%>
+                ₹<%= userWallet.balance %>
             </div>
         </div>
 
         <!-- Transaction History Table -->
         <div class="table-container">
+            <div class="filter-container">
+                <form action="/admin/userWallet" method="get" class="filter-form">
+                    <div class="filter-group">
+                        <select name="type" id="filter" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="Credit" <%= type === 'Credit' ? 'selected' : '' %>>Credit</option>
+                            <option value="Debit" <%= type === 'Debit' ? 'selected' : '' %>>Debit</option>
+                        </select>
+                    </div>
+                    <input type="hidden" value="<%= user._id %>" name="userId">
+                    <button type="submit" class="filter-button">
+                        <i ></i> Apply
+                    </button>
+                </form>
+            </div>
             <table>
                 <thead>
                     <tr>
@@ -420,27 +552,61 @@
                         <th>Amount</th>
                         <th>Type</th>
                         <th>Date</th>
+                        <th>Method</th>
                         <th>Status</th>
                         <th>View</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <%userWallet.transactions.forEach(data=>{%>
+                    <% transaction.forEach(data => { %>
                     <tr>
-                        <td><%=data.transactionId%></td>
-                        <td>₹<%=data.amount%></td>
-                        <td><%=data.type%></td>
-                        <td><%=data.date.toDateString()%></td>
-                        <td><span class="badge bg-success"><%=data.status%></span></td>
-                        <%if(data.orderId){%>
-                            <td><button class="edit-btn" onclick="walletOrder('<%=data.orderId%>')">👁️</button></td>
-                        <%}else{%>
-                            <td><button class="edit-btn" disabled>👁️</button></td>
-                        <%}%>
+                        <td><%= data.transactionId %></td>
+                        <td>₹<%= data.amount.toLocaleString('en-IN') %></td>
+                        <td><%= data.type %></td>
+                        <td><%= data.date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></td>
+                        <td><%= data.method %></td>
+                        <td><span class="badge bg-success"><%= data.status %></span></td>
+                        <td>
+                            <% if (data.method === 'Refund') { %>
+                                <button class="edit-btn" onclick="walletOrder('<%= data.orderId %>', '<%= data._id %>')">👁️</button>
+                            <% } %>
+                        </td>
                     </tr>
-                    <%})%>
+                    <% }) %>
                 </tbody>
             </table>
+            <!-- Pagination Section -->
+            <% if (totalPages > 1) { %>
+                <div class="pagination-container">
+                    <!-- Previous Button -->
+                    <button 
+                        class="pagination-btn" 
+                        onclick="navigatePage(<%= currentPage - 1 %>)" 
+                        <%= currentPage === 1 ? 'disabled' : '' %>
+                    >
+                        Previous
+                    </button>
+
+                    <!-- Page Numbers -->
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <button 
+                            class="pagination-btn <%= currentPage === i ? 'active' : '' %>" 
+                            onclick="navigatePage(<%= i %>)"
+                        >
+                            <%= i %>
+                        </button>
+                    <% } %>
+
+                    <!-- Next Button -->
+                    <button 
+                        class="pagination-btn" 
+                        onclick="navigatePage(<%= currentPage + 1 %>)" 
+                        <%= currentPage === totalPages ? 'disabled' : '' %>
+                    >
+                        Next
+                    </button>
+                </div>
+            <% } %>
         </div>
     </div>
 
@@ -460,13 +626,13 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <p><strong>Order ID:</strong> <span id="orderId"></span></p>
-                                    <p><strong>Order Date:</strong> <span id="invoiceDate"></span></p>
+                                    <p><strong>Order Date:</strong> <span id="orderDate"></span></p>
                                     <p><strong>Status:</strong> <span id="orderStatus" class="badge" style="background-color: var(--primary);"></span></p>
                                 </div>
                                 <div class="col-md-6">
                                     <p><strong>Payment Method:</strong> <span id="paymentMethod"></span></p>
                                     <p><strong>Wallet Amount Used:</strong> ₹<span id="walletAmountUsed"></span></p>
-                                </div>
+                                 </div>
                             </div>
                         </div>
                     </div>
@@ -477,6 +643,26 @@
                             <div id="orderedItems"></div>
                         </div>
                     </div>
+                    <!-- Return Reason (if applicable) -->
+                    <div class="card mb-3" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);" id="returnReasonCard">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: var(--text); font-weight: 600;">Return Reason</h6>
+                            <p id="returnReason"></p>
+                        </div>
+                    </div>
+                    <!-- Transaction Details -->
+                    <div class="card mb-3" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);">
+                        <div class="card-body">
+                            <h6 class="card-title" style="color: var(--text); font-weight: 600;">Transaction Details</h6>
+                            <p><strong>Transaction ID:</strong> <span id="transactionId"></span></p>
+                            <p><strong>Amount:</strong> ₹<span id="transactionAmount"></span></p>
+                            <p><strong>Type:</strong> <span id="transactionType"></span></p>
+                            <p><strong>Method:</strong> <span id="transactionMethod"></span></p>
+                            <p><strong>Status:</strong> <span id="transactionStatus"></span></p>
+                            <p><strong>Date:</strong> <span id="transactionDate"></span></p>
+                            <p><strong>Description:</strong> <span id="transactionDescription"></span></p>
+                        </div>
+                    </div>
                     <!-- Shipping Address -->
                     <div class="card mb-3" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);">
                         <div class="card-body">
@@ -484,34 +670,6 @@
                             <p><strong>Name:</strong> <span id="addressName"></span></p>
                             <p><strong>Address:</strong> <span id="addressDetails"></span></p>
                             <p><strong>Phone:</strong> <span id="addressPhone"></span></p>
-                        </div>
-                    </div>
-                    <!-- Price Breakdown -->
-                    <div class="card" style="border-radius: 8px; box-shadow: 0 2px 8px var(--shadow);">
-                        <div class="card-body">
-                            <h6 class="card-title" style="color: var(--text); font-weight: 600;">Price Breakdown</h6>
-                            <div class="d-flex justify-content-between">
-                                <span>Total Price:</span>
-                                <span>₹<span id="totalPrice"></span></span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Discount:</span>
-                                <span>-₹<span id="discount"></span></span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Offer Discount:</span>
-                                <span>-₹<span id="offerDiscount"></span></span>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span>Coupon Discount:</span>
-                                <span>-₹<span id="couponDiscount"></span></span>
-                            </div>
-                            
-                            <hr>
-                            <div class="d-flex justify-content-between" style="font-weight: 600; color: var(--primary);">
-                                <span>Final Amount:</span>
-                                <span>₹<span id="finalAmount"></span></span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -526,70 +684,68 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        function walletOrder(orderId) {
+        function navigatePage(page) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('page', page);
+            window.location.href = url.toString();
+        }
+
+        function walletOrder(orderId, transactionId) {
             $.ajax({
                 url: '/admin/getOrder',
                 method: 'POST',
-                data: { orderId },
+                data: { orderId, transactionId },
                 success: (response) => {
-                    if (!response || !response.order) {
-                        console.error('Invalid response structure:', response);
-                        alert('Failed to load order details. Invalid response from server.');
+                    if (!response || !response.success || !response.order || !response.transaction) {
+                        console.error('Invalid response:', response);
+                        alert('Failed to load order or transaction details. Invalid response from server.');
                         return;
                     }
 
                     const order = response.order;
+                    const transaction = response.transaction;
 
-                    // Populate modal fields
-                    document.getElementById('orderIdDisplay').textContent = order.orderId || 'N/A';
-                    document.getElementById('orderId').textContent = order.orderId || 'N/A';
-                    document.getElementById('invoiceDate').textContent = order.invoiceDate 
-                        ? new Date(order.invoiceDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) 
+                    // Populate Order Fields
+                    document.getElementById('orderIdDisplay').textContent = order._id || 'N/A';
+                    document.getElementById('orderId').textContent = order._id || 'N/A';
+                    document.getElementById('orderDate').textContent = order.createdAt 
+                        ? new Date(order.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) 
                         : 'N/A';
                     document.getElementById('orderStatus').textContent = order.status || 'N/A';
                     document.getElementById('paymentMethod').textContent = order.paymentMethod || 'N/A';
-                    document.getElementById('walletAmountUsed').textContent = order.walletAmountUsed 
-                        ? order.walletAmountUsed.toFixed(2) 
+                    document.getElementById('walletAmountUsed').textContent = order.walletAmountUsed != null 
+                        ? parseFloat(order.walletAmountUsed).toFixed(2) 
                         : '0.00';
 
                     // Address
                     const address = order.address || {};
                     document.getElementById('addressName').textContent = address.name || 'N/A';
-                    document.getElementById('addressDetails').textContent = address.addressType 
-                        ? `${address.addressType}, ${address.landmark || ''}, ${address.city || ''}, ${address.state || ''}, ${address.pincode || ''}`
-                        : 'N/A';
+                    document.getElementById('addressDetails').textContent = [
+                        address.addressType,
+                        address.landmark,
+                        address.city,
+                        address.state,
+                        address.pincode
+                    ].filter(Boolean).join(', ') || 'N/A';
                     document.getElementById('addressPhone').textContent = address.phone || 'N/A';
-
-                    // Price Breakdown
-                    document.getElementById('totalPrice').textContent = order.totalPrice 
-                        ? order.totalPrice.toFixed(2) 
-                        : '0.00';
-                    document.getElementById('discount').textContent = order.discount 
-                        ? order.discount.toFixed(2) 
-                        : '0.00';
-                    document.getElementById('offerDiscount').textContent = order.offerDiscount 
-                        ? order.offerDiscount.toFixed(2) 
-                        : '0.00';
-                    document.getElementById('couponDiscount').textContent = order.couponDiscount 
-                        ? order.couponDiscount.toFixed(2) 
-                        : '0.00';
-                   
-                    document.getElementById('finalAmount').textContent = order.finalAmount 
-                        ? order.finalAmount.toFixed(2) 
-                        : '0.00';
 
                     // Populate Ordered Items
                     const orderedItemsDiv = document.getElementById('orderedItems');
                     orderedItemsDiv.innerHTML = '';
                     if (order.orderedItems && Array.isArray(order.orderedItems) && order.orderedItems.length > 0) {
                         order.orderedItems.forEach(item => {
+                            const product = item.product || {};
+                            const imageUrl = product.productImage && product.productImage[0] 
+                                ? `/Uploads/product-images/${product.productImage[0]}` 
+                                : '/Uploads/product-images/default.jpg';
                             orderedItemsDiv.innerHTML += `
                                 <div class="item-row">
-                                    <img class="pro-img" src="/Uploads/product-images/${item.product.productImage[0]}" alt="${item.product.productName || 'Product Image'}">
+                                    <img class="item-image" src="${imageUrl}" alt="${product.name || 'Product Image'}" onerror="this.src='/Uploads/product-images/default.jpg'">
                                     <div class="item-details">
-                                        <p><strong>${item.product.productName || 'Unknown Item'}</strong></p>
+                                        <p><strong>${product.name || 'Unknown Item'}</strong></p>
                                         <p>Quantity: ${item.orderQuantity || 1}</p>
-                                        <p>Price: ₹${item.product.salePrice ? item.product.salePrice.toFixed(2) : '0.00'}</p>
+                                        <p>Price: ₹${item.price ? parseFloat(item.price).toFixed(2) : '0.00'}</p>
+                                        <p>Return Status: ${item.returnStatus || 'N/A'}</p>
                                     </div>
                                 </div>
                             `;
@@ -598,16 +754,79 @@
                         orderedItemsDiv.innerHTML = '<p>No items found for this order.</p>';
                     }
 
+                    // Populate Return Reason (if applicable)
+                    const returnReasonCard = document.getElementById('returnReasonCard');
+                    const returnReason = document.getElementById('returnReason');
+                    let hasReturnReason = false;
+                    if (order.orderedItems && Array.isArray(order.orderedItems)) {
+                        const returnReasons = order.orderedItems
+                            .filter(item => item.returnStatus === 'Returned' && item.returnReason)
+                            .map(item => item.returnReason);
+                        if (returnReasons.length > 0) {
+                            returnReason.textContent = returnReasons.join('; ') || 'N/A';
+                            hasReturnReason = true;
+                        } else {
+                            returnReason.textContent = 'No return reason provided.';
+                        }
+                    } else {
+                        returnReason.textContent = 'No return reason provided.';
+                    }
+                    returnReasonCard.style.display = hasReturnReason ? 'block' : 'none';
+
+                    // Populate Transaction Details
+                    document.getElementById('transactionId').textContent = transaction.transactionId || 'N/A';
+                    document.getElementById('transactionAmount').textContent = transaction.amount != null 
+                        ? parseFloat(transaction.amount).toFixed(2) 
+                        : '0.00';
+                    document.getElementById('transactionType').textContent = transaction.type || 'N/A';
+                    document.getElementById('transactionMethod').textContent = transaction.method || 'N/A';
+                    document.getElementById('transactionStatus').textContent = transaction.status || 'N/A';
+                    document.getElementById('transactionDate').textContent = transaction.date 
+                        ? new Date(transaction.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) 
+                        : 'N/A';
+                    document.getElementById('transactionDescription').textContent = transaction.description || 'No description provided';
+
                     // Show modal
-                    const walletOrderModal = new bootstrap.Modal(document.getElementById('walletOrder'));
+                    const walletOrderModal = new bootstrap.Modal(document.getElementById('walletOrder'), {
+                        keyboard: true,
+                        backdrop: 'static'
+                    });
                     walletOrderModal.show();
                 },
                 error: (xhr, status, error) => {
                     console.error('AJAX Error:', status, error, xhr.responseText);
-                    alert('Failed to fetch order details. Please try again later.');
+                    alert('Failed to fetch order or transaction details: ' + (xhr.responseText || 'Unknown error'));
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const modalElement = document.getElementById('walletOrder');
+            if (modalElement) {
+                modalElement.addEventListener('hidden.bs.modal', () => {
+                    document.getElementById('orderIdDisplay').textContent = '';
+                    document.getElementById('orderId').textContent = '';
+                    document.getElementById('orderDate').textContent = '';
+                    document.getElementById('orderStatus').textContent = '';
+                    document.getElementById('paymentMethod').textContent = '';
+                    document.getElementById('walletAmountUsed').textContent = '';
+                    document.getElementById('finalAmount').textContent = '';
+                    document.getElementById('addressName').textContent = '';
+                    document.getElementById('addressDetails').textContent = '';
+                    document.getElementById('addressPhone').textContent = '';
+                    document.getElementById('orderedItems').innerHTML = '';
+                    document.getElementById('returnReason').textContent = '';
+                    document.getElementById('returnReasonCard').style.display = 'none';
+                    document.getElementById('transactionId').textContent = '';
+                    document.getElementById('transactionAmount').textContent = '';
+                    document.getElementById('transactionType').textContent = '';
+                    document.getElementById('transactionMethod').textContent = '';
+                    document.getElementById('transactionStatus').textContent = '';
+                    document.getElementById('transactionDate').textContent = '';
+                    document.getElementById('transactionDescription').textContent = '';
+                });
+            }
+        });
     </script>
 </body>
 </html>

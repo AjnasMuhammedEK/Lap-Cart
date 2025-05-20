@@ -25,9 +25,7 @@ const loadCoupon = async (req,res) => {
         })
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit);
-              
-                      
+        .limit(limit);       
               
         const totalBrand = await Coupon.countDocuments()
         const totalPages = Math.ceil(totalBrand / limit)
@@ -52,11 +50,7 @@ const loadCoupon = async (req,res) => {
 const addCoupon = async (req,res) => {
     try {
 
- 
-        
         const { couponName,couponCode,startDate,endDate,offerPrice,minimumPrice,description} = req.body
-
-
         const existingCode = await Coupon.findOne({couponCode : {$regex : RegExp('^' + couponCode + '$' , 'i')}})
 
         if (existingCode){
@@ -64,7 +58,7 @@ const addCoupon = async (req,res) => {
         }   
 
         const existingDelCoupon = await Coupon.findOne({ couponName: { $regex: new RegExp('^' + couponName + '$', 'i') }})
-        console.log('existing',existingDelCoupon);
+        // console.log('existing',existingDelCoupon);
         if(existingDelCoupon && existingDelCoupon.isDeleted === true ){
             existingDelCoupon.isDeleted = false;
             existingDelCoupon.couponCode = couponCode;
@@ -73,8 +67,9 @@ const addCoupon = async (req,res) => {
             existingDelCoupon.endDate = endDate ;
             existingDelCoupon.offerPrice = offerPrice ;
             existingDelCoupon.minimumPrice = minimumPrice;
+
             await existingDelCoupon.save()
-            return  res.status(200).json({ success: true, message: 'Coupon added successfully' })
+            return  res.json({ success: true, message: 'Coupon added successfully' })
         }
  
         const newCoupon = new Coupon({
@@ -96,12 +91,9 @@ const addCoupon = async (req,res) => {
  
     } catch (error) {
         console.error('error from add coupon',error)
-        
+        return res.redirect('/pageNotFound')       
     }
 }
-
-
-
 
 
 const editCoupon = async (req,res) => {
@@ -117,24 +109,21 @@ const editCoupon = async (req,res) => {
         
 
         const existingCode = await Coupon.findOne({
-            _id: { $ne: couponId }, // Exclude current coupon
+            _id: { $ne: couponId }, 
             couponCode: { $regex: new RegExp('^' + couponCode + '$', 'i') }
           });   
         
         const existingDelCoupon = await Coupon.findOne({ couponName: { $regex: new RegExp('^' + couponName + '$', 'i') },isDeleted:true})
 
         if(existingDelCoupon){
-            existingDelCoupon.isDelete = false;
+            existingDelCoupon.isDeleted = false;
             existingDelCoupon.couponCode = couponCode;
             existingDelCoupon.startDate = startDate;
             existingDelCoupon.endDate = endDate ;
             existingDelCoupon.offerPrice = offerPrice ;
             existingDelCoupon.minimumPrice = minimumPrice;
             await existingDelCoupon.save()
-            return res.status(200).json({ success: true, message: 'Coupon added successfully' })
-
-
-
+            return res.json({ success: true, message: 'Coupon Edited successfully' })
         }
  
 
@@ -149,16 +138,9 @@ const editCoupon = async (req,res) => {
         },{new:true})
 
         if (updateCoupon) {
-            return res.status(200).json({
-                success: true,
-                message: "Coupon updated successfully"
-            });
-            
+            return res.json({success: true,message: "Coupon updated successfully"});
         } else {
-            return res.status(400).json({
-                success: false,
-                message: "Coupon not found"
-            });
+            return res.json({success: false,message: "Coupon not found"});
         }
 
  
@@ -173,16 +155,12 @@ const editCoupon = async (req,res) => {
 
 const deleteCoupon = async (req,res) => {
     try {
-
-        const {couponId} = req.body
-        
+        const {couponId} = req.body    
         const delCoupon = await Coupon.findOneAndUpdate({_id:couponId},{$set:{isDeleted:true}})
-        
         if(!delCoupon){
             return res.json({success:false,message:"Something Went Wrong !!"})
         }
-
-        return res.json({success:true,message:"Coupon Deleted Successfully.."})
+        return res.json({success:true,message:"Coupon Deleted Successfully"})
 
     } catch (error) {
         res.redirect('/pageNotFound')
@@ -217,7 +195,6 @@ const listCoupon = async (req,res) => {
     try {
 
         const {couponId} = req.body
-
         const listCoupon = await Coupon.findOneAndUpdate({_id:couponId},{$set:{isListed:true}})
 
         if(!listCoupon){

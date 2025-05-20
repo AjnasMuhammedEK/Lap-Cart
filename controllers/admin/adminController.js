@@ -23,7 +23,7 @@ const login = async (req,res)=>{
 
         const admin = await User.findOne({email,isAdmin:true});
 
-        console.log('its from admin');
+        // console.log('its from admin');
 
         if(admin){
             const passwordMatch = bcrypt.compare(password,admin.password);
@@ -47,16 +47,18 @@ const login = async (req,res)=>{
 
 
 const logout = async (req,res) =>{
-    console.log('11');
+    // console.log('11');
     try {
-        console.log('1');
-        req.session.destroy(err=>{
-            if(err){
-                console.log('Error destroying session',err);
-                return res.redirect('/pageerror');
-            }
-            res.redirect('/admin/login');
-        });
+        // console.log('1');
+        // req.session.destroy(err=>{
+        //     if(err){
+        //         console.log('Error destroying session',err);
+        //         return res.redirect('/pageerror');
+        //     }
+        //     res.redirect('/admin/login');
+        // });
+         req.session.admin = null
+        return res.redirect('/admin/login');
 
 
     } catch (error) {

@@ -642,7 +642,6 @@
     
             let isValid = true;
     
-            // Validate product name
             if (name.trim() === "") {
                 displayErrorMessage('productName-error', 'Please enter a product name.');
                 isValid = false;
@@ -651,69 +650,57 @@
                 isValid = false;
             }
     
-            // Validate description
             if (description.trim() === "") {
                 displayErrorMessage('description-error', 'Please enter a product description.');
                 isValid = false;
             }
     
-            // Validate stock count
             if (stockCount === "" || parseInt(stockCount) < 0) {
                 displayErrorMessage('quantity-error', 'Please enter a valid non-negative quantity.');
                 isValid = false;
             }
     
-            // Function to clean and parse price (handles commas)
             function cleanPrice(value) {
-                // Remove commas and trim
                 return value.replace(/,/g, '').trim();
             }
     
-            // Validate price
             const cleanedPrice = cleanPrice(price);
             if (!/^\d+(\.\d{1,2})?$/.test(cleanedPrice) || parseFloat(cleanedPrice) <= 0) {
                 displayErrorMessage('regularPrice-error', 'Please enter a valid positive price (e.g., 1,45,000 or 145000).');
                 isValid = false;
             }
     
-            // Validate sale price
             const cleanedSalePrice = cleanPrice(salePrice);
             if (!/^\d+(\.\d{1,2})?$/.test(cleanedSalePrice) || parseFloat(cleanedSalePrice) <= 0) {
                 displayErrorMessage('salePrice-error', 'Please enter a valid positive sale price (e.g., 1,40,000 or 140000).');
                 isValid = false;
             }
     
-            // Compare regular price and sale price
             if (parseFloat(cleanedPrice) <= parseFloat(cleanedSalePrice)) {
                 displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
                 isValid = false;
             }
     
-            // Validate processor
             if (processor.trim() === "") {
                 displayErrorMessage('processor-error', "Please enter product's processor details.");
                 isValid = false;
             }
     
-            // Validate storage
             if (storage.trim() === "") {
                 displayErrorMessage('storage-error', "Please enter product's storage details.");
                 isValid = false;
             }
     
-            // Validate RAM
             if (ram.trim() === "") {
                 displayErrorMessage('ram-error', "Please enter product's RAM details.");
                 isValid = false;
             }
     
-            // Validate graphics card
             if (graphicsCard.trim() === "") {
                 displayErrorMessage('graphicsCard-error', "Please enter product's Graphics Card details.");
                 isValid = false;
             }
     
-            // Validate images
             const hasExistingImage = document.getElementById('imagePreview0').style.backgroundImage ||
                                     document.getElementById('imagePreview1').style.backgroundImage ||
                                     document.getElementById('imagePreview2').style.backgroundImage;

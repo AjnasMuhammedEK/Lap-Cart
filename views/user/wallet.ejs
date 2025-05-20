@@ -318,6 +318,108 @@
             flex-wrap: wrap;
         }
     }
+    /* Filter Section Styles */
+.dw-filter-container {
+    background-color: var(--light-bg);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    box-shadow: var(--box-shadow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dw-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.dw-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dw-filter-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.dw-filter-select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    background-color: white;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    min-width: 200px;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+.dw-filter-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+.dw-filter-button, .dw-clear-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    box-shadow: var(--box-shadow);
+}
+
+.dw-filter-button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.dw-filter-button:hover {
+    background-color: var(--primary-hover-color);
+    transform: translateY(-2px);
+}
+
+.dw-clear-button {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.dw-clear-button:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .dw-filter-container {
+        padding: 15px;
+    }
+
+    .dw-filter-form {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .dw-filter-select {
+        min-width: 100%;
+    }
+
+    .dw-filter-button, .dw-clear-button {
+        width: 100%;
+        padding: 12px;
+    }
+}
 </style>
 </head>
 <body>
@@ -337,10 +439,21 @@
                 
                 <section class="dw-transactions-section">
                     <h3>Recent Transactions</h3>
+                    <div class="dw-filter-container">
+                        <form action="/wallet" method="get" class="dw-filter-form">
+                            <div class="dw-filter-group">
+                                <select name="type" id="type" class="dw-filter-select">
+                                    <option value="">All Transactions</option>
+                                    <option value="Credit" <%= type === 'Credit' ? 'selected' : '' %>>Credit</option>
+                                    <option value="Debit" <%= type === 'Debit' ? 'selected' : '' %>>Debit</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="dw-filter-button">Apply Filter</button>
+                        </form>
+                    </div>
                     <table class="dw-transactions-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Amount</th>
                                 <th>Type</th>
                                 <th>Method</th>
@@ -349,37 +462,61 @@
                                 <th>Date</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <% let i = (currentPage - 1) * 5 %>
-                            <% wallet.transactions.forEach(data => { %>
-                                <% i++ %>
+                        <tbody>  
+                            <% transaction.forEach(data => { %>
                                 <tr>
-                                    <td><%= i %></td>
-                                    <td class="dw-credit"><%= data.amount %></td>
+                                    <td class="<%= data.type === 'Credit' ? 'dw-credit' : 'dw-debit' %>">
+                                        ₹ <%= data.amount.toLocaleString('en-IN') %>
+                                    </td>
                                     <td><%= data.type %></td>
                                     <td><%= data.method %></td>
-                                    <td><%= data.description%></td>
+                                    <td><%= data.description %></td>
                                     <td><%= data.status %></td>
                                     <td><%= new Date(data.date).toLocaleDateString() %></td>
                                 </tr>
-                            <% }) %>
+                            <% }) %>    
                         </tbody>
                     </table>
-                    <!-- Pagination Controls -->
-                    <div class="dw-pagination-container">
-                        <button class="dw-pagination-btn" onclick="navigatePage(<%= currentPage - 1 %>)" <%= currentPage === 1 ? 'disabled' : '' %>>Previous</button>
-                        <% for(let i = 1; i <= totalPages; i++) { %>
-                            <button class="dw-pagination-btn <%= currentPage === i ? 'active' : '' %>" onclick="navigatePage(<%= i %>)"><%= i %></button>
-                        <% } %>
-                        <button class="dw-pagination-btn" onclick="navigatePage(<%= currentPage + 1 %>)" <%= currentPage === totalPages ? 'disabled' : '' %>>Next</button>
-                    </div>
+                    
+                    <!-- Pagination Section -->
+                    <% if (totalPages > 1) { %>
+                        <div class="dw-pagination-container">
+                            <!-- Previous Button -->
+                            <button 
+                                class="dw-pagination-btn" 
+                                onclick="navigatePage(<%= currentPage - 1 %>)" 
+                                <%= currentPage === 1 ? 'disabled' : '' %>
+                            >
+                                Previous
+                            </button>
+
+                            <!-- Page Numbers -->
+                            <% for (let i = 1; i <= totalPages; i++) { %>
+                                <button 
+                                    class="dw-pagination-btn <%= currentPage === i ? 'active' : '' %>" 
+                                    onclick="navigatePage(<%= i %>)"
+                                >
+                                    <%= i %>
+                                </button>
+                            <% } %>
+
+                            <!-- Next Button -->
+                            <button 
+                                class="dw-pagination-btn" 
+                                onclick="navigatePage(<%= currentPage + 1 %>)" 
+                                <%= currentPage === totalPages ? 'disabled' : '' %>
+                            >
+                                Next
+                            </button>
+                        </div>
+                    <% } %>
                 </section>
             </div>
         </div>
     </div>
 
     <script>
-        function navigatePage(page) {
+        function basketsPage(page) {
             const url = new URL(window.location.href);
             url.searchParams.set('page', page);
             window.location.href = url.toString();
@@ -387,4 +524,4 @@
     </script>
 </body>
 </html>
-<%- include("../../views/partials/user/footer") %>
+<%- include("../../views/partials/user/footer") %>  

@@ -4,7 +4,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
- 
+
 <style>
     :root {
         --primary-color: #4a6fdc;
@@ -35,7 +35,7 @@
         font-size: 14px;
     }
 
-    .main-container {
+    .prf-main-container {
         width: 100%;
         margin: 3rem 0;
         padding: 0 1rem;
@@ -45,7 +45,7 @@
         flex: 1;
     }
 
-    .main-content {
+    .prf-main-content {
         flex: 1;
         background-color: white;
         border-radius: var(--border-radius);
@@ -54,11 +54,11 @@
         width: 100%;
     }
 
-    .content-section {
+    .prf-content-section {
         margin-bottom: 1.5rem;
     }
 
-    .content-section h2 {
+    .prf-content-section h2 {
         color: var(--secondary-color);
         margin-bottom: 1rem;
         padding-bottom: 0.5rem;
@@ -67,55 +67,60 @@
         font-weight: 600;
     }
 
-    .referral-section {
-    background: #f8fafc;
-    padding: 1.5rem;
-    border-radius: 12px;
-    margin-top: 2rem;
-    border: 1px solid #e5e7eb;
-  }
-  .referral-section h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #1f2937;
-    margin-bottom: 1rem;
-  }
-  .referral-input {
-    width: 100%;
-    padding: 0.875rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #374151;
-    font-size: 1rem;
-  }
-  .referral-button {
-    background: #3b82f6;
-    color: white;
-    padding: 0.875rem 2rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: all 0.3s ease;
-  }
-  .referral-button:hover {
-    background: #2563eb;
-  }
-    .form-group {
+    .prf-referral-section {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-top: 2rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .prf-referral-section h3 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
         margin-bottom: 1rem;
     }
 
-    .form-group label {
+    .prf-referral-input {
+        width: 100%;
+        padding: 0.875rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #374151;
+        font-size: 1rem;
+    }
+
+    .prf-referral-button {
+        background: #3b82f6;
+        color: white;
+        padding: 0.875rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .prf-referral-button:hover {
+        background: #2563eb;
+    }
+
+    .prf-form-group {
+        margin-bottom: 1rem;
+    }
+
+    .prf-form-group label {
         display: block;
         margin-bottom: 0.4rem;
         color: var(--secondary-color);
         font-weight: 500;
     }
 
-    .form-control {
+    .prf-form-control {
         width: 100%;
         padding: 0.6rem 0.8rem;
         border: 1px solid #ddd;
@@ -123,19 +128,19 @@
         font-size: 0.9rem;
     }
 
-    .form-row {
+    .prf-form-row {
         display: flex;
         flex-wrap: wrap;
         gap: 1rem;
         margin-bottom: 0.8rem;
     }
 
-    .form-col {
+    .prf-form-col {
         flex: 1;
         min-width: 200px;
     }
 
-    .main-btn {
+    .prf-main-btn {
         padding: 0.6rem 1.2rem;
         background-color: var(--primary-color);
         color: white;
@@ -146,19 +151,19 @@
         transition: all 0.3s;
     }
 
-    .main-btn:hover {
+    .prf-main-btn:hover {
         background-color: #3a5dc7;
         transform: translateY(-1px);
     }
 
-    .profile-image-container {
+    .prf-profile-image-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-bottom: 1.2rem;
     }
 
-    .profile-image {
+    .prf-profile-image {
         width: 100px;
         height: 100px;
         border-radius: 50%;
@@ -168,20 +173,20 @@
         margin-bottom: 1rem;
     }
 
-    .image-upload-container {
+    .prf-image-upload-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 0.6rem;
     }
 
-    .image-upload-btn {
+    .prf-image-upload-btn {
         position: relative;
         overflow: hidden;
         display: inline-block;
     }
 
-    .image-upload-btn input[type=file] {
+    .prf-image-upload-btn input[type=file] {
         position: absolute;
         font-size: 80px;
         opacity: 0;
@@ -191,7 +196,7 @@
     }
 
     @media (max-width: 768px) {
-        .main-container {
+        .prf-main-container {
             flex-direction: column;
             padding: 0 0.5rem;
         }
@@ -199,103 +204,92 @@
 </style>
 
 <body>
-    <div class="main-container">
+    <div class="prf-main-container">
         <%- include("../../views/partials/profile/aside") %>
         
-        <div class="main-content">
-            <div class="content-section">
+        <div class="prf-main-content">
+            <div class="prf-content-section">
                 <h2>PERSONAL INFORMATION</h2>
                 
-                 
- 
-
-                <div class="form-row">
-                    <div class="form-col">
-
-                        <div class="form-group">
-                            <div>
-                                <img src="/uploads/products/<%=user.userImage%>" alt="" style="border-radius: 100px;" >
-
+                <div class="prf-form-row">
+                    <div class="prf-form-col">
+                        <div class="prf-form-group">
+                            <%if(user.userImage.length>0){%>
+                                <div>
+                                <img src="/Uploads/products/<%=user.userImage%>" alt="" class="prf-profile-image">
                             </div>
- <br>
+                            <%}%>
+                            
+                            <br>
                             <label for="first-name">Name</label>
                             <h3><%= user.name %></h3>
                         </div>
                     </div>
                 </div>
                 <hr>
-                <div class="form-row">
-                    <div class="form-col">
-                        <div class="form-group">
+                <div class="prf-form-row">
+                    <div class="prf-form-col">
+                        <div class="prf-form-group">
                             <label for="phone">Phone</label>
                             <h5><%= user.phone %></h5>
                         </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <button class="main-btn"><a href="/edit-profile">Edit Profile</a></button>
+                <div class="prf-form-group">
+                    <button class="prf-main-btn"><a href="/edit-profile">Edit Profile</a></button>
                 </div>
             </div>
 
             <hr>
-            <div class="content-section">
+            <div class="prf-content-section">
                 <h2 style="font-weight: bolder; font-size: xx-large;">LOGIN DETAILS</h2>
-                <div class="form-group-row">
-                    <div class="form-group">
+                <div class="prf-form-group-row">
+                    <div class="prf-form-group">
                         <label for="username">Email</label>
                         <h4><%= user.email %></h4>
                     </div>
                 </div>
-                <div class="form-group">
-                    <button class="main-btn"><a href="/changeEmail" style="text-decoration: none;">Change Email</a></button>
+                <div class="prf-form-group">
+                    <button class="prf-main-btn"><a href="/changeEmail" style="text-decoration: none;">Change Email</a></button>
                 </div>
                 <hr>
-                <div class="form-group-row">
-                    <div class="form-group">
+                <div class="prf-form-group-row">
+                    <div class="prf-form-group">
                         <label for="password">Password</label>
                         <h4>........</h4>
                     </div>
                 </div>
-                <div class="form-group">
-                    <button class="main-btn"><a href="/forgot-password">Change Password</a></button>
+                <div class="prf-form-group">
+                    <button class="prf-main-btn"><a href="/forgot-password">Change Password</a></button>
                 </div>
             </div>
-            <div class="container">
-                 
-              
-                <div class="referral-section">
-                  <h3>Your Referral Link</h3>
-                  <p>Invite friends and earn ₹100 for each successful signup!</p>
-                  <input type="text" class="referral-input" value="http://localhost:3000/signup?ref=<%= user.referralCode %>" readonly>
-                  <button class="referral-button" onclick="copyReferralLink()">Copy Link</button>
+            <div class="prf-container">
+                <div class="prf-referral-section">
+                    <h3>Your Referral Link</h3>
+                    <p>Invite friends and earn ₹100 for each successful signup!</p>
+                    <input type="text" class="prf-referral-input" value="http://localhost:3000/signup?ref=<%= user.referralCode %>" readonly>
+                    <button class="prf-referral-button" onclick="copyReferralLink()">Copy Link</button>
                 </div>
-              </div>
+            </div>
               
-              <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-              <script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script>
                 function copyReferralLink() {
-                  const link = document.querySelector('.referral-input');
-                  link.select();
-                  document.execCommand('copy');
-                  Swal.fire({
-                    icon: 'success',
-                    title: 'Link Copied!',
-                    text: 'Share it with your friends.',
-                  });
+                    const link = document.querySelector('.prf-referral-input');
+                    link.select();
+                    document.execCommand('copy');
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Link Copied!',
+                        text: 'Share it with your friends.',
+                    });
                 }
-              </script>
+            </script>
         </div>
-       
     </div>
 
     <input type="text" value="<%= msg %>" id="message" hidden>
 
- 
     <%- include("../../views/partials/user/footer") %>
 </body>
 </html>
-
-  
-
-
- 

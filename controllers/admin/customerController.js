@@ -2,7 +2,6 @@ const Category = require('../../models/categorySchema');
 const User = require('../../models/userSchema');
 
 
-
 const customerInfo = async (req,res) => {
     try {
 
@@ -15,7 +14,7 @@ const customerInfo = async (req,res) => {
             page = req.query.page;
         }
 
-        const limit = 3;
+        const limit = 5;
         const userData = await User.find({
             isAdmin:false,
             $or:[

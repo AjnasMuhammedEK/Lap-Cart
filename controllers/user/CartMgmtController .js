@@ -91,14 +91,7 @@ const loadCart = async (req, res) => {
 
     if (selectedCouponId) {
       const coupon = await Coupon.findById(selectedCouponId);
-      if (
-        coupon &&
-        coupon.isListed &&
-        !coupon.isDeleted &&
-        currentDate >= coupon.startDate &&
-        currentDate <= coupon.endDate &&
-        subtotal >= coupon.minimumPrice
-      ) {
+      if (coupon && coupon.isListed && !coupon.isDeleted && currentDate >= coupon.startDate && currentDate <= coupon.endDate && subtotal >= coupon.minimumPrice) {
         couponDiscount = coupon.offerPrice;
         appliedCoupon = coupon;
       } else {
@@ -169,7 +162,6 @@ function getBestOffer(applicableOffers, product) {
 
 
 
-
 const addToCart = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -230,7 +222,6 @@ const addToCart = async (req, res) => {
       );
       await wishlist.save();
     }
-
     res.status(200).json({ 
       message: 'Product added to cart successfully',
       redirect: `/productDetaile?id=${productId}`
@@ -240,16 +231,13 @@ const addToCart = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
-
-
+ 
 const manageCartQuantity = async (req, res) => {
   try {
     const userId = req.session.user;
     const { productId, action } = req.body;
 
     // console.log('req.body==========---------=========',req.body);
-    
-
     const cart = await Cart.findOne({ userId });
     if (!cart) {
       return res.status(400).json({ message: 'Cart not found' });
@@ -351,14 +339,7 @@ const manageCartQuantity = async (req, res) => {
 
     if (selectedCouponId) {
       const coupon = await Coupon.findById(selectedCouponId);
-      if (
-        coupon &&
-        coupon.isListed &&
-        !coupon.isDeleted &&
-        currentDate >= coupon.startDate &&
-        currentDate <= coupon.endDate &&
-        subtotal >= coupon.minimumPrice
-      ) {
+      if (coupon && coupon.isListed && !coupon.isDeleted && currentDate >= coupon.startDate && currentDate <= coupon.endDate &&subtotal >= coupon.minimumPrice) {
         couponDiscount = coupon.offerPrice;
         appliedCoupon = coupon;
       } else {
@@ -463,14 +444,7 @@ const deleteCart = async (req, res) => {
       const selectedCouponId = req.session.appliedCoupon;
       if (selectedCouponId) {
         const coupon = await Coupon.findById(selectedCouponId);
-        if (
-          coupon &&
-          coupon.isListed &&
-          !coupon.isDeleted &&
-          currentDate >= coupon.startDate &&
-          currentDate <= coupon.endDate &&
-          subtotal >= coupon.minimumPrice
-        ) {
+        if (coupon && coupon.isListed && !coupon.isDeleted && currentDate >= coupon.startDate && currentDate <= coupon.endDate && subtotal >= coupon.minimumPrice) {
           couponDiscount = coupon.offerPrice;
           appliedCoupon = coupon;
         } else {
@@ -502,10 +476,6 @@ const cartCheckout = async (req, res) => {
   try {
     const userId = req.session.user;
     const cart = await Cart.findOne({ userId }).populate('items.productId');
-
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Cart is empty' });
-    }
 
     let outOfStockItems = [];
 
@@ -628,7 +598,9 @@ const removeFromWishlist = async (req, res) => {
     console.log('Error in removeFromWishlist:', error);
     res.status(500).json({ message: 'Server error' });
   }
-};
+}
+
+
 
 const addToCartFromWishlist = async (req, res) => {
   try {
@@ -809,6 +781,7 @@ const checkoutAddAddress = async (req, res) => {
   }
 };
 
+
 const checkoutEditAddress = async (req, res) => {
   try {
     //console.log('req.body=================================',req.body);
@@ -852,7 +825,7 @@ const applyCoupon = async (req, res) => {
       return res.json({ success: false, message: 'No coupon ID provided' });
     }
     if (!userId) {
-      return res.json({ success: false, message: 'User not authenticated' });
+      return res.json({ success: false, message: 'User Not Found' });
     }
 
     if (req.session.appliedCoupon) {

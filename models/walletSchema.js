@@ -18,48 +18,6 @@
             type: String,
             default: "INR" 
         },
-        transactions: [{
-            transactionId: {
-                type: String,
-                unique: true,
-                sparse: true,
-                default: () => Math.random().toString(36).substr(2, 9)
-            },
-            amount: {
-                type: Number,
-                required: true        
-            },
-            type: {
-                type: String,
-                enum: ["Credit", "Debit"],
-                required: true
-            },
-            method: {
-                type: String,
-                enum: ["Razorpay", "Cashback", "Refund","OrderPayment"],
-                required: true
-            },
-            status: {
-                type: String,
-                enum: ["Pending", "Completed", "Failed"],
-                default: "Pending"
-            },
-            date: {
-                type: Date,
-                default: Date.now
-            },
-            description: {
-                type: String,
-                default: "No description provided"
-            },
-            orderId:{
-                type: String,
-            }
-        }],
-        lastUpdated: {
-            type: Date,
-            default: Date.now
-        }
     }, {
         timestamps: true
     });

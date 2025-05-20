@@ -15,7 +15,7 @@ const loadProduct = async (req,res)=>{
         
         const search = req.query.search || '';
         const page = req.query.page || 1;
-        const limit = 4;
+        const limit = 5;
         // console.log('90909090');
 
         const query = {
@@ -39,7 +39,10 @@ const loadProduct = async (req,res)=>{
           const category = await Category.find({isListed:true,isDeleted:false});
           const brand = await Brand.find({isListed:true,isDeleted:false})
         //   console.log('brands===============',brand);
-      
+
+       
+
+ 
 
           if(category && brand){
             res.render('product',{
@@ -128,14 +131,16 @@ const deleteProduct = async (req,res) =>{
 };
 
 
+
 const ensureDirectoryExists = (dir) => {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
 };
-
 const productImagesDir = path.join(process.cwd(), 'public', 'uploads', 'product-images');
 ensureDirectoryExists(productImagesDir);
+
+
 
 const addProduct = async (req, res) => {
     try {
@@ -206,7 +211,6 @@ const addProduct = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 };
-
 
 const editProduct = async (req, res) => {
     try {
@@ -305,8 +309,6 @@ const getListProduct = async (req,res) => {
 
 
     try {
-
-       
 
 
         let id = req.query.id;

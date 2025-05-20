@@ -5,6 +5,7 @@ const Cart = require('../../models/cartSchema');
 const Order = require('../../models/orderSchema');
 const WishList = require('../../models/wishlistSchema');
 const Wallet = require('../../models/walletSchema');
+const Transaction = require('../../models/transaction')
 const Address = require('../../models/addressSchema');
 const Coupon = require('../../models/couponSchema');
 const Offer = require('../../models/offerSchema');
@@ -16,15 +17,10 @@ const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-
 const singleCancel = async (req, res) => {
     try {
         const { productId, orderId } = req.body;
-
-
-
         const userId = req.session.user;
-
         const order = await Order.findOne({
             _id: orderId,
             'orderedItems.product': productId,
@@ -33,19 +29,12 @@ const singleCancel = async (req, res) => {
         if (!order) {
             return res.status(400).json({ success: false, message: 'Order not found' });
         }
-
-       
-
-        
-
         const itemIndex = order.orderedItems.findIndex(
             item => item.product._id.toString() === productId
         );
         if (itemIndex === -1) {
             return res.status(400).json({ success: false, message: 'Product not found in order' });
         }
-
-        
 
         const item = order.orderedItems[itemIndex];
         const itemTotalPrice = item.orderQuantity * item.price;
@@ -62,11 +51,7 @@ const singleCancel = async (req, res) => {
             const coupon = await Coupon.findById(item.couponId);
             if (coupon) {
                 const remainingPrice = order.orderedItems.reduce((sum, currItem, index) => {
-                    if (
-                        index !== itemIndex &&
-                        (currItem.returnStatus === 'Not Returned' ||
-                         currItem.returnStatus === 'Return Requested')
-                    ) {
+                    if (index !== itemIndex && (currItem.returnStatus === 'Not Returned' || currItem.returnStatus === 'Return Requested') ) {
                         return sum + (currItem.orderQuantity * currItem.price - (currItem.offerAmount || 0));
                     }
                     return sum;
@@ -89,10 +74,7 @@ const singleCancel = async (req, res) => {
         order.cancelledAmount = (order.cancelledAmount || 0) + refundAmount;
 
         const remainingItemsPrice = order.orderedItems.reduce((sum, currItem) => {
-            if (
-                currItem.returnStatus === 'Not Returned' ||
-                currItem.returnStatus === 'Return Requested'
-            ) {
+            if (currItem.returnStatus === 'Not Returned' || currItem.returnStatus === 'Return Requested' ) {
                 return sum + (currItem.orderQuantity * currItem.price - (currItem.offerAmount || 0));
             }
             return sum;
@@ -116,24 +98,21 @@ const singleCancel = async (req, res) => {
         await order.save();
 
         if (order.paymentMethod !== 'COD' && refundAmount > 0 && order.paymentStatus === 'Completed') {
-            await Wallet.findOneAndUpdate(
-                { userId },
-                {
-                    $inc: { balance: refundAmount },
-                    $push: {
-                        transactions: {
-                            amount: refundAmount,
-                            type: 'Credit',
-                            method: 'Refund',
-                            status: 'Completed',
-                            description: `Refund for cancelled product ${item.product.productName}`,
-                            orderId: order._id,
-                            date: new Date(),
-                        },
-                    },
-                },
-                { upsert: true }
-            );
+           await Wallet.findOneAndUpdate(
+            {userId},
+            {$inc:{balance:refundAmount }}
+           )
+
+           const transaction = new Transaction({
+                userId,
+                amount: refundAmount,
+                type: 'Credit',
+                method: 'Refund',
+                status: 'Completed',
+                description: `Refund for cancelled product ${item.product.productName}`,
+                orderId:order._id
+           })
+           await transaction.save()
         }
 
         await Product.findByIdAndUpdate(productId, {
@@ -188,7 +167,6 @@ const placeOrder = async (req, res) => {
         if (totalPrice <= 0) {
             return res.status(400).json({ message: 'Invalid total price' });
         }
-
         const currentDate = new Date();
         const allOffers = await Offer.find({
             isListed: true,
@@ -244,14 +222,7 @@ const placeOrder = async (req, res) => {
         const selectedCouponId = req.session.appliedCoupon;
         if (selectedCouponId) {
             const coupon = await Coupon.findById(selectedCouponId);
-            if (
-                coupon &&
-                coupon.isListed &&
-                !coupon.isDeleted &&
-                currentDate >= coupon.startDate &&
-                currentDate <= coupon.endDate &&
-                totalPrice >= coupon.minimumPrice
-            ) {
+            if (coupon && coupon.isListed && !coupon.isDeleted && currentDate >= coupon.startDate && currentDate <= coupon.endDate && totalPrice >= coupon.minimumPrice ) {
                 if (!coupon.offerPrice || coupon.offerPrice <= 0) {
                     console.warn(`Invalid coupon offerPrice for coupon ${selectedCouponId}`);
                 } else {
@@ -266,7 +237,7 @@ const placeOrder = async (req, res) => {
         }
 
         if (couponDiscount > totalPrice - offerDiscount) {
-            console.warn(`Coupon discount (${couponDiscount}) exceeds remaining amount (${totalPrice - offerDiscount}). Capping.`);
+            console.warn(`Coupon discount (${couponDiscount}) exceeds remaining amount (${totalPrice - offerDiscount})`);
             couponDiscount = totalPrice - offerDiscount;
         }
 
@@ -291,6 +262,14 @@ const placeOrder = async (req, res) => {
             walletAmountUsed = finalAmount;
             adjustedPaymentMethod = 'Wallet';
         }
+
+        if (paymentMethod === 'COD' && finalAmount > 1000) {
+            return res.status(400).json({
+                success: false,
+                message: `Cash on Delivery is only available for orders under ₹1000. Your order total is ₹${finalAmount.toFixed(2)}.`,
+            });
+        }
+
 
         
         const order = new Order({
@@ -396,22 +375,22 @@ const placeOrder = async (req, res) => {
                 { userId },
                 {
                     $inc: { balance: -walletAmountUsed },
-                    $push: {
-                        transactions: {
-                            amount: walletAmountUsed,
-                            type: 'Debit',
-                            method: 'OrderPayment',
-                            status: 'Completed',
-                            description: 'Payment for order',
-                            orderId: order._id,
-                            date: new Date(),
-                        },
-                    },
                     lastUpdated: new Date(),
                 }
             );
-        }
 
+            const newTransaction = new Transaction({
+                userId,
+                amount: walletAmountUsed,
+                type: 'Debit',
+                method: 'OrderPayment',
+                status: 'Completed',
+                description: 'Payment for order',
+                orderId: order._id,
+                date: new Date(),
+            })
+            await newTransaction.save()
+        }
         await order.save();
         await Cart.findOneAndDelete({ userId });
 
@@ -528,15 +507,7 @@ const verifyRazorpayPayment = async (req, res) => {
         let couponId = null;
         if (couponApplied && orderDetails.cartItems.some(item => item.couponId)) {
             const coupon = await Coupon.findById(orderDetails.cartItems[0].couponId);
-            if (
-                coupon &&
-                coupon.isListed &&
-                !coupon.isDeleted &&
-                currentDate >= coupon.startDate &&
-                currentDate <= coupon.endDate &&
-                totalPrice >= coupon.minimumPrice &&
-                coupon.offerPrice > 0
-            ) {
+            if (coupon && coupon.isListed && !coupon.isDeleted && currentDate >= coupon.startDate && currentDate <= coupon.endDate && totalPrice >= coupon.minimumPrice && coupon.offerPrice > 0 ) {
                 serverCouponDiscount = Number(coupon.offerPrice);
                 serverCouponApplied = true;
                 couponId = coupon._id;
@@ -804,7 +775,8 @@ const listOrder = async (req, res) => {
         const orders = await Order.find({ userId })
             .populate('orderedItems.product')
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .sort({createdAt:-1})
 
         res.render('userOrder', {
             orderData: orders,
@@ -905,21 +877,23 @@ const cancelOrder = async (req, res) => {
                 { userId },
                 {
                     $inc: { balance: order.finalAmount },
-                    $push: {
-                        transactions: {
-                            amount: order.finalAmount,
-                            type: 'Credit',
-                            method: 'Refund',
-                            status: 'Completed',
-                            description: 'Order Cancelled',
-                            orderId: order._id,
-                            date: new Date(),
-                        },
-                    },
                 },
                 { upsert: true }
             );
         }
+
+        const newTransaction = new Transaction({
+            userId,
+            amount: order.finalAmount,
+            type: 'Credit',
+            method: 'Refund',
+            status: 'Completed',
+            description: 'Order Cancelled',
+            orderId: order._id,
+            date: new Date(),
+    
+        })
+        await newTransaction.save()
         order.finalAmount = 0
         await order.save();
 

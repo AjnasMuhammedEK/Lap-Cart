@@ -142,11 +142,6 @@ function getBestOffer(applicableOffers, product) {
 
 
 
-
-
-
-
-
 const loadShop = async (req, res) => {
     try {
         const user = req.session.user;

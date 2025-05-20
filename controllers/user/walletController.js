@@ -1,4 +1,5 @@
 const Wallet = require('../../models/walletSchema')
+const Transaction = require('../../models/transaction')
 const Category = require('../../models/categorySchema');
 const User = require('../../models/userSchema');
 const Order = require('../../models/orderSchema');
@@ -6,38 +7,40 @@ const Product = require('../../models/productSchema');
 
 
 
-
 const loadWallet = async (req, res) => {
     try {
         const userId = req.session.user;
-        const { page = 1 } = req.query;
+
+        const type = req.query.type;
+
+        const filter = {
+            userId: userId
+        };
+        if (type) {
+            filter.type = type;
+        }
+
+        const page = parseInt(req.query.page) || 1;
         const limit = 5;
         const skip = (page - 1) * limit;
 
         const userData = await User.findOne({ _id: userId });
         const wallet = await Wallet.findOne({ userId: userId });
+        const transaction = await Transaction.find(filter)
+            .sort({ date: -1 }) 
+            .skip(skip)
+            .limit(limit);
 
-        if (!wallet) {
-            return res.render('wallet', {
-                user: userData,
-                wallet: { balance: 0, transactions: [] },
-                currentPage: 1,
-                totalPages: 1
-            });
-        }
-
-        const totalTransactions = wallet.transactions.length;
+        const totalTransactions = await Transaction.countDocuments(filter);
         const totalPages = Math.ceil(totalTransactions / limit);
-        const paginatedTransactions = wallet.transactions.slice(skip, skip + limit);
 
         res.render('wallet', {
             user: userData,
-            wallet: {
-                ...wallet._doc,
-                transactions: paginatedTransactions
-            },
-            currentPage: parseInt(page),
-            totalPages
+            wallet,
+            transaction,
+            currentPage: page,
+            totalPages: totalPages,
+            type: type || '' 
         });
 
     } catch (error) {
@@ -45,7 +48,7 @@ const loadWallet = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
-
+ 
 
 module.exports = {
     loadWallet

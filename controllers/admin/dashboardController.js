@@ -4,14 +4,16 @@ const ExcelJS = require('exceljs');
 const moment = require('moment');
 const Wallet = require('../../models/walletSchema');
 const User = require('../../models/userSchema');
+const userTransaction = require('../../models/transaction')
 const Category = require('../../models/categorySchema');
 const Product = require('../../models/productSchema');
 const Brand = require('../../models/brandSchema');
+const { Transaction } = require('mongodb');
 
 const loadSaleReport = async (req, res) => {
     try {
         const { dateRange, startDate, endDate, page = 1 } = req.query;
-        const limit = 6; // Number of orders per page
+        const limit = 6 
         const skip = (page - 1) * limit;
 
         let query = {};
@@ -43,29 +45,32 @@ const loadSaleReport = async (req, res) => {
             };
         }
 
-        // Fetch all orders for summary metrics (no pagination)
         const allOrdersForSummary = await Order.find(query)
             .populate('orderedItems.product userId');
 
-        // Fetch paginated orders for table display
+
+
+
         const paginatedOrders = await Order.find(query)
             .populate('orderedItems.product userId')
             .skip(skip)
             .limit(limit);
 
-        // Calculate total count of orders for pagination
         const totalOrders = await Order.countDocuments(query);
+
         const totalPages = Math.ceil(totalOrders / limit);
 
-        // Calculate metrics using all orders
-        const totalSaleAmount = allOrdersForSummary.reduce((acc, val) => acc + (val.totalPrice || 0), 0); // Sum of totalPrice
-        const netSale = allOrdersForSummary.reduce((acc, val) => acc + (val.finalAmount || 0), 0); // Sum of finalAmount
-        const amountOfCancelledandReturned = allOrdersForSummary.reduce((acc, val) => acc + ((val.cancelledAmount || 0) + (val.returnAmount || 0)), 0); // Sum of cancelledAmount + returnAmount
+        const totalSaleAmount = allOrdersForSummary.reduce((acc, val) => acc + (val.totalPrice || 0), 0);  
+
+        const netSale = allOrdersForSummary.reduce((acc, val) => acc + (val.finalAmount || 0), 0);  
+        const amountOfCancelledandReturned = allOrdersForSummary.reduce((acc, val) => acc + ((val.cancelledAmount || 0) + (val.returnAmount || 0)), 0); 
         const totalOrderCount = allOrdersForSummary.length;
+
         const totalProducts = allOrdersForSummary.reduce((acc, order) => acc + order.orderedItems.reduce((sum, item) => sum + (item.orderQuantity || 0), 0), 0);
         const totalOfferApplied = allOrdersForSummary.reduce((acc, val) => acc + (val.offerDiscount || 0), 0);
         const totalCouponsApplied = allOrdersForSummary.reduce((acc, val) => acc + (val.couponDiscount || 0), 0);
         const cancelledOrders = allOrdersForSummary.filter(order => order.status === 'Cancelled').length;
+
         const returnedOrders = allOrdersForSummary.filter(order => 
             order.orderedItems.some(item => item.returnStatus === 'Returned')
         ).length;
@@ -80,7 +85,7 @@ const loadSaleReport = async (req, res) => {
             totalCouponsApplied,
             cancelledOrders,
             returnedOrders,
-            allOrders: paginatedOrders, // Use paginated orders for table
+            allOrders: paginatedOrders,
             dateRange,
             startDate,
             endDate,
@@ -89,16 +94,22 @@ const loadSaleReport = async (req, res) => {
             totalPages
         });
 
+
     } catch (error) {
+
         console.error(error);
         res.status(500).send('Server Error');
     }
 };
 
 const downloadPDFReport = async (req, res) => {
+
     try {
+
         const { dateRange, startDate, endDate } = req.query;
+
         let query = {};
+
 
         const now = moment();
         if (dateRange === 'daily') {
@@ -137,31 +148,27 @@ const downloadPDFReport = async (req, res) => {
 
         doc.pipe(res);
 
-        // Header
         doc.fontSize(20).font('Helvetica-Bold').text('Sales Report', { align: 'center' });
         doc.moveDown(1.5);
 
-        // Summary Section
         const totalSaleAmount = allOrders.reduce((acc, val) => acc + (val.totalPrice || 0), 0);
         const netSale = allOrders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
         const amountOfCancelledandReturned = allOrders.reduce((acc, val) => acc + ((val.cancelledAmount || 0) + (val.returnAmount || 0)), 0);
         const totalOrderCount = allOrders.length;
 
         doc.fontSize(12).font('Helvetica')
-           .text(`Total Sales: ₹${totalSaleAmount.toFixed(2)}`, { align: 'left' })
-           .text(`Net Sale: ₹${netSale.toFixed(2)}`, { align: 'left' })
+           .text(`Total Sales: ${totalSaleAmount.toFixed(2)}`, { align: 'left' })
+           .text(`Net Sale: ${netSale.toFixed(2)}`, { align: 'left' })
            .text(`Cancelled/Returned Amount: ₹${amountOfCancelledandReturned.toFixed(2)}`, { align: 'left' })
            .text(`Total Orders: ${totalOrderCount}`, { align: 'left' })
            .moveDown(2);
 
-        // Table Setup
         const tableTop = doc.y;
         const colWidths = [80, 120, 80, 70, 70, 70, 70];
         const colPositions = [50, 130, 250, 330, 400, 470, 540];
         const rowHeight = 25;
         const tableWidth = colWidths.reduce((a, b) => a + b, 0);
 
-        // Draw Table Header
         doc.fontSize(10).font('Helvetica-Bold');
         const headers = ['Order ID', 'User', 'Date', 'Amount', 'Discount', 'Cancelled', 'Returned'];
         headers.forEach((header, i) => {
@@ -171,13 +178,11 @@ const downloadPDFReport = async (req, res) => {
             });
         });
 
-        // Draw Header Bottom Line
         doc.moveTo(50, tableTop + 15)
            .lineTo(50 + tableWidth, tableTop + 15)
            .lineWidth(1)
            .stroke();
 
-        // Draw Vertical Lines for Header
         colPositions.forEach((pos, i) => {
             doc.moveTo(pos, tableTop)
                .lineTo(pos, tableTop + 20)
@@ -187,7 +192,6 @@ const downloadPDFReport = async (req, res) => {
            .lineTo(colPositions[colPositions.length - 1] + colWidths[colWidths.length - 1], tableTop + 20)
            .stroke();
 
-        // Table Rows
         doc.font('Helvetica');
         let currentY = tableTop + rowHeight;
         allOrders.forEach((order, index) => {
@@ -348,14 +352,41 @@ const downloadExcelReport = async (req, res) => {
     }
 };
 
+
+
 const loadUserWallet = async (req, res) => {
     try {
         const { userId } = req.query;
+        const type = req.query.type;
+
+        const filter = {
+            userId: userId
+        };
+        if (type) {
+            filter.type = type;
+        }
+
+         const page = parseInt(req.query.page) || 1;
+        const limit = 5; 
+        const skip = (page - 1) * limit;
+
         const user = await User.findById(userId);
         const userWallet = await Wallet.findOne({ userId: userId });
+        const transaction = await userTransaction.find(filter)
+            .sort({ date: -1 })  
+            .skip(skip)
+            .limit(limit);
+ 
+        const totalTransactions = await userTransaction.countDocuments(filter);
+        const totalPages = Math.ceil(totalTransactions / limit);
+
         res.render('userWallet', {
             user,
-            userWallet
+            userWallet,
+            transaction,
+            currentPage: page,
+            totalPages: totalPages,
+            type: type || ''   
         });
     } catch (error) {
         console.log('error in loadUserWallet', error);
@@ -363,22 +394,33 @@ const loadUserWallet = async (req, res) => {
     }
 };
 
+ 
+
 const getOrder = async (req, res) => {
     try {
-        const { orderId } = req.body;
+        const { orderId, transactionId } = req.body;
         const order = await Order.findOne({ _id: orderId }).populate('orderedItems.product');
-        res.json({ success: true, order: order });
+        const transaction = await userTransaction.findById(transactionId);
+        
+        if (!order || !transaction) {
+            return res.status(404).json({ success: false, message: 'Order or transaction not found' });
+        }
+        
+        res.json({ success: true, order, transaction });
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Error fetching order');
+        console.error('Error in getOrder:', error);
+        res.status(500).send('Error fetching order or transaction');
     }
 };
+
+
+
+
 
 const loadDashboard = async (req, res) => {
     try {
         const { dateRange = 'weekly', startDate, endDate } = req.query;
 
-        // Initialize response data
         const dashboardData = {
             stats: {
                 netSale: 0,
@@ -404,7 +446,6 @@ const loadDashboard = async (req, res) => {
             },
         };
 
-        // Build date query
         let query = {};
         const now = moment();
         if (dateRange === 'daily') {
@@ -434,7 +475,6 @@ const loadDashboard = async (req, res) => {
             };
         }
 
-        // Fetch orders with populated product, category, and brand
         const orders = await Order.find(query).populate({
             path: 'orderedItems.product',
             populate: [
@@ -443,10 +483,8 @@ const loadDashboard = async (req, res) => {
             ],
         });
 
-        // Calculate Stats
         dashboardData.stats.netSale = orders.reduce((acc, val) => acc + (val.finalAmount || 0), 0);
 
-        // Net Sales Chart
         if (dateRange === 'yearly') {
             const salesByYear = {};
             orders.forEach(order => {
@@ -511,7 +549,7 @@ const loadDashboard = async (req, res) => {
             dashboardData.charts.netSales.data = dashboardData.charts.netSales.labels.map(label => salesByDay[label] || 0);
         }
 
-        // Best Selling Products
+      
         const productSales = {};
         orders.forEach(order => {
             order.orderedItems.forEach(item => {
@@ -530,7 +568,6 @@ const loadDashboard = async (req, res) => {
         dashboardData.charts.bestProducts.labels = bestProducts.map(p => p.name);
         dashboardData.charts.bestProducts.data = bestProducts.map(p => p.unitsSold);
 
-        // Best Selling Categories
         const categorySales = {};
         orders.forEach(order => {
             order.orderedItems.forEach(item => {
@@ -549,7 +586,7 @@ const loadDashboard = async (req, res) => {
         dashboardData.charts.bestCategories.labels = bestCategories.map(c => c.name);
         dashboardData.charts.bestCategories.data = bestCategories.map(c => c.unitsSold);
 
-        // Best Selling Brands
+       
         const brandSales = {};
         orders.forEach(order => {
             order.orderedItems.forEach(item => {

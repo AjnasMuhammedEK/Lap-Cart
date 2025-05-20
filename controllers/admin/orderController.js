@@ -3,10 +3,10 @@ const User = require('../../models/userSchema');
 const Order = require('../../models/orderSchema');
 const Product = require('../../models/productSchema');
 const Wallet = require('../../models/walletSchema')
+const userTransaction = require('../../models/transaction')
 const Coupon = require('../../models/couponSchema')
-const Offer = require('../../models/offerSchema')
-
-
+const Offer = require('../../models/offerSchema');
+const { Transaction } = require('mongodb');
 
 
 
@@ -55,6 +55,8 @@ const orderList = async (req, res) => {
         res.redirect('/pageNotFound');
     }
 };
+
+
 const orderDetaile = async (req,res) => {
     try {
 
@@ -149,12 +151,8 @@ const handleReturn = async (req, res) => {
                 const coupon = await Coupon.findById(item.couponId);
                 if (coupon) {
                     const remainingPrice = order.orderedItems.reduce((sum, currItem, index) => {
-                        if (
-                            index !== itemIndex &&
-                            (currItem.returnStatus === 'Not Returned' ||
-                             currItem.returnStatus === 'Return Requested')
-                        ) {
-                            return sum + (currItem.orderQuantity * currItem.price - (currItem.offerAmount || 0));
+                        if (index !== itemIndex && (currItem.returnStatus === 'Not Returned' ||currItem.returnStatus === 'Return Requested')) {
+                            return sum  + (currItem.orderQuantity * currItem.price - (currItem.offerAmount || 0));
                         }
                         return sum;
                     }, 0);
@@ -171,19 +169,15 @@ const handleReturn = async (req, res) => {
                 }
             }
         
-            // Update the current item's return status to 'Returned'
             order.orderedItems[itemIndex].returnStatus = 'Returned';
             order.returnAmount = (order.returnAmount || 0) + refundAmount;
         
-            // Check if all items are now returned
             const allItemsReturned = order.orderedItems.every(item => item.returnStatus === 'Returned');
         
-            // Update order status to 'Returned' if all items are returned
             if (allItemsReturned) {
                 order.status = 'Returned';
             }
         
-            // Calculate remaining items' price for finalAmount
             const remainingItemsPrice = order.orderedItems.reduce((sum, currItem) => {
                 if (
                     currItem.returnStatus === 'Not Returned' ||
@@ -207,25 +201,23 @@ const handleReturn = async (req, res) => {
         
             const userId = order.userId;
             if (refundAmount > 0 && order.paymentMethod !== 'COD') {
-                const wallet = await Wallet.findOneAndUpdate(
-                    { userId },
-                    {
-                        $inc: { balance: refundAmount },
-                        $push: {
-                            transactions: {
-                                amount: refundAmount,
-                                type: 'Credit',
-                                method: 'Refund',
-                                status: 'Completed',
-                                description: `Refund for returned product ${item.product.productName}`,
-                                orderId: order._id,
-                                date: new Date(),
-                            },
-                        },
-                    },
-                    { upsert: true, new: true }
-                );
-                await wallet.save();
+
+                await Wallet.findOneAndUpdate(
+                    {userId:userId},
+                    {$inc:{balance:refundAmount}}
+                )
+                const newTransaction = new userTransaction({
+                    userId,
+                    amount: refundAmount,
+                    type: 'Credit',
+                    method: 'Refund',
+                    status: 'Completed',
+                    description: `Refund for returned product ${item.product.productName}`,
+                    orderId: order._id,
+                    date: new Date(),
+                })
+                await newTransaction.save()
+                
             }
         
             await Product.findByIdAndUpdate(
@@ -249,57 +241,6 @@ const handleReturn = async (req, res) => {
     }
 };
 
-
-function getBestOffer(applicableOffers, product) {
-    if (!Array.isArray(applicableOffers) || applicableOffers.length === 0) {
-        return { offer: null, discountAmount: 0 };
-    }
-
-    let bestOffer = null;
-    let maxDiscount = 0;
-    const salePrice = Number(product.productId?.salePrice || product.salePrice || 0);
-
-    if (salePrice <= 0) {
-        console.warn(`Invalid sale price for product: ${product.productId?.productName || product.productName || 'Unknown'}`);
-        return { offer: null, discountAmount: 0 };
-    }
-
-    for (const offer of applicableOffers) {
-        let discount = 0;
-
-        if (!offer.discountAmount || offer.discountAmount <= 0) {
-            console.warn(`Invalid discount amount for offer: ${offer._id}`);
-            continue;
-        }
-
-        if (offer.discountType === 'flat') {
-            discount = Math.min(Number(offer.discountAmount), salePrice);
-        } else if (offer.discountType === 'percentage') {
-            discount = Math.min((salePrice * Number(offer.discountAmount)) / 100, salePrice);
-        } else {
-            console.warn(`Invalid discount type for offer: ${offer._id}`);
-            continue;
-        }
-
-         if (discount < 0 || discount > salePrice) {
-            console.warn(`Invalid discount calculated for offer ${offer._id}: ${discount}, salePrice: ${salePrice}`);
-            continue;
-        }
-
-        if (discount > maxDiscount) {
-            maxDiscount = discount;
-            bestOffer = offer;
-        }
-    }
-
-    console.log(`Best offer for product ${product.productId?.productName || product.productName || 'Unknown'}:`, {
-        offerId: bestOffer?._id,
-        discountAmount: maxDiscount,
-        discountType: bestOffer?.discountType,
-    });
-
-    return { offer: bestOffer, discountAmount: maxDiscount };
-}
 
 module.exports = {
     orderList,

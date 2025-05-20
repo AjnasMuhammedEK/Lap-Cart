@@ -558,13 +558,11 @@
     </div>
 
     <script>
-        // Show Add Coupon Modal
         function addCouponModal() {
             let addCouponModalShow = new bootstrap.Modal(document.getElementById('addCouponModal'));
             addCouponModalShow.show();
         }
 
-        // Show Edit Coupon Modal and Populate Data
         function editCouponModal(coupon) {
             const couponData = typeof coupon === 'string' ? JSON.parse(coupon) : coupon;
             let editCouponModalShow = new bootstrap.Modal(document.getElementById('editCouponModal'));
@@ -579,14 +577,13 @@
             document.getElementById('editOfferPrice').value = couponData.offerPrice;
             document.getElementById('editMinimumPrice').value = couponData.minimumPrice;
         }
-            
-        // Clear Search
+
+
         function clearSearch() {
             document.getElementById("searchInput").value = "";
             window.location.href = '/admin/couponList?page=1';
         }
 
-        // Validation Function
         function validateForm(formId) {
             const form = document.getElementById(formId);
             const couponName = form.querySelector('[name="couponName"]').value.trim();
@@ -599,7 +596,6 @@
 
             const today = new Date().toISOString().split('T')[0];
 
-            // Validation checks
             if (!couponName || couponName.length < 3 || couponName.length > 50) {
                 Swal.fire({ icon: "error", text: "Coupon Name must be 3-50 characters long." });
                 return false;
@@ -638,7 +634,7 @@
             return true;
         }
 
-        // Add Coupon
+
         function addCoupon(e) {
             e.preventDefault();
             if (!validateForm('addCouponModal')) return;
@@ -673,7 +669,7 @@
             });
         }
 
-        // Edit Coupon
+     
         function editCoupon(e) {
             e.preventDefault();
             if (!validateForm('editCouponModal')) return;
@@ -709,7 +705,6 @@
             });
         }
 
-        // Delete Coupon
         function deleteCoupon(couponId) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -740,7 +735,6 @@
             });
         }
 
-        // Unlist Coupon
         function unListCoupon(couponId) {
             $.ajax({
                 url: '/admin/unlistCoupon',
@@ -756,7 +750,6 @@
             });
         }
 
-        // List Coupon
         function listCoupon(couponId) {
             $.ajax({
                 url: '/admin/listCoupon',

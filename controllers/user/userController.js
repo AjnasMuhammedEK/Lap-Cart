@@ -163,7 +163,7 @@ const signup = async (req, res) => {
         res.render('verify-otp');
         console.log('OTP SENT', otp);
     } catch (error) {
-        console.error('sign error', error);
+        console.error('sign error', error)
         res.redirect('/pageNotFound');
     }
 };
@@ -175,10 +175,12 @@ function generateOtp(){
 async function sentVerificationEmail(email,otp) {
 
     try {
+
+        
         
         const transporter = nodemailer.createTransport({
             service:'gmail',
-            port:587,
+            port:465,
             secure:false,
             requireTLS:true,
             auth:{
@@ -251,21 +253,21 @@ const verifyOtp = async (req, res) => {
         const { otp } = req.body;
 
         if (!req.session.userOtp) {
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: 'OTP session expired. Please restart signup process.',
             });
         }
 
         if (Date.now() > req.session.otpExpiry) {
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: 'OTP has expired. Please request a new OTP.',
             });
         }
 
         if (otp !== req.session.userOtp) {
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: 'Invalid OTP. Please try again.',
             });
@@ -274,7 +276,7 @@ const verifyOtp = async (req, res) => {
         const userData = req.session.userData;
         if (!userData) {
             console.error('Session userData missing');
-            return res.status(400).json({
+            return res.json({
                 success: false,
                 message: 'User data not found in session.',
             });
@@ -294,7 +296,6 @@ const verifyOtp = async (req, res) => {
             password: passwordHash,
             isVerified: true,
             referralCode: userData.referralCode,
-            userImage: ['default.jpg'],
             redeemed: userData.referredBy ? true : false,
         });
 
@@ -306,7 +307,6 @@ const verifyOtp = async (req, res) => {
                 userId: newUser._id,
                 balance: 0,
                 currency: 'INR',
-                transactions: [],
             });
             await newWallet.save();
          } else {
@@ -669,7 +669,7 @@ module.exports = {
     resendotp,
     login,
     logout,
-     loadEmailPage,
+    loadEmailPage,
     loadForPassOtpPage,
     loadRePassPage,
     verifyForgotEmail,
