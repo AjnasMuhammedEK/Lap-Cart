@@ -452,9 +452,6 @@ const deleteAddress = async (req,res) => {
     }
 };
 
-
-
-
 module.exports = {
     userProfile,
     changeEmail,
