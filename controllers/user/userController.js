@@ -5,7 +5,7 @@ const Cart = require('../../models/cartSchema')
 const Wallet = require('../../models/walletSchema')
 const nodemailer = require('nodemailer');
 const env = require('dotenv').config();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 
 const pageNotFound = async (req,res) => {
