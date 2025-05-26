@@ -424,6 +424,7 @@ const verifyOtp = async (req, res) => {
 const login = async (req,res)=>{
 
     try {
+        //hai
      
         const {email,password} = req.body;
         const findUser = await User.findOne({isAdmin:false,email:email});
