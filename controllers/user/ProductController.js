@@ -7,7 +7,7 @@ const Offer = require('../../models/offerSchema');
 const mongoose = require('mongoose');
 
 
-const productDetailes = async (req, res) => {
+const productDetailes = async (req, res ,next) => {
     try {
         const userId = req.session.user;
         let userData = null;
@@ -97,8 +97,7 @@ const productDetailes = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error fetching product details:', error);
-        res.redirect('/pageNotFound');
+        next(error)
     }
 };
 
@@ -142,7 +141,8 @@ function getBestOffer(applicableOffers, product) {
 
 
 
-const loadShop = async (req, res) => {
+
+const loadShop = async (req, res, next) => {
     try {
         const user = req.session.user;
         let userData = null;
@@ -267,8 +267,7 @@ const loadShop = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Error in loadShop:', error);
-        res.redirect('/pageNotFound');
+        next(error)
     }
 };
 

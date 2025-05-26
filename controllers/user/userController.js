@@ -334,7 +334,6 @@ const verifyOtp = async (req, res) => {
                         userId: referrer._id,
                         balance: 0,
                         currency: 'INR',
-                        transactions: [],
                     });
                     await referrerWallet.save();
                     console.log('New wallet created for referrer:', referrer._id.toString());
@@ -357,7 +356,6 @@ const verifyOtp = async (req, res) => {
                     { userId: referrer._id },
                     {
                         $inc: { balance: 100 },
-                        $push: { transactions: referrerTransaction },
                         $set: { lastUpdated: new Date() },
                     },
                     { new: true }
@@ -366,13 +364,13 @@ const verifyOtp = async (req, res) => {
                     console.error('Referrer wallet update returned null');
                     throw new Error('Failed to update referrer wallet');
                 }
-                console.log('Referrer wallet updated:', {
-                    userId: referrerUpdate.userId.toString(),
-                    balance: referrerUpdate.balance,
-                    transactionId: referrerTransactionId,
-                });
+                // console.log('Referrer wallet updated:', {
+                //     userId: referrerUpdate.userId.toString(),
+                //     balance: referrerUpdate.balance,
+                //     transactionId: referrerTransactionId,
+                // });
 
-                 const newUserTransactionId = `TXN-NEW-${Date.now()}-${uuidv4().slice(0, 8)}`;
+                const newUserTransactionId = `TXN-NEW-${Date.now()}-${uuidv4().slice(0, 8)}`;
                 const newUserTransaction = {
                     transactionId: newUserTransactionId,
                     amount: 100,
@@ -387,7 +385,6 @@ const verifyOtp = async (req, res) => {
                     { userId: newUser._id },
                     {
                         $inc: { balance: 100 },
-                        $push: { transactions: newUserTransaction },
                         $set: { lastUpdated: new Date() },
                     },
                     { new: true }

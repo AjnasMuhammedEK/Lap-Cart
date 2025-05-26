@@ -37,7 +37,6 @@
             });
         });
 
-        // Set active item based on current URL
         const currentPath = window.location.pathname.replace(/\/+$/, '');
         let matchedItem = null;
         let maxMatchLength = 0;
@@ -46,7 +45,7 @@
             const href = item.getAttribute('href');
             const normalizedHref = href && href !== '#' ? href.replace(/\/+$/, '') : '';
             
-            // Find the longest matching href that is either an exact match or a parent path
+        
             if (normalizedHref && (currentPath === normalizedHref || currentPath.startsWith(normalizedHref + '/'))) {
                 if (normalizedHref.length > maxMatchLength) {
                     maxMatchLength = normalizedHref.length;
