@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LAP CART - Users</title>
+    <title>LAP CART - Products</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
         * {
@@ -16,46 +16,46 @@
         }
 
         :root {
-            --product-mgmt-sidebar-width: 240px;
-            --product-mgmt-primary-color: #8257ED;
-            --product-mgmt-dark-bg: #1a1a2e;
-            --product-mgmt-darker-bg: #101022;
-            --product-mgmt-lighter-bg: #2a2a3e;
-            --product-mgmt-text-color: #ffffff;
-            --product-mgmt-border-color: #3a3a4e;
-            --product-mgmt-success-color: #00bf8e;
-            --product-mgmt-warning-color: #f7c94b;
-            --product-mgmt-danger-color: #f75842;
+            --lapcart-mgmt-sidebar-width: 240px;
+            --lapcart-mgmt-primary-color: #8257ED;
+            --lapcart-mgmt-dark-bg: #1a1a2e;
+            --lapcart-mgmt-darker-bg: #101022;
+            --lapcart-mgmt-lighter-bg: #2a2a3e;
+            --lapcart-mgmt-text-color: #ffffff;
+            --lapcart-mgmt-border-color: #3a3a4e;
+            --lapcart-mgmt-success-color: #00bf8e;
+            --lapcart-mgmt-warning-color: #f7c94b;
+            --lapcart-mgmt-danger-color: #f75842;
         }
 
         body {
-            background-color: var(--product-mgmt-dark-bg);
-            color: var(--product-mgmt-text-color);
+            background-color: var(--lapcart-mgmt-dark-bg);
+            color: var(--lapcart-mgmt-text-color);
         }
 
         /* Sidebar Styles */
-        .product-mgmt-logo {
+        .lapcart-mgmt-logo {
             padding: 20px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid var(--product-mgmt-border-color);
+            border-bottom: 1px solid var(--lapcart-mgmt-border-color);
         }
 
-        .product-mgmt-logo span {
+        .lapcart-mgmt-logo span {
             font-size: 24px;
             font-weight: bold;
         }
 
-        .product-mgmt-logo span:first-child {
-            color: var(--product-mgmt-primary-color);
+        .lapcart-mgmt-logo span:first-child {
+            color: var(--lapcart-mgmt-primary-color);
         }
 
-        .product-mgmt-menu {
+        .lapcart-mgmt-menu {
             list-style: none;
             padding: 10px 0;
         }
 
-        .product-mgmt-menu-item {
+        .lapcart-mgmt-menu-item {
             padding: 15px 20px;
             display: flex;
             align-items: center;
@@ -63,99 +63,99 @@
             cursor: pointer;
         }
 
-        .product-mgmt-menu-item:hover, .product-mgmt-menu-item.product-mgmt-active {
+        .lapcart-mgmt-menu-item:hover, .lapcart-mgmt-menu-item.lapcart-mgmt-active {
             background-color: rgba(130, 87, 237, 0.1);
         }
 
-        .product-mgmt-menu-item.product-mgmt-active {
-            border-left: 4px solid var(--product-mgmt-primary-color);
+        .lapcart-mgmt-menu-item.lapcart-mgmt-active {
+            border-left: 4px solid var(--lapcart-mgmt-primary-color);
         }
 
-        .product-mgmt-menu-item i {
+        .lapcart-mgmt-menu-item i {
             margin-right: 10px;
             width: 20px;
             text-align: center;
         }
 
-        .product-mgmt-submenu {
+        .lapcart-mgmt-submenu {
             padding-left: 20px;
         }
 
         /* Main Content Styles */
-        .product-mgmt-main-content {
+        .lapcart-mgmt-main-content {
             flex: 1;
-            margin-left: var(--product-mgmt-sidebar-width);
-            width: calc(100% - var(--product-mgmt-sidebar-width));
+            margin-left: var(--lapcart-mgmt-sidebar-width);
+            width: calc(100% - var(--lapcart-mgmt-sidebar-width));
             overflow-x: hidden;
         }
 
-        .product-mgmt-header {
+        .lapcart-mgmt-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 15px 30px;
-            background-color: var(--product-mgmt-darker-bg);
-            border-bottom: 1px solid var(--product-mgmt-border-color);
+            background-color: var(--lapcart-mgmt-darker-bg);
+            border-bottom: 1px solid var(--lapcart-mgmt-border-color);
         }
 
-        .product-mgmt-search-container {
+        .lapcart-mgmt-search-container {
             position: relative;
             width: 300px;
         }
 
-        .product-mgmt-search-container input {
+        .lapcart-mgmt-search-container input {
             width: 100%;
             padding: 10px 40px 10px 15px;
             border-radius: 5px;
-            border: 1px solid var(--product-mgmt-border-color);
-            background-color: var(--product-mgmt-lighter-bg);
-            color: var(--product-mgmt-text-color);
+            border: 1px solid var(--lapcart-mgmt-border-color);
+            background-color: var(--lapcart-mgmt-lighter-bg);
+            color: var(--lapcart-mgmt-text-color);
         }
 
-        .product-mgmt-search-container button {
+        .lapcart-mgmt-search-container button {
             position: absolute;
             right: 5px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
-            color: var(--product-mgmt-text-color);
+            color: var(--lapcart-mgmt-text-color);
             cursor: pointer;
         }
 
-        .product-mgmt-user-profile {
+        .lapcart-mgmt-user-profile {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .product-mgmt-user-profile .product-mgmt-status {
+        .lapcart-mgmt-user-profile .lapcart-mgmt-status {
             width: 10px;
             height: 10px;
-            background-color: var(--product-mgmt-success-color);
+            background-color: var(--lapcart-mgmt-success-color);
             border-radius: 50%;
         }
 
         /* Content Area */
-        .product-mgmt-content {
+        .lapcart-mgmt-content {
             padding: 30px;
         }
 
-        .product-mgmt-page-header {
+        .lapcart-mgmt-page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
 
-        .product-mgmt-page-title {
+        .lapcart-mgmt-page-title {
             font-size: 24px;
             font-weight: bold;
         }
 
-        .product-mgmt-add-button {
+        .lapcart-mgmt-add-button {
             padding: 10px 20px;
-            background-color: var(--product-mgmt-primary-color);
+            background-color: var(--lapcart-mgmt-primary-color);
             color: white;
             border: none;
             border-radius: 5px;
@@ -167,28 +167,28 @@
             transition: all 0.3s ease;
         }
 
-        .product-mgmt-add-button:hover {
+        .lapcart-mgmt-add-button:hover {
             background-color: #6f46c9;
         }
 
         /* Search Component */
-        .product-mgmt-search-component {
+        .lapcart-mgmt-search-component {
             display: flex;
             margin-bottom: 20px;
             gap: 10px;
             align-items: center;
         }
 
-        .product-mgmt-search-component input {
+        .lapcart-mgmt-search-component input {
             flex: 1;
             padding: 12px 15px;
             border-radius: 5px;
-            border: 1px solid var(--product-mgmt-border-color);
-            background-color: var(--product-mgmt-lighter-bg);
-            color: var(--product-mgmt-text-color);
+            border: 1px solid var(--lapcart-mgmt-border-color);
+            background-color: var(--lapcart-mgmt-lighter-bg);
+            color: var(--lapcart-mgmt-text-color);
         }
 
-        .product-mgmt-search-component button {
+        .lapcart-mgmt-search-component button {
             padding: 12px 20px;
             border-radius: 5px;
             border: none;
@@ -196,28 +196,28 @@
             font-weight: 500;
         }
 
-        .product-mgmt-search-btn {
-            background-color: var(--product-mgmt-primary-color);
+        .lapcart-mgmt-search-btn {
+            background-color: var(--lapcart-mgmt-primary-color);
             color: white;
         }
 
-        .product-mgmt-search-btn:hover {
+        .lapcart-mgmt-search-btn:hover {
             background-color: #6f46c9;
         }
 
-        .product-mgmt-clear-btn {
-            background-color: var(--product-mgmt-lighter-bg);
-            color: var(--product-mgmt-text-color);
-            border: 1px solid var(--product-mgmt-border-color);
+        .lapcart-mgmt-clear-btn {
+            background-color: var(--lapcart-mgmt-lighter-bg);
+            color: var(--lapcart-mgmt-text-color);
+            border: 1px solid var(--lapcart-mgmt-border-color);
         }
 
-        .product-mgmt-clear-btn:hover {
+        .lapcart-mgmt-clear-btn:hover {
             background-color: #3a3a4e;
         }
 
         /* Table Styles */
-        .product-mgmt-table-container {
-            background-color: var(--product-mgmt-lighter-bg);
+        .lapcart-mgmt-table-container {
+            background-color: var(--lapcart-mgmt-lighter-bg);
             border-radius: 10px;
             overflow: hidden;
         }
@@ -230,11 +230,11 @@
         th, td {
             padding: 15px 20px;
             text-align: left;
-            border-bottom: 1px solid var(--product-mgmt-border-color);
+            border-bottom: 1px solid var(--lapcart-mgmt-border-color);
         }
 
         th {
-            background-color: var(--product-mgmt-darker-bg);
+            background-color: var(--lapcart-mgmt-darker-bg);
             font-weight: 600;
         }
 
@@ -242,12 +242,12 @@
             background-color: rgba(130, 87, 237, 0.05);
         }
 
-        .product-mgmt-action-cell {
+        .lapcart-mgmt-action-cell {
             display: flex;
             gap: 10px;
         }
 
-        .product-mgmt-edit-btn, .product-mgmt-delete-btn {
+        .lapcart-mgmt-edit-btn, .lapcart-mgmt-delete-btn {
             width: 32px;
             height: 32px;
             display: flex;
@@ -259,31 +259,31 @@
             color: white;
         }
 
-        .product-mgmt-edit-btn {
-            background-color: var(--product-mgmt-warning-color);
+        .lapcart-mgmt-edit-btn {
+            background-color: var(--lapcart-mgmt-warning-color);
         }
 
-        .product-mgmt-delete-btn {
-            background-color: var(--product-mgmt-danger-color);
+        .lapcart-mgmt-delete-btn {
+            background-color: var(--lapcart-mgmt-danger-color);
         }
 
         /* Updated Pagination Styles */
-        .product-mgmt-pagination {
+        .lapcart-mgmt-pagination {
             margin-top: 20px;
             display: flex;
             justify-content: center;
             gap: 8px;
         }
 
-        .product-mgmt-pagination .product-mgmt-page-item {
+        .lapcart-mgmt-pagination .lapcart-mgmt-page-item {
             display: flex;
             align-items: center;
         }
 
-        .product-mgmt-pagination .product-mgmt-page-link {
-            background-color: var(--product-mgmt-lighter-bg);
-            color: var(--product-mgmt-text-color);
-            border: 1px solid var(--product-mgmt-border-color);
+        .lapcart-mgmt-pagination .lapcart-mgmt-page-link {
+            background-color: var(--lapcart-mgmt-lighter-bg);
+            color: var(--lapcart-mgmt-text-color);
+            border: 1px solid var(--lapcart-mgmt-border-color);
             border-radius: 8px;
             padding: 10px 16px;
             font-size: 14px;
@@ -293,88 +293,117 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .product-mgmt-pagination .product-mgmt-page-link:hover {
-            background-color: var(--product-mgmt-primary-color);
-            border-color: var(--product-mgmt-primary-color);
+        .lapcart-mgmt-pagination .lapcart-mgmt-page-link:hover {
+            background-color: var(--lapcart-mgmt-primary-color);
+            border-color: var(--lapcart-mgmt-primary-color);
             color: white;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .product-mgmt-pagination .product-mgmt-page-item.product-mgmt-active .product-mgmt-page-link {
-            background-color: var(--product-mgmt-primary-color);
-            border-color: var(--product-mgmt-primary-color);
+        .lapcart-mgmt-pagination .lapcart-mgmt-page-item.lapcart-mgmt-active .lapcart-mgmt-page-link {
+            background-color: var(--lapcart-mgmt-primary-color);
+            border-color: var(--lapcart-mgmt-primary-color);
             color: white;
             cursor: default;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .product-mgmt-pagination .product-mgmt-page-item.product-mgmt-disabled .product-mgmt-page-link {
-            background-color: var(--product-mgmt-lighter-bg);
+        .lapcart-mgmt-pagination .lapcart-mgmt-page-item.lapcart-mgmt-disabled .lapcart-mgmt-page-link {
+            background-color: var(--lapcart-mgmt-lighter-bg);
             color: #666;
-            border-color: var(--product-mgmt-border-color);
+            border-color: var(--lapcart-mgmt-border-color);
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
+        /* Modal Styles */
+        .lapcart-mgmt-modal-content {
+            color: #000;
+            background-color: #fff;
+            z-index: 1050; /* Ensure modal content is above other elements */
+        }
+
+        .lapcart-mgmt-modal-body label, .lapcart-mgmt-modal-title {
+            color: #000;
+        }
+
+        .lapcart-mgmt-modal-delete-btn {
+            background-color: var(--lapcart-mgmt-primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            z-index: 1055; /* Ensure button is clickable */
+            position: relative;
+            pointer-events: auto !important; /* Ensure button is clickable */
+        }
+
+        .lapcart-mgmt-modal-delete-btn:hover {
+            background-color: #6f46c9;
+        }
+
         /* Responsive styles */
         @media (max-width: 992px) {
-            .product-mgmt-sidebar {
+            .lapcart-mgmt-sidebar {
                 width: 70px;
             }
 
-            .product-mgmt-sidebar .product-mgmt-logo span, .product-mgmt-sidebar .product-mgmt-menu-item span {
+            .lapcart-mgmt-sidebar .lapcart-mgmt-logo span, .lapcart-mgmt-sidebar .lapcart-mgmt-menu-item span {
                 display: none;
             }
 
-            .product-mgmt-sidebar .product-mgmt-menu-item {
+            .lapcart-mgmt-sidebar .lapcart-mgmt-menu-item {
                 justify-content: center;
                 padding: 15px 0;
             }
 
-            .product-mgmt-sidebar .product-mgmt-menu-item i {
+            .lapcart-mgmt-sidebar .lapcart-mgmt-menu-item i {
                 margin-right: 0;
             }
 
-            .product-mgmt-main-content {
+            .lapcart-mgmt-main-content {
                 margin-left: 70px;
                 width: calc(100% - 70px);
             }
         }
 
         @media (max-width: 768px) {
-            .product-mgmt-header {
+            .lapcart-mgmt-header {
                 flex-direction: column;
                 gap: 15px;
                 align-items: flex-start;
             }
 
-            .product-mgmt-search-container {
+            .lapcart-mgmt-search-container {
                 width: 100%;
             }
 
-            .product-mgmt-user-profile {
+            .lapcart-mgmt-user-profile {
                 align-self: flex-end;
             }
 
-            .product-mgmt-search-component {
+            .lapcart-mgmt-search-component {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .product-mgmt-action-cell {
+            .lapcart-mgmt-action-cell {
                 flex-direction: column;
                 gap: 5px;
             }
 
-            .product-mgmt-table-container {
+            .lapcart-mgmt-table-container {
                 overflow-x: auto;
             }
 
-            .product-mgmt-pagination {
+            .lapcart-mgmt-pagination {
                 flex-wrap: wrap;
                 gap: 8px;
                 justify-content: center;
@@ -382,54 +411,44 @@
         }
 
         @media (max-width: 576px) {
-            .product-mgmt-content {
+            .lapcart-mgmt-content {
                 padding: 15px;
             }
 
-            .product-mgmt-pagination .product-mgmt-page-link {
+            .lapcart-mgmt-pagination .lapcart-mgmt-page-link {
                 padding: 8px 12px;
                 font-size: 12px;
             }
         }
-
-        .product-mgmt-modal-content {
-            color: #000;
-            background-color: #fff;
-        }
-
-        .product-mgmt-modal-body label, .product-mgmt-modal-title {
-            color: #000;
-        }
     </style>
 </head>
 <body>
-    
     <!-- Main Content -->
-    <div class="product-mgmt-main-content">
-        <div class="product-mgmt-header">
+    <div class="lapcart-mgmt-main-content">
+        <div class="lapcart-mgmt-header">
         </div>
 
-        <div class="product-mgmt-content">
-            <div class="product-mgmt-page-header">
-                <h1 class="product-mgmt-page-title">Products</h1>
+        <div class="lapcart-mgmt-content">
+            <div class="lapcart-mgmt-page-header">
+                <h1 class="lapcart-mgmt-page-title">Products</h1>
                 <form action="/admin/addProduct">
-                    <button class="product-mgmt-add-button" id="product-mgmt-addCategoryBtn">
+                    <button class="lapcart-mgmt-add-button" id="lapcart-mgmt-addCategoryBtn">
                         <span>Add Product</span>
                         <span>+</span>
                     </button>
                 </form>
             </div>
 
-            <div class="product-mgmt-search-component">
+            <div class="lapcart-mgmt-search-component">
                 <form action="/admin/product">
-                    <input type="text" name="search" id="product-mgmt-searchInput" placeholder="Search by Name or Brand">
-                    <button class="product-mgmt-search-btn">Search</button>
-                    <button class="product-mgmt-clear-btn" onclick="clearSearch()">Clear</button>
+                    <input type="text" name="search" id="lapcart-mgmt-searchInput" placeholder="Search by Name or Brand">
+                    <button class="lapcart-mgmt-search-btn">Search</button>
+                    <button class="lapcart-mgmt-clear-btn" onclick="clearSearch()">Clear</button>
                 </form>
             </div>
 
-            <div class="product-mgmt-table-container">
-                <table class="product-mgmt-users-table">
+            <div class="lapcart-mgmt-table-container">
+                <table class="lapcart-mgmt-users-table">
                     <thead>
                         <tr>
                             <th>Product Name</th>
@@ -448,7 +467,7 @@
                             <tr>
                                 <td><%= pro.productName %></td>
                                 <td>
-                                    <img src="/Uploads/product-images/<%= pro.productImage[0] %>" alt="img-loading" style="inline-size: 50px;" class="product-mgmt-product-image">
+                                    <img src="/Uploads/product-images/<%= pro.productImage[0] %>" alt="img-loading" style="inline-size: 50px;" class="lapcart-mgmt-product-image">
                                 </td>
                                 <td><%= pro.brand.brandName %></td>
                                 <td><%= pro.category.name %></td>
@@ -466,9 +485,9 @@
                                         </button>
                                     <% } %>
                                 </td>
-                                <td class="product-mgmt-action-cell">
-                                    <button class="product-mgmt-edit-btn"><a href="/admin/editProduct?id=<%= pro._id %>" class="text-white" style="text-decoration: none;">✏️</a></button>
-                                    <button class="product-mgmt-delete-btn" onclick="deleteProduct('<%= pro._id %>')">🗑️</button>
+                                <td class="lapcart-mgmt-action-cell">
+                                    <button class="lapcart-mgmt-edit-btn"><a href="/admin/editProduct?id=<%= pro._id %>" class="text-white" style="text-decoration: none;">✏️</a></button>
+                                    <button class="lapcart-mgmt-delete-btn" onclick="deleteProduct('<%= pro._id %>')">🗑️</button>
                                 </td>
                             </tr>
                         <% }) %>
@@ -476,18 +495,18 @@
                 </table>
 
                 <!-- Delete Modal -->
-                <div class="modal" tabindex="-1" id="product-mgmt-deleteProductModal">
+                <div class="modal fade" tabindex="-1" id="lapcart-mgmt-deleteProductModal" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="product-mgmt-modal-content">
+                        <div class="lapcart-mgmt-modal-content">
                             <div class="modal-header">
-                                <h5 class="product-mgmt-modal-title text-danger">DELETE PRODUCT</h5>
+                                <h5 class="lapcart-mgmt-modal-title text-danger" id="deleteProductModalLabel">DELETE PRODUCT</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <div class="product-mgmt-modal-body">
+                            <div class="lapcart-mgmt-modal-body">
                                 <form action="/admin/deleteProduct" method="post">
-                                    <input type="text" id="product-mgmt-deleteProduct" name="productId" hidden>
-                                    <p class="text-danger">Are You Sure For Delete This Product</p>
-                                    <button class="btn btn-primary">Delete Product</button>
+                                    <input type="hidden" id="lapcart-mgmt-deleteProduct" name="productId">
+                                    <p class="text-danger">Are you sure you want to delete this product?</p>
+                                    <button type="submit" class="lapcart-mgmt-modal-delete-btn">Delete Product</button>
                                 </form>
                             </div>
                             <div class="modal-footer">
@@ -501,10 +520,10 @@
             <!-- Pagination -->
             <div class="container mt-3">
                 <nav aria-label="Page navigation">
-                    <ul class="product-mgmt-pagination">
+                    <ul class="lapcart-mgmt-pagination">
                         <% for(let i = 1; i <= totalPages; i++) { %>
-                            <li class="product-mgmt-page-item <%= (i === currentPage) ? 'product-mgmt-active' : '' %>">
-                                <a class="product-mgmt-page-link" href="?page=<%= i %>"><%= i %></a>
+                            <li class="lapcart-mgmt-page-item <%= (i === currentPage) ? 'lapcart-mgmt-active' : '' %>">
+                                <a class="lapcart-mgmt-page-link" href="?page=<%= i %>"><%= i %></a>
                             </li>
                         <% } %>
                     </ul>
@@ -516,14 +535,14 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         function deleteProduct(productId) {
-            document.getElementById('product-mgmt-deleteProduct').value = productId;
-            let deleteModalShow = new bootstrap.Modal(document.getElementById('product-mgmt-deleteProductModal'));
+            document.getElementById('lapcart-mgmt-deleteProduct').value = productId;
+            let deleteModalShow = new bootstrap.Modal(document.getElementById('lapcart-mgmt-deleteProductModal'));
             deleteModalShow.show();
         }
 
         function clearSearch() {
-            document.getElementById("product-mgmt-searchInput").value = "";
-            document.getElementById('product-mgmt-search-btn').click();
+            document.getElementById("lapcart-mgmt-searchInput").value = "";
+            document.getElementById('lapcart-mgmt-search-btn').click();
         }
     </script>
 </body>

@@ -490,7 +490,7 @@ button:disabled {
                                     <% const total = data.price * data.orderQuantity %>
                                     <tr>
                                         <td><%=data.product.productName%></td>
-                                        <td><img src="/uploads/product-images/<%=data.product.productImage[0]%>" alt="" style="inline-size: 50px;"></td>
+                                        <td><img src="/Uploads/product-images/<%=data.product.productImage[0]%>" alt="" style="inline-size: 50px;"></td>
                                         <td><%=data.orderQuantity %></td>
                                         <td><%=data.price%></td>
                                         <td><%=total%></td>
@@ -530,7 +530,7 @@ button:disabled {
                                 <% orderData.orderedItems.forEach(data => { %>
                                     <% if(data.returnStatus === 'Return Requested' || data.returnStatus === 'Returned') { %>
                                          <tr>
-                                            <td><img src="/uploads/product-images/<%=data.product.productImage[0]%>" alt="" style="inline-size: 50px;"></td>
+                                            <td><img src="/Uploads/product-images/<%=data.product.productImage[0]%>" alt="" style="inline-size: 50px;"></td>
                                             <td><%=data.price%></td>
                                             <td><%=data.orderQuantity %></td>
                                              <td><%=data.returnStatus%></td>
