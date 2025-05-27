@@ -149,7 +149,7 @@ const addProduct = async (req, res) => {
         const productExists = await Product.findOne({ productName: product.productName });
         
         if (productExists) {
-            return res.json({ error: 'Product already exists' });
+            return res.status(400).json({ error: 'Product already exists' });
         }
         
         const images = [];
