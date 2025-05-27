@@ -16,7 +16,6 @@ const pageNotFound = async (req,res) => {
     }
 };
 
-
  
 const loadHomepage = async (req, res) => {
     try {
@@ -33,7 +32,6 @@ const loadHomepage = async (req, res) => {
                 return;  
             }
         }
-        // console.log('1');
 
          const categories = await Category.find({ isListed: true, isDeleted: false });
         let productData = await Product.find({
