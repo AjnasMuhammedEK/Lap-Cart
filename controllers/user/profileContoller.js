@@ -253,7 +253,7 @@ const updateProfile = async (req, res) => {
       profileImage = req.file.filename;
 
        if (user.profileImage) {
-        const oldImagePath = path.join(__dirname, '../public/uploads/profiles', user.userImage);
+        const oldImagePath = path.join(__dirname, '../public/Uploads/profiles', user.userImage);
         if (fs.existsSync(oldImagePath)) {
           fs.unlinkSync(oldImagePath);
         }
