@@ -137,7 +137,7 @@ const ensureDirectoryExists = (dir) => {
         fs.mkdirSync(dir, { recursive: true });
     }
 };
-const productImagesDir = path.join(process.cwd(), 'public', 'uploads', 'product-images');
+const productImagesDir = path.join(process.cwd(), 'public', 'Uploads', 'product-images');
 ensureDirectoryExists(productImagesDir);
 
 
